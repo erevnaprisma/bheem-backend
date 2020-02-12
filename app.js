@@ -3,9 +3,26 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var graphqlHTTP = require('express-graphql');
+
+var { buildSchema } = require('graphql');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
+//Graphql Schema
+var schema = buildSchema(`
+  type Query{
+    hello: String
+  }
+`);
+
+//root
+var root = {
+  hello: () => {
+    return 'Hello World!';
+  },
+};
 
 var app = express();
 
@@ -19,6 +36,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true,
+}));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
