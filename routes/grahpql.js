@@ -16,12 +16,13 @@ var schema = require('../schema')
 //   }
 // }
 
-const Router = express.Router()
-Router.all(['/'], [graphqlHTTP({
+const Router = express.Router();
+
+Router.all('/', graphqlHTTP({
   schema: schema,
   pretty: true,
   graphiql: true,
 //   rootValue: root
-})])
+}));
 
 module.exports = Router
