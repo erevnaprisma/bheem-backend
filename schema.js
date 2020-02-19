@@ -29,10 +29,20 @@ const RootQuery = new GraphQLObjectType({
         login: {
             type: UserType,
             args: {
-                id: { type: GraphQLID }
+                name: { type: GraphQLString },
+                password: { type: GraphQLString }
             },
-            resolve(parent, args) {
-                return User.findById(args.id)
+            async resolve(parent, args) {
+                const user = await User.findOne({ name: args.name });
+                if (!user) return {status: 400, err: "name or password not correct"}
+
+                const res = await bcrypt.compare(args.password, user.password);
+                if(!res) return {status: 400, err: "name or password not correct"}
+
+                //access token
+                const access_token = await jwt.sign({ userID: user._id }, config.get('privateKey'), { expiresIn: "15min"});
+
+                return user;
             }
         },
         allUser: {
