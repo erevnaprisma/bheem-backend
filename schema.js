@@ -1,8 +1,6 @@
 const graphql = require('graphql');
-const User = require('./models/User');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const config = require('config');
+
+const { signup, login, findUser } = require('./services/UserServices');
 
 const {
     GraphQLString,
@@ -11,6 +9,8 @@ const {
     GraphQLObjectType,
     GraphQLSchema,
     GraphQLList,
+    GraphQLInt,
+    List
 } = graphql;
 
 const UserType = new GraphQLObjectType({
@@ -19,38 +19,41 @@ const UserType = new GraphQLObjectType({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
         email: { type: GraphQLString },
-        password: { type: GraphQLString }
+        password: { type: GraphQLString },
     })
 });
+
+const LoginType = new GraphQLObjectType({
+    name: 'Login',
+    fields: () => ({
+        access_token: { type: GraphQLString },
+        status: { type: GraphQLInt},
+        error: { type: GraphQLString},
+        user: { 
+            type: UserType, 
+            args: {
+                id: { type: GraphQLID }
+            },
+            resolve(parent, args) {
+                return findUser(args);
+            }
+        }
+    })
+})
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
         login: {
-            type: UserType,
+            type: LoginType,
             args: {
                 name: { type: GraphQLString },
                 password: { type: GraphQLString }
             },
-            async resolve(parent, args) {
-                const user = await User.findOne({ name: args.name });
-                if (!user) return {status: 400, err: "name or password not correct"}
-
-                const res = await bcrypt.compare(args.password, user.password);
-                if(!res) return {status: 400, err: "name or password not correct"}
-
-                //access token
-                const access_token = await jwt.sign({ userID: user._id }, config.get('privateKey'), { expiresIn: "15min"});
-
-                return user;
+            async resolve(parent, args, context) {
+                return login(args);
             }
         },
-        allUser: {
-            type: new GraphQLList(UserType),
-            resolve(parent, args) {
-                return User.find();
-            }
-        }
     }
 });
 
@@ -58,33 +61,14 @@ const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields:  {
         signUp: {
-            type: UserType,
+            type: LoginType,
             args: {
                 name: { type: new GraphQLNonNull(GraphQLString)},
                 email: { type: new GraphQLNonNull(GraphQLString)},
                 password: { type: new GraphQLNonNull(GraphQLString)}
             },
-            async resolve(parent, args, context) {
-                let user = new User({
-                    name: args.name,
-                    email: args.email,
-                    password: args.password
-                });
-                
-                //hash password
-                const salt = await bcrypt.genSalt(10);
-                user.password = await bcrypt.hash(user.password, salt);
-
-                //refresh token
-                const refresh_token = await jwt.sign({ userID: user._id}, config.get('privateKey'), { expiresIn: "7d"});
-
-                //access token
-                const access_token = await jwt.sign({ userID: user._id }, config.get('privateKey'), { expiresIn: "15min"});
-
-                context.headers.access_token = access_token;
-
-                
-                return user.save();
+            resolve(parent, args, context) {
+                return signup(args);
             }
         }
     }

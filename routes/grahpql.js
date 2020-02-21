@@ -1,7 +1,7 @@
-var express = require('express')
-var graphqlHTTP = require('express-graphql')
-var { buildSchema } = require('graphql')
-var schema = require('../schema')
+const express = require('express')
+const graphqlHTTP = require('express-graphql')
+const { buildSchema } = require('graphql')
+const schema = require('../schema')
 
 // Graphql Schema
 // var schema = buildSchema(`
@@ -18,11 +18,12 @@ var schema = require('../schema')
 
 const Router = express.Router();
 
-Router.all('/', graphqlHTTP({
-  schema: schema,
-  pretty: true,
-  graphiql: true,
-//   rootValue: root
-}));
+Router.all('/', 
+  graphqlHTTP((request, response, graphQLParams) =>({
+    schema: schema,
+    pretty: true,
+    graphiql: true,
+  //   rootValue: root
+  })));
 
 module.exports = Router
