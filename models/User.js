@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     username: {
       type: String,
       min: 5,
-      max: 25
+      max: 25,
+      unique: true
     },
     full_name: {
       type: String, 
@@ -26,26 +27,30 @@ const userSchema = new mongoose.Schema({
     device_id: {
       type: String, 
       required: true,
+    },
+    isHash: {
+      type: Boolean,
+      default: false
     }     
 });
 
-// userSchema.pre('save', function(next){
-//     const user = this;
+userSchema.pre('save', function(next){
+    const user = this;
     
-//     bcrypt.genSalt(10, (err, salt) => {
-//         if (err) {
-//           return next(err);
-//         }
+    bcrypt.genSalt(10, (err, salt) => {
+        if (err) {
+          return next(err);
+        }
     
-//         bcrypt.hash(user.password, salt, (err, hash) => {
-//           if (err) {
-//             return next(err);
-//           }
-//           user.password = hash;
-//           next();
-//         });
-//       });
-// });
+        bcrypt.hash(user.password, salt, (err, hash) => {
+          if (err) {
+            return next(err);
+          }
+          user.password = hash;
+          next();
+        });
+      });
+});
 
 userSchema.methods.comparedPassword = function(candidatePassword) {
     const user = this;

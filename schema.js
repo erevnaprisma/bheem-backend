@@ -10,7 +10,7 @@ const {
     GraphQLSchema,
     GraphQLList,
     GraphQLInt,
-    List
+    GraphQLBoolean
 } = graphql;
 
 const UserType = new GraphQLObjectType({
@@ -22,6 +22,7 @@ const UserType = new GraphQLObjectType({
         device_id: { type: GraphQLString},
         email: { type: GraphQLString },
         password: { type: GraphQLString },
+        isHash: { type: GraphQLBoolean }
     })
 });
 
@@ -49,7 +50,7 @@ const RootQuery = new GraphQLObjectType({
         login: {
             type: AuthType,
             args: {
-                email: { type: GraphQLString },
+                username: { type: GraphQLString },
                 password: { type: GraphQLString }
             },
             async resolve(parent, args, context) {
