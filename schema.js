@@ -17,14 +17,16 @@ const UserType = new GraphQLObjectType({
     name: 'User',
     fields: () => ({
         id: { type: GraphQLID },
-        name: { type: GraphQLString },
+        full_name: { type: GraphQLString },
+        username: { type: GraphQLString },
+        device_id: { type: GraphQLString},
         email: { type: GraphQLString },
         password: { type: GraphQLString },
     })
 });
 
-const LoginType = new GraphQLObjectType({
-    name: 'Login',
+const AuthType = new GraphQLObjectType({
+    name: 'Auth',
     fields: () => ({
         access_token: { type: GraphQLString },
         status: { type: GraphQLInt},
@@ -45,7 +47,7 @@ const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
         login: {
-            type: LoginType,
+            type: AuthType,
             args: {
                 email: { type: GraphQLString },
                 password: { type: GraphQLString }
@@ -61,11 +63,10 @@ const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields:  {
         signUp: {
-            type: LoginType,
+            type: AuthType,
             args: {
-                name: { type: new GraphQLNonNull(GraphQLString)},
                 email: { type: new GraphQLNonNull(GraphQLString)},
-                password: { type: new GraphQLNonNull(GraphQLString)}
+                device_id: { type: new GraphQLNonNull(GraphQLString)}
             },
             resolve(parent, args, context) {
                 return signup(args);

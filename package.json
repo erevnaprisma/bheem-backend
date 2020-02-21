@@ -22,7 +22,8 @@
     "mongoose": "^5.9.1",
     "mongoose-type-email": "^1.0.12",
     "morgan": "~1.9.1",
-    "pug": "^2.0.4"
+    "pug": "^2.0.4",
+    "randomstring": "^1.1.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

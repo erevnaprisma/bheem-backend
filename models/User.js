@@ -3,42 +3,49 @@ require('mongoose-type-email');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        min: 5,
-        max: 25
+    username: {
+      type: String,
+      min: 5,
+      max: 25
+    },
+    full_name: {
+      type: String, 
+      min: 6,
+      max: 40,
     },
     email: {
-        type: mongoose.SchemaTypes.Email,
-        required: true,
-        unique: true
+      type: mongoose.SchemaTypes.Email,
+      required: true,
+      unique: true
     },
     password: {
-        type: String,
-        required: true,
-        min: 5,
-        max: 15
+      type: String,
+      min: 5,
+      max: 15
+    },
+    device_id: {
+      type: String, 
+      required: true,
     }     
 });
 
-userSchema.pre('save', function(next){
-    const user = this;
+// userSchema.pre('save', function(next){
+//     const user = this;
     
-    bcrypt.genSalt(10, (err, salt) => {
-        if (err) {
-          return next(err);
-        }
+//     bcrypt.genSalt(10, (err, salt) => {
+//         if (err) {
+//           return next(err);
+//         }
     
-        bcrypt.hash(user.password, salt, (err, hash) => {
-          if (err) {
-            return next(err);
-          }
-          user.password = hash;
-          next();
-        });
-      });
-});
+//         bcrypt.hash(user.password, salt, (err, hash) => {
+//           if (err) {
+//             return next(err);
+//           }
+//           user.password = hash;
+//           next();
+//         });
+//       });
+// });
 
 userSchema.methods.comparedPassword = function(candidatePassword) {
     const user = this;

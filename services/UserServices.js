@@ -2,19 +2,22 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const config = require('config');
+const randomString = require('randomstring');
 
 const signup = async (args) => {
     let user = new User({
-        name: args.name,
         email: args.email,
-        password: args.password
+        device_id: args.device_id,
+        username: generateRandomString(10),
+        password: generateRandomString(10)
     });
     
-    //access token
-    const access_token = await jwt.sign({ userID: user._id }, config.get('privateKey'), { expiresIn: "30min"});
-    
     try {
+        //access token
+        const access_token = await jwt.sign({ userID: user._id }, config.get('privateKey'), { expiresIn: "30min"});
+        
         await user.save();
+        
         return {access_token}
     }
     catch(err) {
@@ -42,6 +45,13 @@ const login = async (args) => {
 
 const findUser = (args) => {
     return User.findById(args.id);
+}
+
+const generateRandomString = (length) => {
+    return randomString.generate({
+        length,
+        charset: 'alphabetic' 
+    })
 }
 
 module.exports.signup = signup;
