@@ -23,7 +23,7 @@ const signup = async (args) => {
 }
 
 const login = async (args) => {
-    const user = await User.findOne({ name: args.name });
+    const user = await User.findOne({ email: args.email });
     if (!user) return {status: 400, error: "Invalid name or password"}
 
     try {
