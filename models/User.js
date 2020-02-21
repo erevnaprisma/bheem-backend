@@ -27,11 +27,7 @@ const userSchema = new mongoose.Schema({
     device_id: {
       type: String, 
       required: true,
-    },
-    isHash: {
-      type: Boolean,
-      default: false
-    }     
+    },   
 });
 
 userSchema.pre('save', function(next){

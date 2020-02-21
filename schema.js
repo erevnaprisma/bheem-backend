@@ -22,7 +22,6 @@ const UserType = new GraphQLObjectType({
         device_id: { type: GraphQLString},
         email: { type: GraphQLString },
         password: { type: GraphQLString },
-        isHash: { type: GraphQLBoolean }
     })
 });
 
