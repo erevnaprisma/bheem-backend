@@ -49,7 +49,7 @@ const RootQuery = new GraphQLObjectType({
         login: {
             type: AuthType,
             args: {
-                email: { type: GraphQLString },
+                username: { type: GraphQLString },
                 password: { type: GraphQLString }
             },
             async resolve(parent, args, context) {

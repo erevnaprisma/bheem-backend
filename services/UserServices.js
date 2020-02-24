@@ -73,7 +73,7 @@ const sendMailVerification = async (model) => {
         subject: 'RayaPay',
         text: `Thank you for applying on RayaPay. We are looking forward for your action in changing your name and password.
         name: ${model.username}
-        password: ${model.password}`
+        password: ${model.password}`,
       };
       
       transporter.sendMail(mailOptions, function(error, info){
