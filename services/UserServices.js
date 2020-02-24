@@ -57,6 +57,10 @@ const generateRandomString = (length) => {
     })
 }
 
+const getAllUser = () => {
+    return User.find();
+}
+
 const sendMailVerification = async (model) => {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -88,3 +92,4 @@ const sendMailVerification = async (model) => {
 module.exports.signup = signup;
 module.exports.login = login;
 module.exports.findUser = findUser;
+module.exports.getAllUser = getAllUser;

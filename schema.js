@@ -1,6 +1,7 @@
 const graphql = require('graphql');
+const User = require('./models/User');
 
-const { signup, login, findUser } = require('./services/UserServices');
+const { signup, login, findUser, getAllUser } = require('./services/UserServices');
 
 const {
     GraphQLString,
@@ -56,6 +57,15 @@ const RootQuery = new GraphQLObjectType({
                 return login(args);
             }
         },
+        allUser: {
+            type: new GraphQLList(UserType),
+            args: {
+                email: { type: GraphQLString }
+            },
+            resolve(parent, args) {
+                return getAllUser();
+            }
+        }
     }
 });
 
