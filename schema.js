@@ -29,16 +29,14 @@ const UserType = new GraphQLObjectType({
 const AuthType = new GraphQLObjectType({
     name: 'Auth',
     fields: () => ({
+        user_id: { type: GraphQLID },
         access_token: { type: GraphQLString },
         status: { type: GraphQLInt},
         error: { type: GraphQLString},
         user: { 
             type: UserType, 
-            args: {
-                id: { type: GraphQLID }
-            },
             resolve(parent, args) {
-                return findUser(args);
+                return findUser(parent.user_id);
             }
         }
     })

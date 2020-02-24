@@ -39,7 +39,8 @@ const login = async (args) => {
         const access_token = await jwt.sign({ userID: user._id }, config.get('privateKey'), { expiresIn: "30min"});
 
         return {
-            access_token
+            access_token,
+            user_id: user._id
         };
     }
     catch(err) {
@@ -48,7 +49,7 @@ const login = async (args) => {
 }
 
 const findUser = (args) => {
-    return User.findById(args.id);
+    return User.findById(args);
 }
 
 const generateRandomString = (length) => {
