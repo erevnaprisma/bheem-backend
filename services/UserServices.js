@@ -4,6 +4,7 @@ const config = require('config');
 const randomString = require('randomstring');
 const nodemailer = require('nodemailer');
 const Joi = require('joi');
+const { word_signup_success, word_login, word_change_email, word_change_password, word_change_username } = require('../constants/word');
 
 const schema = Joi.object({
     username: Joi.string().min(5).max(25),
@@ -32,9 +33,9 @@ const signup = async (email, device_id) => {
         
         await sendMailVerification(user);
 
-        await user.save();
+        user = await user.save();
 
-        return {access_token}
+        return { user_id: user._id, access_token, success: word_signup_success }
     }
     catch(err) {
         return {status: '500', error: err || 'Failed to save to data...'}
@@ -56,11 +57,53 @@ const login = async (username, password) => {
 
         return {
             access_token,
-            user_id: user._id
+            user_id: user._id,
+            success: word_login
         };
     }
     catch(err) {
         return {status: 500, error: err}
+    }
+}
+
+const changeEmail = async (new_email, user_id) => {
+    const { error } = schema.validate({ email: new_email });
+    if(error) return {status: 400, error: error.details[0].message}
+
+    try {
+
+        await User.updateOne({_id: user_id}, { email: new_email });
+
+        return { user_id,success: word_change_email };
+    }
+    catch (er) {
+        return {status: 400, error: er || 'Update failed'};
+    }
+}
+
+const changePassword = async (user_id, new_password) => {
+    try {
+        const hashed_pass = await User.hashing(new_password);
+        await User.findOneAndUpdate({_id: user_id}, {password: hashed_pass});
+
+        return { user_id, success: word_change_password };
+    }
+    catch (er) {
+        return {status: 400, error: er || 'Update failed'}
+    }
+}
+
+const changeUsername = async (user_id, new_username) => {
+    const { error } = schema.validate({ username: new_username });
+    if(error) return { error: 400, error: error.details[0].message }
+
+    try{
+        await User.findOneAndUpdate({ _id: user_id }, { username: new_username });
+
+        return { user_id, success: word_change_username};
+    }
+    catch(er) {
+        return {status: 400, error: err || 'Update failed'}
     }
 }
 
@@ -104,47 +147,6 @@ const sendMailVerification = async (model) => {
           console.log('Email sent: ' + info.response);
         }
       });
-}
-
-const changeEmail = async (new_email, user_id) => {
-    const { error } = schema.validate({ email: new_email });
-    if(error) return {status: 400, error: error.details[0].message}
-
-    try {
-
-        await User.updateOne({_id: user_id}, { email: new_email });
-
-        return { user_id };
-    }
-    catch (er) {
-        return {status: 400, error: er || 'Update failed'};
-    }
-}
-
-const changePassword = async (user_id, new_password) => {
-    try {
-        const hashed_pass = await User.hashing(new_password);
-        await User.findOneAndUpdate({_id: user_id}, {password: hashed_pass});
-
-        return { user_id };
-    }
-    catch (er) {
-        return {status: 400, error: er || 'Update failed'}
-    }
-}
-
-const changeUsername = async (user_id, new_username) => {
-    const { error } = schema.validate({ username: new_username });
-    if(error) return { error: 400, error: error.details[0].message }
-
-    try{
-        await User.findOneAndUpdate({ _id: user_id }, { username: new_username });
-
-        return {user_id};
-    }
-    catch(er) {
-        return {status: 400, error: err || 'Update failed'}
-    }
 }
 
 module.exports.signup = signup;

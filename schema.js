@@ -31,6 +31,7 @@ const AuthType = new GraphQLObjectType({
         access_token: { type: GraphQLString },
         status: { type: GraphQLInt},
         error: { type: GraphQLString},
+        success: { type: GraphQLString },
         user: { 
             type: UserType, 
             resolve(parent, args) {
