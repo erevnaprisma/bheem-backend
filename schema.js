@@ -1,7 +1,6 @@
 const graphql = require('graphql');
-const User = require('./models/User');
 
-const { signup, login, findUser, getAllUser } = require('./services/UserServices');
+const { signup, login, findUser, getAllUser, changeEmail, changePassword, changeUsername } = require('./services/UserServices');
 
 const {
     GraphQLString,
@@ -11,7 +10,6 @@ const {
     GraphQLSchema,
     GraphQLList,
     GraphQLInt,
-    GraphQLBoolean
 } = graphql;
 
 const UserType = new GraphQLObjectType({
@@ -36,7 +34,7 @@ const AuthType = new GraphQLObjectType({
         user: { 
             type: UserType, 
             resolve(parent, args) {
-                return findUser(parent.user_id);
+                return findUser(parent.user_id || args.user_id);
             }
         }
     })
@@ -52,7 +50,7 @@ const RootQuery = new GraphQLObjectType({
                 password: { type: GraphQLString }
             },
             async resolve(parent, args, context) {
-                return login(args);
+                return login(args.username, args.password);
             }
         },
         allUser: {
@@ -77,7 +75,37 @@ const Mutation = new GraphQLObjectType({
                 device_id: { type: new GraphQLNonNull(GraphQLString)}
             },
             resolve(parent, args, context) {
-                return signup(args);
+                return signup(args.email, args.device_id);
+            }
+        },
+        changeEmail: {
+            type: AuthType,
+            args: {
+                user_id: { type: new GraphQLNonNull(GraphQLString)},
+                new_email: { type: new GraphQLNonNull(GraphQLString)}
+            },
+            resolve(parent, args) {
+                return changeEmail( args.new_email, args.user_id);
+            }
+        },
+        changePassword: {
+            type: AuthType,
+            args: {
+                user_id: { type: new GraphQLNonNull(GraphQLID)},
+                new_password: { type: new GraphQLNonNull(GraphQLString)}
+            },
+            resolve(parent, args) {
+                return changePassword(args.user_id, args.new_password);
+            }
+        },
+        changeUsername: {
+            type: AuthType,
+            args: {
+                user_id: { type: new GraphQLNonNull(GraphQLID)},
+                new_username: { type: new GraphQLNonNull(GraphQLString)}
+            },
+            resolve(parent, args) {
+                return changeUsername(args.user_id, args.new_username);
             }
         }
     }

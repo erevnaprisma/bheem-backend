@@ -10,7 +10,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var graphqlRouter = require('./routes/grahpql');
 
-mongoose.connect(config.get('DB'), { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
+mongoose.connect(config.get('DB'), { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true})
   .then(() => console.log('Connected to MongoDB...'))
   .catch(() => console.log('Server Timeout...'));
 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 require('mongoose-type-email');
 const bcrypt = require('bcrypt');
+const Joi = require('joi');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -48,9 +49,22 @@ userSchema.pre('save', function(next){
       });
 });
 
+userSchema.statics.hashing = (password) => {
+  return new Promise((resolve, reject) => {
+    bcrypt.genSalt(10, (err, salt) => {
+      if(err) return reject(err)
+
+      bcrypt.hash(password, salt, (err, hash) => {
+        if(err) return reject(err)
+
+        resolve(hash);
+      })
+    })
+  })
+}
+
 userSchema.methods.comparedPassword = function(candidatePassword) {
     const user = this;
-    // console.log(user);
 
     return new Promise((resolve, reject) => {
         bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
