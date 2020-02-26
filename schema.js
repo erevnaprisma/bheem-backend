@@ -83,30 +83,33 @@ const Mutation = new GraphQLObjectType({
             type: AuthType,
             args: {
                 user_id: { type: new GraphQLNonNull(GraphQLString)},
-                new_email: { type: new GraphQLNonNull(GraphQLString)}
+                new_email: { type: new GraphQLNonNull(GraphQLString)},
+                password: { type: new GraphQLNonNull(GraphQLString)}
             },
             resolve(parent, args) {
-                return changeEmail( args.new_email, args.user_id);
+                return changeEmail( args.new_email, args.user_id, args.password);
             }
         },
         changePassword: {
             type: AuthType,
             args: {
                 user_id: { type: new GraphQLNonNull(GraphQLID)},
-                new_password: { type: new GraphQLNonNull(GraphQLString)}
+                new_password: { type: new GraphQLNonNull(GraphQLString)},
+                password: { type: new GraphQLNonNull(GraphQLString)}
             },
             resolve(parent, args) {
-                return changePassword(args.user_id, args.new_password);
+                return changePassword(args.user_id, args.new_password, args.password);
             }
         },
         changeUsername: {
             type: AuthType,
             args: {
                 user_id: { type: new GraphQLNonNull(GraphQLID)},
-                new_username: { type: new GraphQLNonNull(GraphQLString)}
+                new_username: { type: new GraphQLNonNull(GraphQLString)},
+                password: { type: new GraphQLNonNull(GraphQLString)}
             },
             resolve(parent, args) {
-                return changeUsername(args.user_id, args.new_username);
+                return changeUsername(args.user_id, args.new_username, args.password);
             }
         }
     }

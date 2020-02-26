@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
     },
     email: {
       type: mongoose.SchemaTypes.Email,
-      required: true,
       unique: true
     },
     password: {
@@ -27,7 +26,6 @@ const userSchema = new mongoose.Schema({
     },
     device_id: {
       type: String, 
-      required: true,
       min: 2
     },   
 });
@@ -50,7 +48,7 @@ userSchema.pre('save', function(next){
       });
 });
 
-userSchema.statics.validation = args => {
+userSchema.statics.validation = (args) => {
   const schema = Joi.object({
     username: Joi.string().min(5).max(25),
     full_name: Joi.string().min(6).max(40),
@@ -86,7 +84,7 @@ userSchema.methods.comparedPassword = function(candidatePassword) {
           }
     
           if (!isMatch) {
-            return reject(false);
+            return reject('Invalid password');
           }
     
           resolve(true);

@@ -58,23 +58,41 @@ const login = async (username, password) => {
     }
 }
 
-const changeEmail = async (new_email, user_id) => {
-    const { error } = schema.validate({ email: new_email });
+const changeEmail = async (new_email, user_id, password) => {
+    if(!new_email || !password) return { status:400, error: 'Must provide email or password' }
+
+    if(!user_id) return { status:400, error: 'user id not found'}
+
+    const { error } = User.validation({ email: new_email });
     if(error) return {status: 400, error: error.details[0].message}
 
     try {
+        const user = await User.findById({ _id: user_id });
+        
+        await user.comparedPassword(password);
 
         await User.updateOne({_id: user_id}, { email: new_email });
 
         return { user_id,success: word_change_email };
     }
-    catch (er) {
-        return {status: 400, error: er || 'Update failed'};
+    catch (err) {
+        return {status: 400, error: err || 'Update failed'};
     }
 }
 
-const changePassword = async (user_id, new_password) => {
+const changePassword = async (user_id, new_password, password) => {
+    if(!new_password || !password) return { status: 400, error: 'Must provide new password or old password'}
+
+    if(!user_id) return { status:400, error: 'user id not found'}
+
+    const { error } = User.validation({ password: new_password});
+    if(error) return { status: 400, error: error.details[0].message }
+    
     try {
+        const user = await User.findById({ _id: user_id });
+
+        await user.comparedPassword(password);
+
         const hashed_pass = await User.hashing(new_password);
         await User.findOneAndUpdate({_id: user_id}, {password: hashed_pass});
 
@@ -85,11 +103,19 @@ const changePassword = async (user_id, new_password) => {
     }
 }
 
-const changeUsername = async (user_id, new_username) => {
-    const { error } = schema.validate({ username: new_username });
+const changeUsername = async (user_id, new_username, password) => {
+    if(!new_username || !password) return { status:400, error:'Must provide username or password'}
+
+    if(!user_id) return { status:400, error: 'user id not found'}
+
+    const { error } = User.validation({ username: new_username });
     if(error) return { error: 400, error: error.details[0].message }
 
     try{
+        const user = await User.findById({ _id: user_id });
+        
+        await user.comparedPassword(password);
+
         await User.findOneAndUpdate({ _id: user_id }, { username: new_username });
 
         return { user_id, success: word_change_username};
