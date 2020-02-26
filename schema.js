@@ -47,8 +47,8 @@ const RootQuery = new GraphQLObjectType({
         login: {
             type: AuthType,
             args: {
-                username: { type: GraphQLString },
-                password: { type: GraphQLString }
+                username: { type: new GraphQLNonNull(GraphQLString) },
+                password: { type: new GraphQLNonNull(GraphQLString) }
             },
             async resolve(parent, args, context) {
                 return login(args.username, args.password);
@@ -72,8 +72,8 @@ const Mutation = new GraphQLObjectType({
         signUp: {
             type: AuthType,
             args: {
-                email: { type: new GraphQLNonNull(GraphQLString)},
-                device_id: { type: new GraphQLNonNull(GraphQLString)}
+                email: { type: new GraphQLNonNull(GraphQLString) },
+                device_id: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve(parent, args, context) {
                 return signup(args.email, args.device_id);
