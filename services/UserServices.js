@@ -66,7 +66,7 @@ const login = async (username, password) => {
 const changeEmail = async (new_email, user_id, password) => {
     if(!new_email || !password) return { status:400, error: 'Must provide email or password' }
 
-    if(!user_id) return { status:400, error: 'user id not found'}
+    if(!user_id) return { status:400, error: 'User ID not found'}
 
     const { error } = User.validation({ email: new_email });
     if(error) return {status: 400, error: error.details[0].message}
@@ -130,6 +130,19 @@ const changeUsername = async (user_id, new_username, password) => {
     }
 }
 
+const changeProfile = async args => {
+    if(!args.user_id) return { status: 400, error: 'User ID not found'}
+
+    try {
+        await User.where({ _id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address }});
+
+        return { status: 200, success: 'Update profile success'}
+    }
+    catch(err){
+        return { status: 400, error: err || 'Cannot update profile' }
+    }
+}
+
 const findUser = (args) => {
     return User.findById(args);
 }
@@ -179,3 +192,4 @@ module.exports.getAllUser = getAllUser;
 module.exports.changeEmail = changeEmail;
 module.exports.changePassword = changePassword;
 module.exports.changeUsername = changeUsername;
+module.exports.changeProfile = changeProfile;

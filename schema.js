@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 
-const { signup, login, findUser, getAllUser, changeEmail, changePassword, changeUsername } = require('./services/UserServices');
+const { signup, login, findUser, getAllUser, changeEmail, changePassword, changeUsername, changeProfile } = require('./services/UserServices');
 
 const {
     GraphQLString,
@@ -21,6 +21,10 @@ const UserType = new GraphQLObjectType({
         device_id: { type: GraphQLString},
         email: { type: GraphQLString },
         password: { type: GraphQLString },
+        first_name: { type: GraphQLString },
+        last_name: { type: GraphQLString },
+        nickname: { type: GraphQLString },
+        address: { type: GraphQLString }
     })
 });
 
@@ -110,6 +114,20 @@ const Mutation = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 return changeUsername(args.user_id, args.new_username, args.password);
+            }
+        },
+        changeProfile: {
+            type: AuthType,
+            args: {
+                user_id: { type: GraphQLID },
+                first_name: { type: GraphQLString },
+                last_name: { type: GraphQLString },
+                nickname: { type: GraphQLString },
+                full_name: { type: GraphQLString },
+                address: { type: GraphQLString}
+            },
+            resolve(parent, args) {
+                return changeProfile(args);
             }
         }
     }

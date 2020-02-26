@@ -27,7 +27,27 @@ const userSchema = new mongoose.Schema({
     device_id: {
       type: String, 
       min: 2
-    },   
+    },
+    first_name: {
+      type: String,
+      min:3,
+      max: 14
+    },
+    last_name: {
+      type: String,
+      min: 3,
+      max: 14
+    },
+    nickname: {
+      type: String,
+      min: 3,
+      max: 10
+    },
+    address: {
+      type: String, 
+      min: 6,
+      max: 35
+    }   
 });
 
 userSchema.pre('save', function(next){
@@ -54,7 +74,11 @@ userSchema.statics.validation = (args) => {
     full_name: Joi.string().min(6).max(40),
     email: Joi.string().email(),
     password: Joi.string().min(5).max(15),
-    device_id: Joi.string().min(2)
+    device_id: Joi.string().min(2),
+    first_name: Joi.string().min(3).max(14),
+    last_name: Joi.string().min(3).max(14),
+    nickname: Joi.string().min(3).max(14),
+    address: Joi.string().min(6).max(35)
   });
 
   return schema.validate(args);
