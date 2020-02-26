@@ -6,14 +6,6 @@ const nodemailer = require('nodemailer');
 const Joi = require('joi');
 const { word_signup_success, word_login, word_change_email, word_change_password, word_change_username } = require('../constants/word');
 
-const schema = Joi.object({
-    username: Joi.string().min(5).max(25),
-    full_name: Joi.string().min(6).max(40),
-    email: Joi.string().email(),
-    password: Joi.string().min(5).max(15),
-    device_id: Joi.string()
-  });
-
 const signup = async (email, device_id) => {
     if(!email || !device_id) return {status: 400, error: 'Email or Password can\'t be empty'}
 
@@ -24,8 +16,8 @@ const signup = async (email, device_id) => {
         password: generateRandomString(6)
     });
 
-    const { error } = schema.validate({email: user.email});
-        if(error) return {status: 400, error: error.details[0].message}
+    const { error } = User.validation({ email, device_id });
+    if(error) return { status: 400, error: error.details[0].message }
 
     try {     
 

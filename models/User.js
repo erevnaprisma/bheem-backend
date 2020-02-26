@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     device_id: {
       type: String, 
       required: true,
+      min: 2
     },   
 });
 
@@ -48,6 +49,18 @@ userSchema.pre('save', function(next){
         });
       });
 });
+
+userSchema.statics.validation = args => {
+  const schema = Joi.object({
+    username: Joi.string().min(5).max(25),
+    full_name: Joi.string().min(6).max(40),
+    email: Joi.string().email(),
+    password: Joi.string().min(5).max(15),
+    device_id: Joi.string().min(2)
+  });
+
+  return schema.validate(args);
+}
 
 userSchema.statics.hashing = (password) => {
   return new Promise((resolve, reject) => {
