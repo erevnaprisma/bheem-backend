@@ -124,7 +124,8 @@ const Mutation = new GraphQLObjectType({
                 last_name: { type: GraphQLString },
                 nickname: { type: GraphQLString },
                 full_name: { type: GraphQLString },
-                address: { type: GraphQLString}
+                address: { type: GraphQLString},
+                password: { type: GraphQLString, }
             },
             resolve(parent, args) {
                 return changeProfile(args);

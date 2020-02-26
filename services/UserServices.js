@@ -133,8 +133,14 @@ const changeUsername = async (user_id, new_username, password) => {
 const changeProfile = async args => {
     if(!args.user_id) return { status: 400, error: 'User ID not found'}
 
+    if(!args.password) return { status: 400, error: 'Must provide password'}
+
     try {
         await User.where({ _id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address }});
+
+        const user = await User.findById({ _id: args.user_id });
+
+        await user.comparedPassword(args.password);
 
         return { status: 200, success: 'Update profile success'}
     }
