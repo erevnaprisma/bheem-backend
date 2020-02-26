@@ -73,7 +73,7 @@ const changeEmail = async (new_email, user_id, password) => {
 
         await User.updateOne({_id: user_id}, { email: new_email });
 
-        return { user_id,success: word_change_email };
+        return { success: word_change_email };
     }
     catch (err) {
         return {status: 400, error: err || 'Update failed'};
@@ -96,7 +96,7 @@ const changePassword = async (user_id, new_password, password) => {
         const hashed_pass = await User.hashing(new_password);
         await User.findOneAndUpdate({_id: user_id}, {password: hashed_pass});
 
-        return { user_id, success: word_change_password };
+        return { success: word_change_password };
     }
     catch (er) {
         return {status: 400, error: er || 'Update failed'}
@@ -118,7 +118,7 @@ const changeUsername = async (user_id, new_username, password) => {
 
         await User.findOneAndUpdate({ _id: user_id }, { username: new_username });
 
-        return { user_id, success: word_change_username};
+        return { success: word_change_username};
     }
     catch(er) {
         return {status: 400, error: err || 'Update failed'}
