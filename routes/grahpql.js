@@ -2,12 +2,17 @@ const express = require('express')
 const graphqlHTTP = require('express-graphql')
 const { buildSchema } = require('graphql')
 const schema = require('../schema')
+const { applyMiddleware } = require('graphql-middleware');
+
+const authMiddleware = require('../middlewares/auth');
 
 const Router = express.Router();
 
+applyMiddleware(schema, authMiddleware);
+
 Router.all('/', 
   graphqlHTTP({
-    schema: schema,
+    schema,
     pretty: true,
     graphiql: true,
   //   rootValue: root

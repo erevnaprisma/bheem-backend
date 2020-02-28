@@ -4,7 +4,8 @@ const config = require('config');
 const randomString = require('randomstring');
 const nodemailer = require('nodemailer');
 const Joi = require('joi');
-const { word_signup_success, word_login, word_change_email, word_change_password, word_change_username } = require('../constants/word');
+
+const { word_signup_success, word_login, word_change_email, word_change_password, word_change_username, errorHandling } = require('../constants/word');
 
 const signup = async (email, device_id) => {
     console.log('sampe signup setelah middleware');
@@ -73,11 +74,11 @@ const changeEmail = async (new_email, user_id, password) => {
     if(error) return {status: 400, error: error.details[0].message}
 
     try {
-        const user = await User.findById({ _id: user_id });
+        await reusableFindUserByID(user_id);
         
         await user.comparedPassword(password);
 
-        await User.updateOne({_id: user_id}, { email: new_email });
+        await User.updateOne({_id: user_id}, { email: new_email }).catch(() => { errorHandling('Failed updating user') });
 
         return { status: 200, success: word_change_email };
     }
@@ -95,12 +96,12 @@ const changePassword = async (user_id, new_password, password) => {
     if(error) return { status: 400, error: error.details[0].message }
     
     try {
-        const user = await User.findById({ _id: user_id });
+        await reusableFindUserByID(user_id);
 
         await user.comparedPassword(password);
 
         const hashed_pass = await User.hashing(new_password);
-        await User.findOneAndUpdate({_id: user_id}, {password: hashed_pass});
+        await User.findOneAndUpdate({ _id: user_id }, { password: hashed_pass }).catch(() => { errorHandling('Failed updating password') });
 
         return { status: 200, success: word_change_password };
     }
@@ -118,15 +119,15 @@ const changeUsername = async (user_id, new_username, password) => {
     if(error) return { error: 400, error: error.details[0].message }
 
     try{
-        const user = await User.findById({ _id: user_id });
-        
+        await reusableFindUserByID(user_id);
+
         await user.comparedPassword(password);
 
-        await User.findOneAndUpdate({ _id: user_id }, { username: new_username });
+        await User.findOneAndUpdate({ _id: user_id }, { username: new_username }).catch(() => { errorHandling('Failed updating username') });
 
         return { status: 200, success: word_change_username};
     }
-    catch(er) {
+    catch(err) {
         return {status: 400, error: err || 'Update failed'}
     }
 }
@@ -137,9 +138,9 @@ const changeProfile = async args => {
     if(!args.password) return { status: 400, error: 'Must provide password'}
 
     try {
-        await User.where({ _id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address }});
+        await User.where({ _id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address }}).catch(() => { errorHandling('Failed updating user profile') });
 
-        const user = await User.findById({ _id: args.user_id });
+        await reusableFindUserByID(args.user_id);
 
         await user.comparedPassword(args.password);
 
@@ -154,8 +155,15 @@ const findUser = (args) => {
     return User.findById(args);
 }
 
+const reusableFindUserByID = async (_id) => {
+    const user = await User.findById({ _id }).catch(() => errorHandling('Invalid user id'));
+    return user;
+}
+
 const getUserProfile = async (args) => {
-    if(!args) return { status: 400, error: 'Must provide user id'}
+    if(!args) return { status: 400, error: 'Must provide user'}
+
+    await reusableFindUserByID(args);
 
     try {
         return { user_id: args, success: 'Success', status: 200 }

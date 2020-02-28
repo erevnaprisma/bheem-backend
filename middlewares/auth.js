@@ -1,6 +1,23 @@
-const express = require('express');
-const app = express();
+const isAuth = async (
+    resolve,
+    parent,
+    args,
+    context,
+    info
+) => {
+    // console.log('context', context);
+    return resolve(parent, args, context, info);
+}
 
-app.use((req, res, next) => {
-    
-})
+const authMiddleware = {
+    Mutation: {
+        changeUsername: isAuth,
+        signUp: isAuth,
+        // login: isAuth
+    },
+    RootQueryType: {
+        login: isAuth
+    }
+}
+
+module.exports = authMiddleware;
