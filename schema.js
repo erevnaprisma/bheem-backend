@@ -33,8 +33,8 @@ const AuthType = new GraphQLObjectType({
     fields: () => ({
         user_id: { type: GraphQLID },
         access_token: { type: GraphQLString },
-        status: { type: GraphQLInt},
-        error: { type: GraphQLString},
+        status: { type: GraphQLInt },
+        error: { type: GraphQLString },
         success: { type: GraphQLString },
         user: { 
             type: UserType, 
@@ -42,6 +42,17 @@ const AuthType = new GraphQLObjectType({
                 return findUser(parent.user_id || args.user_id);
             }
         }
+    })
+});
+
+const EmoneyType = new GraphQLObjectType({
+    name: 'Emoney',
+    fields: () => ({
+        id: { type: GraphQLID },
+        user_id: { type: GraphQLID },
+        transaction_amount: { type: GraphQLString },
+        billing_id: { type: GraphQLString },
+        transaction_id: { type: GraphQLID }
     })
 })
 
@@ -139,10 +150,10 @@ const Mutation = new GraphQLObjectType({
             resolve(parent, args) {
                 return changeProfile(args);
             }
-        }
+        },
+
     }
 });
-
 
 module.exports = new GraphQLSchema({
     query: RootQuery,

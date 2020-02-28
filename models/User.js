@@ -100,8 +100,6 @@ userSchema.statics.hashing = (password) => {
 
 userSchema.methods.comparedPassword = function(candidatePassword) {
     const user = this;
-    console.log('sampe sini');
-
     return new Promise((resolve, reject) => {
         bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
           if (err) {

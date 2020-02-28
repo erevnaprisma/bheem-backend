@@ -8,7 +8,6 @@ const Joi = require('joi');
 const { word_signup_success, word_login, word_change_email, word_change_password, word_change_username, errorHandling } = require('../constants/word');
 
 const signup = async (email, device_id) => {
-    console.log('sampe signup setelah middleware');
     if(!email || !device_id) return {status: 400, error: 'Email or Password can\'t be empty'}
 
     let user = new User({
@@ -41,10 +40,11 @@ const signup = async (email, device_id) => {
 }
 
 const login = async (username, password) => {
-    if(!username || !password) return {status: 400, error: 'Email or Password can\'t be empty '}
+    if(!username || !password) return {status: 400, error: 'Email or Password can\'t be empty'}
 
     const user = await User.findOne({ username });
-    if (!user) return {status: 400, error: "Invalid name or password"}
+    // console.log(user);
+    if (!user) return {status: 400, error: 'Invalid email or password'}
 
     try {
         //verified password
@@ -74,7 +74,7 @@ const changeEmail = async (new_email, user_id, password) => {
     if(error) return {status: 400, error: error.details[0].message}
 
     try {
-        await reusableFindUserByID(user_id);
+        const user = await reusableFindUserByID(user_id);
         
         await user.comparedPassword(password);
 
@@ -96,7 +96,7 @@ const changePassword = async (user_id, new_password, password) => {
     if(error) return { status: 400, error: error.details[0].message }
     
     try {
-        await reusableFindUserByID(user_id);
+        const user = await reusableFindUserByID(user_id);
 
         await user.comparedPassword(password);
 
@@ -105,8 +105,8 @@ const changePassword = async (user_id, new_password, password) => {
 
         return { status: 200, success: word_change_password };
     }
-    catch (er) {
-        return {status: 400, error: er || 'Update failed'}
+    catch (err) {
+        return {status: 400, error: err || 'Update failed'}
     }
 }
 
@@ -119,7 +119,7 @@ const changeUsername = async (user_id, new_username, password) => {
     if(error) return { error: 400, error: error.details[0].message }
 
     try{
-        await reusableFindUserByID(user_id);
+        const user = await reusableFindUserByID(user_id);
 
         await user.comparedPassword(password);
 
@@ -140,7 +140,7 @@ const changeProfile = async args => {
     try {
         await User.where({ _id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address }}).catch(() => { errorHandling('Failed updating user profile') });
 
-        await reusableFindUserByID(args.user_id);
+        const user = await reusableFindUserByID(args.user_id);
 
         await user.comparedPassword(args.password);
 
@@ -155,9 +155,10 @@ const findUser = (args) => {
     return User.findById(args);
 }
 
-const reusableFindUserByID = async (_id) => {
-    const user = await User.findById({ _id }).catch(() => errorHandling('Invalid user id'));
-    return user;
+const reusableFindUserByID =  (_id) => {
+    return new Promise((resolve, reject) => {
+        const user = User.findOne({ _id }).then((result) => resolve(result)).catch(() => reject('error bro koli'));
+    })
 }
 
 const getUserProfile = async (args) => {

@@ -5,7 +5,6 @@ const isAuth = async (
     context,
     info
 ) => {
-    // console.log('context', context);
     return resolve(parent, args, context, info);
 }
 
