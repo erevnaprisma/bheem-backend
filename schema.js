@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 
-const { signup, login, findUser, getAllUser, changeEmail, changePassword, changeUsername, changeProfile } = require('./services/UserServices');
+const { signup, login, findUser, getAllUser, changeEmail, changePassword, changeUsername, changeProfile, getUserProfile } = require('./services/UserServices');
 
 const {
     GraphQLString,
@@ -56,6 +56,15 @@ const RootQuery = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 return login(args.username, args.password);
+            }
+        },
+        getProfile: {
+            type: AuthType,
+            args: {
+                user_id: { type: new GraphQLNonNull(GraphQLID) },
+            },
+            async resolve(parent, args, context) {
+                return getUserProfile(args.user_id);
             }
         },
         allUser: {

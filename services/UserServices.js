@@ -7,6 +7,7 @@ const Joi = require('joi');
 const { word_signup_success, word_login, word_change_email, word_change_password, word_change_username } = require('../constants/word');
 
 const signup = async (email, device_id) => {
+    console.log('sampe signup setelah middleware');
     if(!email || !device_id) return {status: 400, error: 'Email or Password can\'t be empty'}
 
     let user = new User({
@@ -153,6 +154,17 @@ const findUser = (args) => {
     return User.findById(args);
 }
 
+const getUserProfile = async (args) => {
+    if(!args) return { status: 400, error: 'Must provide user id'}
+
+    try {
+        return { user_id: args, success: 'Success', status: 200 }
+    }
+    catch(err) {
+        return { status: 400, error: 'User not found'}
+    }
+}
+
 const generateRandomString = (length) => {
     return randomString.generate({
         length, 
@@ -199,3 +211,4 @@ module.exports.changeEmail = changeEmail;
 module.exports.changePassword = changePassword;
 module.exports.changeUsername = changeUsername;
 module.exports.changeProfile = changeProfile;
+module.exports.getUserProfile = getUserProfile;
