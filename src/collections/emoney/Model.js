@@ -4,14 +4,29 @@ const emoneySchema = new mongoose.Schema({
     user_id:{
         type: mongoose.SchemaTypes.ObjectId
     },
-    transaction_amount: {
-        type: String
-    },
-    billing_id: {
+    bill_id: {
         type: String
     },
     transaction_id: {
         type: String
+    },
+    transaction_amount: {
+        type: Number
+    },
+    saldo: {
+        type: Number
+    },
+    created_at: {
+        type: String,
+        default: new Date().getTime(),
+    },
+    updated_at: {
+        type: String,
+        default: new Date().getTime()
+    },
+    type: {
+        type: String,
+        enum: ['Credit', 'Debit'],
     }
 });
 

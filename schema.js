@@ -2,6 +2,7 @@ const graphql = require('graphql');
 
 const { signUp, changeUserEmail, changeUserPassword, changeUserName, changeUserProfile } = require('./src/collections/user/graphql/mutation');
 const { login, getProfile, allUser } = require('./src/collections/user/graphql/query');
+const { addDummy } = require('./src/collections/emoney/graphql/mutation');
 
 const {
     GraphQLString,
@@ -31,6 +32,7 @@ const Mutation = new GraphQLObjectType({
         changeUserName,
         changeUserPassword,
         changeUserProfile,
+        addDummy
     }
 });
 

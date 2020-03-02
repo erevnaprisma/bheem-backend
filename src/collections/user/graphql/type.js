@@ -36,7 +36,7 @@ const AuthType = new GraphQLObjectType({
         user: { 
             type: UserType, 
             resolve(parent, args) {
-                return findUser(parent.user_id || args.user_id);
+                return findUser(parent.user_id);
             }
         }
     })
