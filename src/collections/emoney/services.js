@@ -1,7 +1,7 @@
 const Emoney = require('./Model')
 
 const addTransaction = async (userID, transactionID, billID, transactionAmount, saldo, type) => {
-  // if(!user_id || !transaction_id || !bill_id || !transaction_amount || !saldo || !tipe) return { status: 400, error: 'Field cannot be empty' }
+  if (!userID || !transactionID || !billID || !transactionAmount || !saldo || !type) return { status: 400, error: 'Field cannot be empty' }
 
   const res = await new Emoney({
     user_id: userID,

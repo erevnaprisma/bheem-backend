@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const { reusableFindUserByID } = require('../../utils/mongoServices')
-const { generateRandomString, sendMailVerification } = require('../../utils/supportServices')
+const { generateRandomStringAndNumber, sendMailVerification } = require('../../utils/supportServices')
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../../constants/word')
 
 const userSignup = async (email, deviceID) => {
@@ -16,8 +16,8 @@ const userSignup = async (email, deviceID) => {
   let user = new User({
     email,
     device_id: deviceID,
-    username: generateRandomString(8),
-    password: generateRandomString(6)
+    username: generateRandomStringAndNumber(8),
+    password: generateRandomStringAndNumber(6)
   })
 
   const localPassword = user.password

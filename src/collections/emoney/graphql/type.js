@@ -1,7 +1,5 @@
 const graphql = require('graphql')
 
-const { findUser } = require('../../../utils/mongoServices')
-
 const {
   GraphQLString,
   GraphQLInt,
@@ -13,8 +11,8 @@ const {
 const PaymentType = new GraphQLEnumType({
   name: 'Payment',
   values: {
-    DEBIT: { value: 'Debit' },
-    CREDIT: { value: 'Credit' }
+    DEBIT: { value: 'DEBIT' },
+    CREDIT: { value: 'CREDIT' }
   }
 })
 
@@ -39,13 +37,7 @@ const EmoneyResponseType = new GraphQLObjectType({
     user_id: { type: GraphQLString },
     success: { type: GraphQLString },
     status: { type: GraphQLID },
-    error: { type: GraphQLString },
-    transaction: {
-      type: EmoneyType,
-      resolve (parent) {
-        return findUser(parent.user_id)
-      }
-    }
+    error: { type: GraphQLString }
   })
 })
 

@@ -2,9 +2,16 @@ const randomString = require('randomstring')
 const nodemailer = require('nodemailer')
 const config = require('config')
 
-const generateRandomString = (length) => {
+const generateRandomStringAndNumber = (length) => {
   return randomString.generate({
     length
+  })
+}
+
+const generateRandomString = (length) => {
+  return randomString.generate({
+    length,
+    charset: 'alphabetic'
   })
 }
 
@@ -36,5 +43,6 @@ const sendMailVerification = async (model) => {
   })
 }
 
+module.exports.generateRandomStringAndNumber = generateRandomStringAndNumber
 module.exports.generateRandomString = generateRandomString
 module.exports.sendMailVerification = sendMailVerification
