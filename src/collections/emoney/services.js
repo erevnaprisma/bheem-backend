@@ -21,14 +21,9 @@ const addTransaction = async (userID, transactionID, billID, transactionAmount, 
   }
 }
 
-const getAllTransaction = async () => {
-  try {
-    const transaction = await Emoney.find()
-
-    return { status: 200, success: 'Get transaction success', transaction }
-  } catch (err) {
-    return { status: 400, error: 'Error getting transaction' }
-  }
+const getAllTransaction = () => {
+  return Emoney.find()
+  
 }
 
 module.exports.addTransaction = addTransaction

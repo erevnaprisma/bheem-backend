@@ -1,12 +1,17 @@
 const graphql = require('graphql')
 const Emoney = require('../Model')
 
-const { EmoneyResponseType } = require('./type')
+const {
+  GraphQLList
+} = graphql
+
+const { EmoneyType } = require('./type')
+const { getAllTransaction } = require('../services')
 
 const allTransaction = {
-  type: EmoneyResponseType,
+  type: new GraphQLList(EmoneyType),
   async resolve (parent, args, context) {
-    console.log('sampai sini')
+    return getAllTransaction()
   }
 }
 

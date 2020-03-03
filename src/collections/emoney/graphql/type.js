@@ -27,8 +27,8 @@ const EmoneyType = new GraphQLObjectType({
     bill_id: { type: GraphQLID },
     transaction_amount: { type: GraphQLInt },
     saldo: { type: GraphQLInt },
-    created_at: { type: GraphQLInt },
-    updated_at: { type: GraphQLInt },
+    created_at: { type: GraphQLString },
+    updated_at: { type: GraphQLString },
     type: { type: PaymentType }
   })
 })
