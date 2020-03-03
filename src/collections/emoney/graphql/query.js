@@ -1,21 +1,13 @@
-const graphql = require('graphql');
+const graphql = require('graphql')
+const Emoney = require('../Model')
 
-const { EmoneyResponseType } = require('./type');
-
-const {
-    GraphQLNonNull,
-    GraphQLString,
-    GraphQLInt,
-    GraphQLObjectType,
-    GraphQLList,
-    GraphQLEnumType,
-    GraphQLID,    
-    GraphQLBoolean
-} = graphql;
+const { EmoneyResponseType } = require('./type')
 
 const allTransaction = {
-    type: EmoneyResponseType,
-    async resolve(parent, args, context) {
-        return;
-    }
+  type: EmoneyResponseType,
+  async resolve (parent, args, context) {
+    console.log('sampai sini')
+  }
 }
+
+module.exports.allTransaction = allTransaction
