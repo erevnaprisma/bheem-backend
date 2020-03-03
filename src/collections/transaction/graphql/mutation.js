@@ -12,7 +12,7 @@ const {
 const addTransaction = {
   type: TransactionResponseType,
   args: {
-    amount_transaction: { type: new GraphQLNonNull(GraphQLInt) },
+    transaction_amount: { type: new GraphQLNonNull(GraphQLInt) },
     merchant_id: { type: new GraphQLNonNull(GraphQLID) }
   },
   resolve (parent, args) {

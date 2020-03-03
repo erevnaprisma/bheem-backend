@@ -5,7 +5,7 @@ const { signUp, changeUserEmail, changeUserPassword, changeUserName, changeUserP
 const { login, getProfile, allUser } = require('./src/collections/user/graphql/query')
 
 // Emoney
-const { addDummy } = require('./src/collections/emoney/graphql/mutation')
+const { addPayment } = require('./src/collections/emoney/graphql/mutation')
 const { allTransaction } = require('./src/collections/emoney/graphql/query')
 
 // Transaction
@@ -34,7 +34,7 @@ const Mutation = new GraphQLObjectType({
     changeUserName,
     changeUserPassword,
     changeUserProfile,
-    addDummy,
+    addPayment,
     addTransaction
   }
 })

@@ -2,7 +2,7 @@ const graphql = require('graphql')
 
 const { EmoneyResponseType } = require('./type')
 const { PaymentType } = require('./type')
-const { addTransaction } = require('../services')
+const { addUserPayment } = require('../services')
 
 const {
   GraphQLNonNull,
@@ -11,7 +11,7 @@ const {
   GraphQLInt
 } = graphql
 
-const addDummy = {
+const addPayment = {
   type: EmoneyResponseType,
   args: {
     user_id: { type: new GraphQLNonNull(GraphQLID) },
@@ -21,9 +21,10 @@ const addDummy = {
     saldo: { type: new GraphQLNonNull(GraphQLInt) },
     type: { type: new GraphQLNonNull(PaymentType) }
   },
-  resolve (args) {
-    return addTransaction(args.user_id, args.transaction_id, args.bill_id, args.transaction_amount, args.saldo, args.type)
+  resolve (parent, args) {
+    console.log(args.user_id)
+    return addUserPayment(args)
   }
 }
 
-module.exports.addDummy = addDummy
+module.exports.addPayment = addPayment

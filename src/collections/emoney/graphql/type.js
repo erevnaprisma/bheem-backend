@@ -34,7 +34,6 @@ const EmoneyType = new GraphQLObjectType({
 const EmoneyResponseType = new GraphQLObjectType({
   name: 'EmoneyResponse',
   fields: () => ({
-    user_id: { type: GraphQLString },
     success: { type: GraphQLString },
     status: { type: GraphQLID },
     error: { type: GraphQLString }

@@ -1,16 +1,27 @@
 const Emoney = require('./Model')
 
-const addTransaction = async (userID, transactionID, billID, transactionAmount, saldo, type) => {
-  if (!userID || !transactionID || !billID || !transactionAmount || !saldo || !type) return { status: 400, error: 'Field cannot be empty' }
+const addUserPayment = async (args) => {
+  if (!args.user_id || !args.transaction_id || !args.bill_id || !args.transaction_amount || !args.saldo || !args.type) return { status: 400, error: 'Field cannot be empty' }
 
   const res = await new Emoney({
-    user_id: userID,
-    transaction_id: transactionID,
-    bill_id: billID,
-    transaction_amount: transactionAmount,
-    saldo,
-    type
+    user_id: args.user_id,
+    transaction_id: args.transaction_id,
+    bill_id: args.bill_id,
+    transaction_amount: args.transaction_amount,
+    saldo: args.saldo,
+    type: args.type
   })
+
+  switch (args.type) {
+    case 'DEBIT':
+      res.saldo = 10
+      break
+    case 'CREDIT':
+      res.saldo = 20
+      break
+    default:
+      return { status: 400, error: 'Type not found' }
+  }
 
   try {
     res.save()
@@ -21,10 +32,9 @@ const addTransaction = async (userID, transactionID, billID, transactionAmount, 
   }
 }
 
-const getAllTransaction = () => {
+const getAllPayment = () => {
   return Emoney.find()
-  
 }
 
-module.exports.addTransaction = addTransaction
-module.exports.getAllTransaction = getAllTransaction
+module.exports.addUserPayment = addUserPayment
+module.exports.getAllPayment = getAllPayment
