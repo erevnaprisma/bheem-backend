@@ -10,7 +10,6 @@ const userSignup = async (email, deviceID) => {
   if (!email || !deviceID) return { status: 400, error: 'Email or Password can\'t be empty' }
 
   const emailCheck = await User.findOne({ email })
-  console.log(emailCheck)
   if (emailCheck) return { status: 400, error: 'Email already used' }
 
   let user = new User({
@@ -41,11 +40,11 @@ const userSignup = async (email, deviceID) => {
 }
 
 const userLogin = async (username, password) => {
-  if (!username || !password) return { status: 400, error: 'Email or Password can\'t be empty' }
+  if (!username || !password) return { status: 400, error: 'Username or Password can\'t be empty' }
 
   const user = await User.findOne({ username })
-  // console.log(user);
-  if (!user) return { status: 400, error: 'Invalid email or password' }
+  console.log(user)
+  if (!user) return { status: 400, error: 'Invalid username or password' }
 
   try {
     // verified password

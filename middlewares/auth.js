@@ -5,15 +5,16 @@ const isAuth = async (
   context,
   info
 ) => {
+  console.log('sampe sini')
   return resolve(parent, args, context, info)
 }
 
 const authMiddleware = {
-  Mutation: {
-    changeUsername: isAuth,
-    signUp: isAuth
-    // login: isAuth
-  },
+  // Mutation: {
+  //   changeUsername: isAuth,
+  //   signUp: isAuth
+  //   // login: isAuth
+  // },
   RootQueryType: {
     login: isAuth
   }

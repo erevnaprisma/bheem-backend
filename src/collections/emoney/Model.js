@@ -11,7 +11,7 @@ const emoneySchema = new mongoose.Schema({
     type: String
   },
   transaction_id: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     unique: true,
     ref: Transaction
   },
@@ -19,7 +19,8 @@ const emoneySchema = new mongoose.Schema({
     type: Number
   },
   saldo: {
-    type: Number
+    type: Number,
+    default: 0
   },
   created_at: {
     type: String,

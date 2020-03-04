@@ -12,7 +12,7 @@ const addUserTransaction = async (args) => {
     await res.save()
     return { status: 200, success: 'Transaction successfully saved' }
   } catch (err) {
-    return { status: 400, error: 'Fail saving transaction' }
+    return { status: 400, error: err || 'Fail saving transaction' }
   }
 }
 module.exports.addUserTransaction = addUserTransaction
