@@ -1,6 +1,9 @@
 const Billing = require('./Model')
 
 const addBillingService = async (args) => {
+  const { error } = Billing.validation(args)
+  if (error) return { status: 400, error: error.details[0].message }
+
   if (!args.amount) return { status: 400, error: 'Invalid amount' }
 
   try {

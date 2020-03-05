@@ -47,10 +47,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 35
-  },
-  saldo: {
-    type: Number,
-    default: 0
   }
 })
 

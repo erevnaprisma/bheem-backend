@@ -21,7 +21,6 @@ const UserType = new GraphQLObjectType({
     last_name: { type: GraphQLString },
     nickname: { type: GraphQLString },
     address: { type: GraphQLString },
-    saldo: { type: GraphQLInt }
   })
 })
 

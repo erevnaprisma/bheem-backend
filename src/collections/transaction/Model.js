@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Joi = require('joi')
 
 const Merchant = require('../merchant/Model')
 const Emoney = require('../emoney/Model')
@@ -53,5 +54,22 @@ const transactionSchema = new mongoose.Schema({
     default: 'PNDNG'
   }
 })
+
+transactionSchema.statics.validation = (args) => {
+  const schema = Joi.object({
+    merchant_id: Joi.string(),
+    emoney_id: Joi.string(),
+    qr_id: Joi.string(),
+    user_id: Joi.string(),
+    transaction_id: Joi.string(),
+    transaction_amount: Joi.number(),
+    billing_id: Joi.string(),
+    created_at: Joi.string(),
+    updated_at: Joi.string(),
+    status: Joi.string()
+  })
+
+  return schema.validate(args)
+}
 
 module.exports = mongoose.model('Transaction', transactionSchema)
