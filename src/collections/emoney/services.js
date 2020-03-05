@@ -1,6 +1,10 @@
 const Emoney = require('./Model')
 
 const addUserPayment = async ({ userID, saldo, transactionAmount, type }) => {
+  if (!userID) return { status: 400, error: 'Invalid user id' }
+  if (!saldo) return { status: 400, error: 'Invalid saldo' }
+  if (!transactionAmount) return { status: 400, error: 'Invalid transaction amount' }
+  if (!type) return { status: 400, error: 'Invalid type' }
 
   let res = new Emoney({
     user_id: userID,
