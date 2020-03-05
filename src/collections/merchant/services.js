@@ -1,5 +1,5 @@
 const Merchant = require('./Model')
-const { sendMailVerification, generateRandomStringAndNumber } = require('../../utils/supportServices')
+const { sendMailVerification, generateRandomStringAndNumber } = require('../../utils/services/supportServices')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 

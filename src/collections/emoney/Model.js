@@ -1,19 +1,17 @@
 const mongoose = require('mongoose')
+
 const User = require('../user/Model')
-const Transaction = require('../transaction/Model')
+const { generateID } = require('../../utils/services/supportServices')
+const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const emoneySchema = new mongoose.Schema({
+  emoney_id: {
+    type: String,
+    default: generateID(RANDOM_STRING_FOR_CONCAT)
+  },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: User
-  },
-  bill_id: {
-    type: String
-  },
-  transaction_id: {
-    type: String,
-    unique: true,
-    ref: Transaction
   },
   transaction_amount: {
     type: Number

@@ -1,4 +1,4 @@
-const User = require('../collections/user/Model')
+const User = require('../../collections/user/Model')
 
 const findUser = (args) => {
   return User.findById(args)

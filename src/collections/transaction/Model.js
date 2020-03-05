@@ -1,29 +1,43 @@
 const mongoose = require('mongoose')
 
-const { generateRandomString } = require('../../utils/supportServices')
-const { RANDOM_STRING_FOR_CONCAT } = require('../../../constants/number')
 const Merchant = require('../merchant/Model')
+const Emoney = require('../emoney/Model')
+const Qr = require('../qr/Model')
 const User = require('../user/Model')
+const { generateID } = require('../../utils/services/supportServices')
+const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const transactionSchema = new mongoose.Schema({
   merchant_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Merchant
+    type: String,
+    ref: Merchant,
+    default: null
   },
-  // user_id: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: User
-  // },
+  emoney_id: {
+    type: String,
+    ref: Emoney,
+    default: null
+  },
+  qr_id: {
+    type: String,
+    ref: Qr,
+    default: null
+  },
+  user_id: {
+    type: String,
+    ref: User,
+    default: null
+  },
   transaction_id: {
     type: String,
-    default: new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
+    default: generateID(RANDOM_STRING_FOR_CONCAT)
   },
   transaction_amount: {
     type: Number
   },
   billing_id: {
     type: String,
-    default: new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
+    default: null
   },
   created_at: {
     type: String,

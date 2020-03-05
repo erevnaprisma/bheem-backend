@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 const { userLogin, getUserProfile } = require('../services')
-const { getAllUser } = require('../../../utils/mongoServices')
+const { getAllUser } = require('../../../utils/services/mongoServices')
 const { AuthType, UserType } = require('./type')
 
 const {

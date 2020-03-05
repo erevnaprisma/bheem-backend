@@ -1,6 +1,6 @@
 const graphql = require('graphql')
 
-const { findUser } = require('../../../utils/mongoServices')
+const { findUser } = require('../../../utils/services/mongoServices')
 
 const {
   GraphQLString,
@@ -17,18 +17,17 @@ const UserType = new GraphQLObjectType({
     username: { type: GraphQLString },
     device_id: { type: GraphQLString },
     email: { type: GraphQLString },
-    password: { type: GraphQLString },
     first_name: { type: GraphQLString },
     last_name: { type: GraphQLString },
     nickname: { type: GraphQLString },
-    address: { type: GraphQLString }
+    address: { type: GraphQLString },
+    saldo: { type: GraphQLInt }
   })
 })
 
 const AuthType = new GraphQLObjectType({
   name: 'Auth',
   fields: () => ({
-    user_id: { type: GraphQLID },
     access_token: { type: GraphQLString },
     status: { type: GraphQLInt },
     error: { type: GraphQLString },

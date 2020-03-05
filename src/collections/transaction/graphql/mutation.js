@@ -9,15 +9,15 @@ const {
   GraphQLInt
 } = graphql
 
-const addTransaction = {
-  type: TransactionResponseType,
-  args: {
-    transaction_amount: { type: new GraphQLNonNull(GraphQLInt) },
-    merchant_id: { type: new GraphQLNonNull(GraphQLID) }
-  },
-  resolve (parent, args) {
-    return addUserTransaction(args)
-  }
-}
+// const addTransaction = {
+//   type: TransactionResponseType,
+//   args: {
+//     transaction_amount: { type: new GraphQLNonNull(GraphQLInt) },
+//     merchant_id: { type: new GraphQLNonNull(GraphQLID) }
+//   },
+//   resolve (parent, args) {
+//     return addUserTransaction(args)
+//   }
+// }
 
 module.exports.addTransaction = addTransaction

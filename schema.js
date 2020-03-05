@@ -5,14 +5,20 @@ const { signUp, changeUserEmail, changeUserPassword, changeUserName, changeUserP
 const { login, getProfile, allUser } = require('./src/collections/user/graphql/query')
 
 // Emoney
-const { addPayment } = require('./src/collections/emoney/graphql/mutation')
+// const { addPayment } = require('./src/collections/emoney/graphql/mutation')
 const { allTransaction } = require('./src/collections/emoney/graphql/query')
 
 // Transaction
-const { addTransaction } = require('./src/collections/transaction/graphql/mutation')
+// const { addTransaction } = require('./src/collections/transaction/graphql/mutation')
 
 // Merchant
 const { signUpMerchant } = require('./src/collections/merchant/graphql/mutation')
+
+// Billing
+// const { addBilling } = require('./src/collections/billing/graphql/mutation')
+
+// Service
+const { topupVa } = require('./src/services/graphql/mutation')
 
 const {
   GraphQLObjectType,
@@ -37,9 +43,8 @@ const Mutation = new GraphQLObjectType({
     changeUserName,
     changeUserPassword,
     changeUserProfile,
-    addPayment,
-    addTransaction,
-    signUpMerchant
+    signUpMerchant,
+    topupVa
   }
 })
 

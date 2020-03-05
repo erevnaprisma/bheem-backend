@@ -23,6 +23,7 @@ const TransactionType = new GraphQLObjectType({
     id: { type: GraphQLID },
     transaction_id: { type: GraphQLString },
     transaction_amount: { type: GraphQLInt },
+    emoney_id: { type: GraphQLString },
     merchant_id: { type: GraphQLID },
     billing_id: { type: GraphQLString },
     created_at: { type: GraphQLString },

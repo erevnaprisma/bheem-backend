@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken')
+
 const isAuth = async (
   resolve,
   parent,
@@ -5,7 +7,6 @@ const isAuth = async (
   context,
   info
 ) => {
-  console.log('sampe sini')
   return resolve(parent, args, context, info)
 }
 

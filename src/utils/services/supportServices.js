@@ -2,6 +2,8 @@ const randomString = require('randomstring')
 const nodemailer = require('nodemailer')
 const config = require('config')
 
+const { RANDOM_STRING_FOR_CONCAT } = require('../constants/number')
+
 const generateRandomStringAndNumber = (length) => {
   return randomString.generate({
     length
@@ -43,6 +45,11 @@ const sendMailVerification = async (model) => {
   })
 }
 
+const generateID = () => {
+  return new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
+}
+
 module.exports.generateRandomStringAndNumber = generateRandomStringAndNumber
 module.exports.generateRandomString = generateRandomString
 module.exports.sendMailVerification = sendMailVerification
+module.exports.generateID = generateID

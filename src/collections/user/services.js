@@ -2,9 +2,9 @@ const User = require('./Model')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 
-const { reusableFindUserByID } = require('../../utils/mongoServices')
-const { generateRandomStringAndNumber, sendMailVerification } = require('../../utils/supportServices')
-const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../../constants/word')
+const { reusableFindUserByID } = require('../../utils/services/mongoServices')
+const { generateRandomStringAndNumber, sendMailVerification } = require('../../utils/services/supportServices')
+const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 
 const userSignup = async (email, deviceID) => {
   if (!email || !deviceID) return { status: 400, error: 'Email or Password can\'t be empty' }
@@ -43,7 +43,6 @@ const userLogin = async (username, password) => {
   if (!username || !password) return { status: 400, error: 'Username or Password can\'t be empty' }
 
   const user = await User.findOne({ username })
-  console.log(user)
   if (!user) return { status: 400, error: 'Invalid username or password' }
 
   try {
