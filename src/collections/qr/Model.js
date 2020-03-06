@@ -13,6 +13,10 @@ const qrSchema = new mongoose.Schema({
   updated_at: {
     type: String,
     default: new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
+  },
+  type: {
+    type: String,
+    default: null
   }
 })
 
