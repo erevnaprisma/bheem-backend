@@ -17,14 +17,14 @@ let getSaldoInstance
 
 const staticPayment = async (merchantID, amount, userID) => {
   if (!merchantID) return { status: 400, error: 'Invalid merchant id' }
-  if (!amount) return { status: 400, error: 'Invalid merchant id' }
-  if (!userID) return { status: 400, error: 'Invalid merchant id' }
+  if (!amount || amount < 0) return { status: 400, error: 'Invalid amount' }
+  if (!userID) return { status: 400, error: 'Invalid user id' }
 
   try {
     // add Billing
     const billing = await addBillingService(amount)
 
-    // add Transaction type pending
+    // add Transaction status pending
     const transaction = await addUserTransaction({ amount, userID, bill: billing.bill_id })
 
     // get current saldo
