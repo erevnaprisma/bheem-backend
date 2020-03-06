@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 require('mongoose-type-email')
 const bcrypt = require('bcrypt')
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 
 const merchantSchema = new mongoose.Schema({
   email: {
@@ -41,8 +41,8 @@ merchantSchema.pre('save', function (next) {
 
 merchantSchema.statics.validation = (args) => {
   const schema = Joi.object({
-    email: Joi.string().email(),
-    device_id: Joi.string().min(2)
+    email: Joi.string().email().required(),
+    device_id: Joi.string().min(2).required()
   })
 
   return schema.validate(args)

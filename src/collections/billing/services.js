@@ -1,4 +1,6 @@
 const Billing = require('./Model')
+const { generateID, getUnixTime } = require('../../utils/services/supportServices')
+const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const addBillingService = async (args) => {
   const { error } = Billing.validation(args)
@@ -8,7 +10,10 @@ const addBillingService = async (args) => {
 
   try {
     let bill = await new Billing({
-      amount: args.amount
+      amount: args.amount,
+      bill_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      created_at: getUnixTime(),
+      updated_at: getUnixTime()
     })
     bill = await bill.save()
 

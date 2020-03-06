@@ -1,13 +1,11 @@
 const mongoose = require('mongoose')
+const Joi = require('@hapi/joi')
 
 const User = require('../user/Model')
-const { generateID } = require('../../utils/services/supportServices')
-const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const saldoSchema = new mongoose.Schema({
   saldo_id: {
-    type: String,
-    default: generateID(RANDOM_STRING_FOR_CONCAT)
+    type: String
   },
   saldo: {
     type: Number,
@@ -16,7 +14,22 @@ const saldoSchema = new mongoose.Schema({
   user_id: {
     type: String,
     ref: User
+  },
+  created_at: {
+    type: String
+  },
+  updated_at: {
+    type: String
   }
 })
+
+saldoSchema.statics.validation = (args) => {
+  const schema = Joi.object({
+    user_id: Joi.string().required(),
+    saldo: Joi.number().required()
+  })
+
+  return schema.validate(args)
+}
 
 module.exports = mongoose.model('Saldo', saldoSchema)

@@ -1,13 +1,11 @@
 const mongoose = require('mongoose')
+const Joi = require('@hapi/joi')
 
 const User = require('../user/Model')
-const { generateID } = require('../../utils/services/supportServices')
-const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const emoneySchema = new mongoose.Schema({
   emoney_id: {
-    type: String,
-    default: generateID(RANDOM_STRING_FOR_CONCAT)
+    type: String
   },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,16 +20,27 @@ const emoneySchema = new mongoose.Schema({
   },
   created_at: {
     type: String,
-    default: new Date().getTime()
+    default: null
   },
   updated_at: {
     type: String,
-    default: new Date().getTime()
+    default: null
   },
   type: {
     type: String,
     enum: ['CREDIT', 'DEBIT']
   }
 })
+
+emoneySchema.statics.validation = (args) => {
+  const schema = Joi.object({
+    user_id: Joi.string().required(),
+    transaction_amount: Joi.number().required(),
+    type: Joi.string().required(),
+    saldo: Joi.number().required()
+  })
+
+  return schema.validate(args)
+}
 
 module.exports = mongoose.model('Emoney', emoneySchema)

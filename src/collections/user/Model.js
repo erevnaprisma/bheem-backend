@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 require('mongoose-type-email')
 const bcrypt = require('bcrypt')
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -47,6 +47,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 35
+  },
+  created_at: {
+    type: String
+  },
+  updated_at: {
+    type: String
   }
 })
 

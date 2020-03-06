@@ -4,9 +4,6 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const addMerchantAccount = async (email, deviceID) => {
-  if (!email) return { status: 400, error: 'Invalid email' }
-  if (!deviceID) return { status: 400, error: 'Invalid device_id' }
-
   const { error } = Merchant.validation({ email, device_id: deviceID })
   if (error) return { status: 400, error: error.details[0].message }
 

@@ -49,7 +49,12 @@ const generateID = () => {
   return new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
 }
 
+const getUnixTime = () => {
+  return new Date().getTime()
+}
+
 module.exports.generateRandomStringAndNumber = generateRandomStringAndNumber
 module.exports.generateRandomString = generateRandomString
 module.exports.sendMailVerification = sendMailVerification
 module.exports.generateID = generateID
+module.exports.getUnixTime = getUnixTime

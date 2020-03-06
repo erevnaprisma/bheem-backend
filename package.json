@@ -9,6 +9,7 @@
     "prod": "NODE_ENV=production nodemon app.js"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.0",
     "bcrypt": "^3.0.8",
     "config": "^3.2.5",
     "cookie-parser": "~1.4.4",

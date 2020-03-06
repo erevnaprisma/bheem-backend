@@ -1,16 +1,19 @@
 const Emoney = require('./Model')
+const { generateID, getUnixTime } = require('../../utils/services/supportServices')
+const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const addUserPayment = async ({ userID, saldo, transactionAmount, type }) => {
-  if (!userID) return { status: 400, error: 'Invalid user id' }
-  if (!saldo) return { status: 400, error: 'Invalid saldo' }
-  if (!transactionAmount) return { status: 400, error: 'Invalid transaction amount' }
-  if (!type) return { status: 400, error: 'Invalid type' }
+  const { error } = Emoney.validation({ user_id: userID, saldo, transaction_amount: transactionAmount, type })
+  if (error) return { status: 400, error: error.details[0].message }
 
   let res = new Emoney({
     user_id: userID,
     transaction_amount: transactionAmount,
     saldo,
-    type
+    type,
+    emoney_id: generateID(RANDOM_STRING_FOR_CONCAT),
+    created_at: getUnixTime(),
+    updated_at: getUnixTime()
   })
 
   try {

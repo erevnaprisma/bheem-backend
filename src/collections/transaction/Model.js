@@ -1,12 +1,10 @@
 const mongoose = require('mongoose')
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 
 const Merchant = require('../merchant/Model')
 const Emoney = require('../emoney/Model')
 const Qr = require('../qr/Model')
 const User = require('../user/Model')
-const { generateID } = require('../../utils/services/supportServices')
-const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const transactionSchema = new mongoose.Schema({
   merchant_id: {
@@ -30,8 +28,7 @@ const transactionSchema = new mongoose.Schema({
     default: null
   },
   transaction_id: {
-    type: String,
-    default: generateID(RANDOM_STRING_FOR_CONCAT)
+    type: String
   },
   transaction_amount: {
     type: Number
@@ -41,12 +38,10 @@ const transactionSchema = new mongoose.Schema({
     default: null
   },
   created_at: {
-    type: String,
-    default: new Date().getTime()
+    type: String
   },
   updated_at: {
-    type: String,
-    default: new Date().getTime()
+    type: String
   },
   status: {
     type: String,
@@ -57,16 +52,9 @@ const transactionSchema = new mongoose.Schema({
 
 transactionSchema.statics.validation = (args) => {
   const schema = Joi.object({
-    merchant_id: Joi.string(),
-    emoney_id: Joi.string(),
-    qr_id: Joi.string(),
-    user_id: Joi.string(),
-    transaction_id: Joi.string(),
-    transaction_amount: Joi.number(),
-    billing_id: Joi.string(),
-    created_at: Joi.string(),
-    updated_at: Joi.string(),
-    status: Joi.string()
+    user_id: Joi.string().required(),
+    billing_id: Joi.string().required(),
+    transaction_amount: Joi.number().required()
   })
 
   return schema.validate(args)

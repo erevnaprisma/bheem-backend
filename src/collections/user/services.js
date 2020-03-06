@@ -3,11 +3,12 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
-const { generateRandomStringAndNumber, sendMailVerification } = require('../../utils/services/supportServices')
+const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = require('../../utils/services/supportServices')
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 
 const userSignup = async (email, deviceID) => {
-  if (!email || !deviceID) return { status: 400, error: 'Email or Password can\'t be empty' }
+  const { error } = User.validation({ email, device_id: deviceID })
+  if (error) return { status: 400, error: error.details[0].message }
 
   const emailCheck = await User.findOne({ email })
   if (emailCheck) return { status: 400, error: 'Email already used' }
@@ -16,13 +17,12 @@ const userSignup = async (email, deviceID) => {
     email,
     device_id: deviceID,
     username: generateRandomStringAndNumber(8),
-    password: generateRandomStringAndNumber(6)
+    password: generateRandomStringAndNumber(6),
+    created_at: getUnixTime(),
+    updated_at: getUnixTime()
   })
 
   const localPassword = user.password
-
-  const { error } = User.validation({ email, device_id: deviceID })
-  if (error) return { status: 400, error: error.details[0].message }
 
   try {
     const accessToken = await jwt.sign({ user_id: user._id }, config.get('privateKey'), { expiresIn: '30min' })

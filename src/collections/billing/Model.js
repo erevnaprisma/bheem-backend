@@ -1,23 +1,25 @@
 const mongoose = require('mongoose')
-const Joi = require('joi')
-
-const { generateID } = require('../../utils/services/supportServices')
-const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
+const Joi = require('@hapi/joi')
 
 const billSchema = new mongoose.Schema({
   bill_id: {
-    type: String,
-    default: generateID(RANDOM_STRING_FOR_CONCAT)
+    type: String
   },
   amount: {
     type: Number
+  },
+  created_at: {
+    type: String
+  },
+  updated_at: {
+    type: String
   }
 })
 
 billSchema.statics.validation = (args) => {
   const schema = Joi.object({
     user_id: Joi.string().required(),
-    amount: Joi.number().required().greater(0)
+    amount: Joi.number().required().greater(0),
   })
 
   return schema.validate(args)
