@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+
 const { generateRandomString } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
@@ -16,8 +17,27 @@ const qrSchema = new mongoose.Schema({
   },
   type: {
     type: String,
+    enum: ['DYNAMIC', 'STATIC']
+  },
+  status: {
+    type: String,
+    enum: ['ACTIVE', 'INACTIVE']
+  },
+  user_id: {
+    type: String,
+    ref: 'User',
+    default: null
+  },
+  merchant_id: {
+    type: String,
+    ref: 'Merchant',
+    default: null
+  },
+  transaction_id: {
+    type: String,
+    ref: 'Transaction',
     default: null
   }
 })
 
-module.exports = mongoose.model('QR', qrSchema)
+module.exports = mongoose.model('Qr', qrSchema)

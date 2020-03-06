@@ -1,34 +1,30 @@
 const mongoose = require('mongoose')
 const Joi = require('@hapi/joi')
 
-const Merchant = require('../merchant/Model')
-const Emoney = require('../emoney/Model')
-const Qr = require('../qr/Model')
-const User = require('../user/Model')
-
 const transactionSchema = new mongoose.Schema({
   merchant_id: {
     type: String,
-    ref: Merchant,
+    ref: 'Merchant',
     default: null
   },
   emoney_id: {
     type: String,
-    ref: Emoney,
+    ref: 'Emoney',
     default: null
   },
   qr_id: {
     type: String,
-    ref: Qr,
+    ref: 'Qr',
     default: null
   },
   user_id: {
     type: String,
-    ref: User,
+    ref: 'User',
     default: null
   },
   transaction_id: {
-    type: String
+    type: String,
+    unique: true
   },
   transaction_amount: {
     type: Number

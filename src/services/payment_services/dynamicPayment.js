@@ -4,9 +4,9 @@ const { addUserPayment } = require('../../collections/emoney/services')
 
 const Transaction = require('../../collections/transaction/Model')
 
-const userDynamicPayment = async () => {
+// const userDynamicPayment = async () => {
   
-}
+// }
 
 const merchantDynamicPayment = async (amount) => {
   if (!amount || amount < 0) return { status: 400, error: 'Invalid amount' }
