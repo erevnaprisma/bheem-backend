@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+// const jwt = require('jsonwebtoken')
 
 const isAuth = async (
   resolve,

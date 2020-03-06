@@ -1,28 +1,28 @@
-const { addBillingService } = require('../collections/billing/services')
-const { addUserPayment } = require('../collections/emoney/services')
-const { addUserTransaction } = require('../collections/transaction/services')
-const { createSaldo, updateSaldo } = require('../collections/saldo/services')
+const { addBillingService } = require('../../collections/billing/services')
+const { addUserPayment } = require('../../collections/emoney/services')
+const { addUserTransaction } = require('../../collections/transaction/services')
+const { createSaldo, updateSaldo } = require('../../collections/saldo/services')
 
-const User = require('../collections/user/Model')
-const Transaction = require('../collections/transaction/Model')
-const Saldo = require('../collections/saldo/Model')
+const User = require('../../collections/user/Model')
+const Transaction = require('../../collections/transaction/Model')
+const Saldo = require('../../collections/saldo/Model')
 
 let finalAmount
 let emoney
 
 const serviceTopupVa = async (args) => {
   if (!args.user_id) return { status: 400, error: 'Invalid user id' }
-  if (!args.amount || args.amount < 0) return { status: 400, error: 'Invalid amount' }
+  if (!args.amount) return { status: 400, error: 'Invalid amount' }
 
   try {
     const checkerID = await User.findOne({ _id: args.user_id })
     if (!checkerID) return { status: 400, error: 'User id not found' }
 
     // create new billing
-    const billing = await addBillingService(args)
+    const billing = await addBillingService(args.amount)
 
     // create new transaction
-    const transaction = await addUserTransaction(billing.bill_id, args.amount, args.user_id)
+    const transaction = await addUserTransaction({ bill: billing.bill_id, amount: args.amount, userID: args.user_id })
 
     // get saldo in saldo collection
     const getSaldoInstance = await Saldo.findOne({ user_id: args.user_id })
@@ -54,4 +54,4 @@ const serviceTopupVa = async (args) => {
   }
 }
 
-module.exports.serviceTopupVa = serviceTopupVa
+module.exports = serviceTopupVa

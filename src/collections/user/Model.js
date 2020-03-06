@@ -48,6 +48,9 @@ const userSchema = new mongoose.Schema({
     min: 6,
     max: 35
   },
+  profile_picture: {
+    type: String
+  },
   created_at: {
     type: String
   },

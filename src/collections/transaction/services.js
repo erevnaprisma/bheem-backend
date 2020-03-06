@@ -2,7 +2,7 @@ const Transaction = require('./Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const addUserTransaction = async (bill, amount, userID) => {
+const addUserTransaction = async ({ bill, amount, userID }) => {
   const { error } = Transaction.validation({ user_id: userID, transaction_amount: amount, billing_id: bill })
   if (error) return { status: 400, error: error.details[0].message }
 

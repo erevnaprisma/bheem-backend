@@ -18,8 +18,8 @@ const billSchema = new mongoose.Schema({
 
 billSchema.statics.validation = (args) => {
   const schema = Joi.object({
-    user_id: Joi.string().required(),
-    amount: Joi.number().required().greater(0),
+    user_id: Joi.string(),
+    amount: Joi.number().required().greater(0)
   })
 
   return schema.validate(args)

@@ -1,12 +1,14 @@
 const graphql = require('graphql')
 
 const { ResponseType } = require('./type')
-const { serviceTopupVa } = require('../topUpVa')
+const serviceTopupVa = require('../payment_services/topUpVa')
+const serviceStaticPayment = require('../payment_services/staticPayment')
 
 const {
   GraphQLNonNull,
   GraphQLString,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLID
 } = graphql
 
 const topupVa = {
@@ -20,4 +22,17 @@ const topupVa = {
   }
 }
 
+const staticPayment = {
+  type: ResponseType,
+  args: {
+    merchant_id: { type: new GraphQLNonNull(GraphQLString) },
+    amount: { type: new GraphQLNonNull(GraphQLInt) },
+    user_id: { type: new GraphQLNonNull(GraphQLID) }
+  },
+  resolve (parent, args) {
+    return serviceStaticPayment(args.merchant_id, args.amount, args.user_id)
+  }
+}
+
 module.exports.topupVa = topupVa
+module.exports.staticPayment = staticPayment
