@@ -14,11 +14,12 @@ const {
 const login = {
   type: AuthType,
   args: {
+    access_token: { type: GraphQLString },
     username: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) }
   },
   async resolve (parent, args, context) {
-    return userLogin(args.username, args.password)
+    return userLogin(args.username, args.password, args.access_token, args.isAuth)
   }
 }
 

@@ -5,6 +5,8 @@ const config = require('config')
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
 const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = require('../../utils/services/supportServices')
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
+const { serviceAddBlacklist } = require('../blacklist/services')
+const Blacklist = require('../blacklist/Model')
 
 const userSignup = async (email, deviceID) => {
   const { error } = User.validation({ email, device_id: deviceID })
@@ -39,8 +41,14 @@ const userSignup = async (email, deviceID) => {
   }
 }
 
-const userLogin = async (username, password) => {
+const userLogin = async (username, password, token, isAuth = false) => {
+  if (isAuth === true) {
+    return { status: 200, success: WORD_LOGIN, access_token: token }
+  }
   if (!username || !password) return { status: 400, error: 'Username or Password can\'t be empty' }
+
+  const checkerToken = await Blacklist.findOne({ token })
+  if (checkerToken) return { status: 400, error: 'Token already expired' }
 
   const user = await User.findOne({ username })
   if (!user) return { status: 400, error: 'Invalid username or password' }
@@ -163,6 +171,17 @@ const getUserProfile = async (args) => {
   }
 }
 
+const serviceLogout = async (token) => {
+  if (!token) return { status: 400, error: 'Invalid token' }
+
+  try {
+    await serviceAddBlacklist(token)
+    return { status: 200, success: 'Successfully logout' }
+  } catch (err) {
+    return { status: 400, success: err }
+  }
+}
+
 module.exports.userSignup = userSignup
 module.exports.userLogin = userLogin
 module.exports.changeEmail = changeEmail
@@ -170,3 +189,4 @@ module.exports.changePassword = changePassword
 module.exports.changeName = changeName
 module.exports.changeProfile = changeProfile
 module.exports.getUserProfile = getUserProfile
+module.exports.serviceLogout = serviceLogout

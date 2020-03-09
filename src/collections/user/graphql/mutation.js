@@ -1,6 +1,6 @@
 const graphql = require('graphql')
 
-const { userSignup, changeEmail, changePassword, changeName, changeProfile } = require('../services')
+const { userSignup, changeEmail, changePassword, changeName, changeProfile, serviceLogout } = require('../services')
 const { AuthType } = require('./type')
 
 const {
@@ -72,8 +72,19 @@ const changeUserProfile = {
   }
 }
 
+const logout = {
+  type: AuthType,
+  args: {
+    access_token: { type: GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return serviceLogout(args.access_token)
+  }
+}
+
 module.exports.signUp = signUp
 module.exports.changeUserEmail = changeUserEmail
 module.exports.changeUserPassword = changeUserPassword
 module.exports.changeUserName = changeUserName
 module.exports.changeUserProfile = changeUserProfile
+module.exports.logout = logout
