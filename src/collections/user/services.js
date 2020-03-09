@@ -42,13 +42,13 @@ const userSignup = async (email, deviceID) => {
 }
 
 const userLogin = async (username, password, token, isAuth = false) => {
+  const checkerToken = await Blacklist.findOne({ token })
+  if (checkerToken) return { status: 400, error: 'Token already expired' }
+
   if (isAuth === true) {
     return { status: 200, success: WORD_LOGIN, access_token: token }
   }
   if (!username || !password) return { status: 400, error: 'Username or Password can\'t be empty' }
-
-  const checkerToken = await Blacklist.findOne({ token })
-  if (checkerToken) return { status: 400, error: 'Token already expired' }
 
   const user = await User.findOne({ username })
   if (!user) return { status: 400, error: 'Invalid username or password' }
