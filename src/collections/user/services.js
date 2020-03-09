@@ -7,6 +7,7 @@ const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = req
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
+const Saldo = require('../saldo/Model')
 
 const userSignup = async (email, deviceID) => {
   const { error } = User.validation({ email, device_id: deviceID })
@@ -162,9 +163,11 @@ const changeProfile = async args => {
 const getUserProfile = async (args) => {
   if (!args) return { status: 400, error: 'Must provide user' }
 
-  await reusableFindUserByID(args)
-
   try {
+    await reusableFindUserByID(args)
+
+    // const saldo = await Saldo.findOne({ user_id: args })
+
     return { user_id: args, success: 'Success', status: 200 }
   } catch (err) {
     return { status: 400, error: 'User not found' }

@@ -5,7 +5,6 @@ const { addUserPayment } = require('../../collections/emoney/services')
 const Transaction = require('../../collections/transaction/Model')
 
 // const userDynamicPayment = async () => {
-  
 // }
 
 const merchantDynamicPayment = async (amount) => {

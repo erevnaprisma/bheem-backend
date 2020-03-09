@@ -1,6 +1,7 @@
 const graphql = require('graphql')
 
 const { findUser } = require('../../../utils/services/mongoServices')
+const Saldo = require('../../saldo/Model')
 
 const {
   GraphQLString,
@@ -21,6 +22,13 @@ const UserType = new GraphQLObjectType({
     last_name: { type: GraphQLString },
     nickname: { type: GraphQLString },
     address: { type: GraphQLString },
+    saldo: {
+      type: GraphQLInt,
+      async resolve (parent) {
+        const res = await Saldo.findOne({ user_id: parent.id }).select('saldo -_id')
+        return res.saldo
+      }
+    }
   })
 })
 
