@@ -27,7 +27,9 @@ const transactionSchema = new mongoose.Schema({
     unique: true
   },
   transaction_amount: {
-    type: Number
+    type: Number,
+    max: 8,
+    min: 1
   },
   billing_id: {
     type: String,

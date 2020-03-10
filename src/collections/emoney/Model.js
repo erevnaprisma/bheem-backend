@@ -12,11 +12,15 @@ const emoneySchema = new mongoose.Schema({
     ref: User
   },
   transaction_amount: {
-    type: Number
+    type: Number,
+    max: 8,
+    min: 1
   },
   saldo: {
     type: Number,
-    default: 0
+    default: 0,
+    max: 8,
+    min: 0
   },
   created_at: {
     type: String,

@@ -9,7 +9,9 @@ const merchantSchema = new mongoose.Schema({
     unique: true
   },
   username: {
-    type: String
+    type: String,
+    max: 25,
+    min: 5
   },
   password: {
     type: String,
