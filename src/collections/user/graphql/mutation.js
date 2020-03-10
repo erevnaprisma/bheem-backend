@@ -63,13 +63,13 @@ const changeUserProfile = {
   type: ChangeType,
   args: {
     access_token: { type: new GraphQLNonNull(GraphQLString) },
-    user_id: { type: GraphQLID },
+    user_id: { type: new GraphQLNonNull(GraphQLID) },
     first_name: { type: GraphQLString },
     last_name: { type: GraphQLString },
     nickname: { type: GraphQLString },
     full_name: { type: GraphQLString },
     address: { type: GraphQLString },
-    password: { type: GraphQLString }
+    password: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
     return changeProfile(args)

@@ -73,7 +73,7 @@ const userLogin = async (username, password, token, isLoggedInWithToken) => {
   }
 }
 
-const changeEmail = async (newEmail, userID, password, token) => {
+const changeEmail = async (newEmail, userID, password, token = null) => {
   if (!newEmail || !password) return { status: 400, error: 'Must provide email or password' }
 
   if (!userID) return { status: 400, error: 'User ID not found' }
@@ -97,7 +97,7 @@ const changeEmail = async (newEmail, userID, password, token) => {
   }
 }
 
-const changePassword = async (userID, newPassword, password, token) => {
+const changePassword = async (userID, newPassword, password, token = null) => {
   if (!newPassword || !password) return { status: 400, error: 'Must provide new password or old password' }
 
   if (!userID) return { status: 400, error: 'user id not found' }
@@ -119,7 +119,7 @@ const changePassword = async (userID, newPassword, password, token) => {
   }
 }
 
-const changeName = async (userID, newUsername, password, token) => {
+const changeName = async (userID, newUsername, password, token = null) => {
   if (!newUsername || !password) return { status: 400, error: 'Must provide username or password' }
 
   if (!userID) return { status: 400, error: 'User id not found' }
