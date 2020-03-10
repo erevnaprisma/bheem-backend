@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 const { userSignup, changeEmail, changePassword, changeName, changeProfile, serviceLogout } = require('../services')
-const { AuthType } = require('./type')
+const { AuthType, ChangeType } = require('./type')
 
 const {
   GraphQLString,
@@ -21,44 +21,48 @@ const signUp = {
 }
 
 const changeUserEmail = {
-  type: AuthType,
+  type: ChangeType,
   args: {
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
     user_id: { type: new GraphQLNonNull(GraphQLString) },
     new_email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return changeEmail(args.new_email, args.user_id, args.password)
+    return changeEmail(args.new_email, args.user_id, args.password, args.newToken)
   }
 }
 
 const changeUserPassword = {
-  type: AuthType,
+  type: ChangeType,
   args: {
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
     user_id: { type: new GraphQLNonNull(GraphQLID) },
     new_password: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return changePassword(args.user_id, args.new_password, args.password)
+    return changePassword(args.user_id, args.new_password, args.password, args.newToken)
   }
 }
 
 const changeUserName = {
-  type: AuthType,
+  type: ChangeType,
   args: {
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
     user_id: { type: new GraphQLNonNull(GraphQLID) },
     new_username: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return changeName(args.user_id, args.new_username, args.password)
+    return changeName(args.user_id, args.new_username, args.password, args.newToken)
   }
 }
 
 const changeUserProfile = {
-  type: AuthType,
+  type: ChangeType,
   args: {
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
     user_id: { type: GraphQLID },
     first_name: { type: GraphQLString },
     last_name: { type: GraphQLString },

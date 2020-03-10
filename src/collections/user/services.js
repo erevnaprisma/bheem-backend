@@ -7,7 +7,6 @@ const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = req
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
-const Saldo = require('../saldo/Model')
 
 const userSignup = async (email, deviceID) => {
   const { error } = User.validation({ email, device_id: deviceID })
@@ -42,18 +41,19 @@ const userSignup = async (email, deviceID) => {
   }
 }
 
-const userLogin = async (username, password, token, isAuth = false) => {
+const userLogin = async (username, password, token, isLoggedInWithToken) => {
   const checkerToken = await Blacklist.findOne({ token })
   if (checkerToken) return { status: 400, error: 'Token already expired' }
 
-  if (isAuth === true) {
-    return { status: 200, success: WORD_LOGIN, access_token: token }
+  // login with token
+  if (isLoggedInWithToken) {
+    return { status: 200, success: WORD_LOGIN }
   }
   if (!username || !password) return { status: 400, error: 'Username or Password can\'t be empty' }
 
   const user = await User.findOne({ username })
   if (!user) return { status: 400, error: 'Invalid username or password' }
-
+  console.log('sini bro')
   try {
     // verified password
     await user.comparedPassword(password)
@@ -61,6 +61,7 @@ const userLogin = async (username, password, token, isAuth = false) => {
     // generate access token
     const accessToken = await jwt.sign({ user_id: user._id }, config.get('privateKey'), { expiresIn: '30min' })
 
+    // login with username & password
     return {
       status: 200,
       access_token: accessToken,
@@ -72,7 +73,7 @@ const userLogin = async (username, password, token, isAuth = false) => {
   }
 }
 
-const changeEmail = async (newEmail, userID, password) => {
+const changeEmail = async (newEmail, userID, password, token) => {
   if (!newEmail || !password) return { status: 400, error: 'Must provide email or password' }
 
   if (!userID) return { status: 400, error: 'User ID not found' }
@@ -90,13 +91,13 @@ const changeEmail = async (newEmail, userID, password) => {
 
     await User.updateOne({ _id: userID }, { email: newEmail }).catch(() => { errorHandling('Failed updating user') })
 
-    return { status: 200, success: WORD_CHANGE_EMAIL }
+    return { status: 200, success: WORD_CHANGE_EMAIL, new_token: token }
   } catch (err) {
     return { status: 400, error: err || 'Update failed' }
   }
 }
 
-const changePassword = async (userID, newPassword, password) => {
+const changePassword = async (userID, newPassword, password, token) => {
   if (!newPassword || !password) return { status: 400, error: 'Must provide new password or old password' }
 
   if (!userID) return { status: 400, error: 'user id not found' }
@@ -112,13 +113,13 @@ const changePassword = async (userID, newPassword, password) => {
     const hashedPass = await User.hashing(newPassword)
     await User.findOneAndUpdate({ _id: userID }, { password: hashedPass }).catch(() => { errorHandling('Failed updating password') })
 
-    return { status: 200, success: WORD_CHANGE_PASSWORD }
+    return { status: 200, success: WORD_CHANGE_PASSWORD, new_token: token }
   } catch (err) {
     return { status: 400, error: err || 'Update failed' }
   }
 }
 
-const changeName = async (userID, newUsername, password) => {
+const changeName = async (userID, newUsername, password, token) => {
   if (!newUsername || !password) return { status: 400, error: 'Must provide username or password' }
 
   if (!userID) return { status: 400, error: 'User id not found' }
@@ -136,7 +137,7 @@ const changeName = async (userID, newUsername, password) => {
 
     await User.findOneAndUpdate({ _id: userID }, { username: newUsername }).catch(() => { errorHandling('Failed updating username') })
 
-    return { status: 200, success: WORD_CHANGE_USERNAME }
+    return { status: 200, success: WORD_CHANGE_USERNAME, new_token: token }
   } catch (err) {
     return { status: 400, error: err || 'Update failed' }
   }
@@ -154,7 +155,7 @@ const changeProfile = async args => {
 
     await user.comparedPassword(args.password)
 
-    return { status: 200, success: 'Update profile success' }
+    return { status: 200, success: 'Update profile success', new_token: args.newToken }
   } catch (err) {
     return { status: 400, error: err || 'Cannot update profile' }
   }

@@ -48,5 +48,16 @@ const AuthType = new GraphQLObjectType({
   })
 })
 
+const ChangeType = new GraphQLObjectType({
+  name: 'Change',
+  fields: () => ({
+    new_token: { type: GraphQLString },
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
 module.exports.UserType = UserType
 module.exports.AuthType = AuthType
+module.exports.ChangeType = ChangeType

@@ -7,7 +7,7 @@ const authMiddleware = require('../middlewares/auth')
 
 const Router = express.Router()
 
-applyMiddleware(schema, authMiddleware);
+applyMiddleware(schema, authMiddleware)
 
 Router.all('/',
   graphqlHTTP({
