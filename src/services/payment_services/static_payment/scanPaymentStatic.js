@@ -27,7 +27,7 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID }) => {
     billing = await addBillingService()
 
     // add Transaction status pending
-    transaction = await addUserTransaction({ userID, bill: billing.bill_id, qrID })
+    transaction = await addUserTransaction({ userID, bill: billing.bill_id, qrID, merchantID })
   } catch (err) {
     return { status: 400, error: err || 'Scan Failed' }
   }
