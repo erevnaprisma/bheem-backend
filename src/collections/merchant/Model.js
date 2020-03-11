@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt')
 const Joi = require('@hapi/joi')
 
 const merchantSchema = new mongoose.Schema({
+  merchant_id: {
+    type: String
+  },
   email: {
     type: mongoose.SchemaTypes.Email,
     unique: true

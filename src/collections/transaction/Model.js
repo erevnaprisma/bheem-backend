@@ -28,8 +28,8 @@ const transactionSchema = new mongoose.Schema({
   },
   transaction_amount: {
     type: Number,
-    max: 8,
-    min: 1
+    min: 1,
+    default: null
   },
   billing_id: {
     type: String,
@@ -52,7 +52,6 @@ transactionSchema.statics.validation = (args) => {
   const schema = Joi.object({
     user_id: Joi.string().required(),
     billing_id: Joi.string().required(),
-    transaction_amount: Joi.number().required()
   })
 
   return schema.validate(args)

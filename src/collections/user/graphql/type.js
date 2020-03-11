@@ -26,6 +26,7 @@ const UserType = new GraphQLObjectType({
       type: GraphQLInt,
       async resolve (parent) {
         const res = await Saldo.findOne({ user_id: parent.id }).select('saldo -_id')
+        if (!res) return 0
         return res.saldo
       }
     }

@@ -12,10 +12,10 @@ let emoney
 
 const serviceTopupVa = async (args) => {
   if (!args.user_id) return { status: 400, error: 'Invalid user id' }
-  if (!args.amount) return { status: 400, error: 'Invalid amount' }
+  if (!args.amount || args.amount <= 0) return { status: 400, error: 'Invalid amount' }
 
   try {
-    const checkerID = await User.findOne({ _id: args.user_id })
+    const checkerID = await User.findOne({ user_id: args.user_id })
     if (!checkerID) return { status: 400, error: 'User id not found' }
 
     // create new billing

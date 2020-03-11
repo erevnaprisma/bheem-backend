@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt')
 const Joi = require('@hapi/joi')
 
 const userSchema = new mongoose.Schema({
+  user_id: {
+    type: String
+  },
   username: {
     type: String,
     min: 5,

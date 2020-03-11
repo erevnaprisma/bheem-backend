@@ -1,12 +1,15 @@
-const User = require('./Model')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 
+const User = require('./Model')
+const Saldo = require('../saldo/Model')
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
 const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = require('../../utils/services/supportServices')
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
+const { generateID } = require('../../utils/services/supportServices')
+const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const userSignup = async (email, deviceID) => {
   const { error } = User.validation({ email, device_id: deviceID })
@@ -16,6 +19,7 @@ const userSignup = async (email, deviceID) => {
   if (emailCheck) return { status: 400, error: 'Email already used' }
 
   let user = new User({
+    user_id: generateID(RANDOM_STRING_FOR_CONCAT),
     email,
     device_id: deviceID,
     username: generateRandomStringAndNumber(8),
@@ -35,7 +39,7 @@ const userSignup = async (email, deviceID) => {
 
     await sendMailVerification(user)
 
-    return { status: 200, user_id: user._id, access_token: accessToken, success: WORD_SIGN_UP }
+    return { status: 200, user_id: user.user_id, access_token: accessToken, success: WORD_SIGN_UP }
   } catch (err) {
     return { status: '500', error: err || 'Failed to save to data...' }
   }
@@ -89,7 +93,7 @@ const changeEmail = async (newEmail, userID, password, token = null) => {
 
     await user.comparedPassword(password)
 
-    await User.updateOne({ _id: userID }, { email: newEmail }).catch(() => { errorHandling('Failed updating user') })
+    await User.updateOne({ user_id: userID }, { email: newEmail }).catch(() => { errorHandling('Failed updating user') })
 
     return { status: 200, success: WORD_CHANGE_EMAIL, new_token: token }
   } catch (err) {
@@ -111,7 +115,7 @@ const changePassword = async (userID, newPassword, password, token = null) => {
     await user.comparedPassword(password)
 
     const hashedPass = await User.hashing(newPassword)
-    await User.findOneAndUpdate({ _id: userID }, { password: hashedPass }).catch(() => { errorHandling('Failed updating password') })
+    await User.findOneAndUpdate({ user_id: userID }, { password: hashedPass }).catch(() => { errorHandling('Failed updating password') })
 
     return { status: 200, success: WORD_CHANGE_PASSWORD, new_token: token }
   } catch (err) {
@@ -135,7 +139,7 @@ const changeName = async (userID, newUsername, password, token = null) => {
 
     await user.comparedPassword(password)
 
-    await User.findOneAndUpdate({ _id: userID }, { username: newUsername }).catch(() => { errorHandling('Failed updating username') })
+    await User.findOneAndUpdate({ user_id: userID }, { username: newUsername }).catch(() => { errorHandling('Failed updating username') })
 
     return { status: 200, success: WORD_CHANGE_USERNAME, new_token: token }
   } catch (err) {
@@ -149,7 +153,7 @@ const changeProfile = async args => {
   if (!args.password) return { status: 400, error: 'Must provide password' }
 
   try {
-    await User.where({ _id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address } }).catch(() => { errorHandling('Failed updating user profile') })
+    await User.where({ user_id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address } }).catch(() => { errorHandling('Failed updating user profile') })
 
     const user = await reusableFindUserByID(args.user_id)
 
@@ -166,8 +170,6 @@ const getUserProfile = async (args) => {
 
   try {
     await reusableFindUserByID(args)
-
-    // const saldo = await Saldo.findOne({ user_id: args })
 
     return { user_id: args, success: 'Success', status: 200 }
   } catch (err) {
@@ -186,6 +188,13 @@ const serviceLogout = async (token) => {
   }
 }
 
+const checkerValidUser = async (userID) => {
+  if (!userID) throw new Error('Invalid user id')
+
+  const res = await User.findOne({ user_id: userID })
+  if (!res) throw new Error('Invalid user id')
+}
+
 module.exports.userSignup = userSignup
 module.exports.userLogin = userLogin
 module.exports.changeEmail = changeEmail
@@ -194,3 +203,4 @@ module.exports.changeName = changeName
 module.exports.changeProfile = changeProfile
 module.exports.getUserProfile = getUserProfile
 module.exports.serviceLogout = serviceLogout
+module.exports.checkerValidUser = checkerValidUser

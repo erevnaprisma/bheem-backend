@@ -1,13 +1,17 @@
-const Merchant = require('./Model')
-const { sendMailVerification, generateRandomStringAndNumber } = require('../../utils/services/supportServices')
 const jwt = require('jsonwebtoken')
 const config = require('config')
+
+const Merchant = require('./Model')
+const { sendMailVerification, generateRandomStringAndNumber } = require('../../utils/services/supportServices')
+const { generateID } = require('../../utils/services/supportServices')
+const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const addMerchantAccount = async (email, deviceID) => {
   const { error } = Merchant.validation({ email, device_id: deviceID })
   if (error) return { status: 400, error: error.details[0].message }
 
   let user = await new Merchant({
+    merchant_id: generateID(RANDOM_STRING_FOR_CONCAT),
     email,
     device_id: deviceID,
     username: generateRandomStringAndNumber(8),
@@ -30,4 +34,12 @@ const addMerchantAccount = async (email, deviceID) => {
   }
 }
 
+const checkerValidMerchant = async ({ MerhchantID }) => {
+  if (!MerhchantID) throw new Error('Invalid Merchant ID')
+
+  const res = await Merchant.findOne({ merchant_id: MerhchantID })
+  if (!res) throw new Error('Invalid Merchant ID')
+}
+
 module.exports.addMerchantAccount = addMerchantAccount
+module.exports.checkerValidMerchant = checkerValidMerchant

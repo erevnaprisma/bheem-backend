@@ -6,7 +6,7 @@ const addUserPayment = async ({ userID, saldo, transactionAmount, type }) => {
   const { error } = Emoney.validation({ user_id: userID, saldo, transaction_amount: transactionAmount, type })
   if (error) return { status: 400, error: error.details[0].message }
 
-  let res = new Emoney({
+  const res = new Emoney({
     user_id: userID,
     transaction_amount: transactionAmount,
     saldo,
@@ -15,13 +15,10 @@ const addUserPayment = async ({ userID, saldo, transactionAmount, type }) => {
     created_at: getUnixTime(),
     updated_at: getUnixTime()
   })
-
   try {
-    res = await res.save()
-
-    return res
+    return res.save().catch((err) => console.log(err._message))
   } catch (err) {
-    return { status: 400, error: 'transaction failed' }
+    return { status: 400, error: err || 'transaction failed' }
   }
 }
 

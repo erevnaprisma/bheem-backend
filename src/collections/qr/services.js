@@ -2,7 +2,7 @@ const Qr = require('./Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const createQrStatic = async (merchantID) => {
+const createQrStaticService = async (merchantID) => {
   const type = 'STATIC'
   const status = 'ACTIVE'
 
@@ -39,5 +39,13 @@ const createQrDynamic = async (type, status, transactionID) => {
   return qr
 }
 
+const checkerValidQr = async ({ QrID }) => {
+  if (!QrID) throw new Error('Invalid QR Code')
+
+  const res = await Qr.findOne({ qr_id: QrID })
+  if (!res) throw new Error('Invalid QR Code')
+}
+
 module.exports.createQrDynamic = createQrDynamic
-module.exports.createQrStatic = createQrStatic
+module.exports.createQrStaticService = createQrStaticService
+module.exports.checkerValidQr = checkerValidQr

@@ -10,7 +10,6 @@ const saldoSchema = new mongoose.Schema({
   saldo: {
     type: Number,
     default: 0,
-    max: 8,
     min: 1
   },
   user_id: {

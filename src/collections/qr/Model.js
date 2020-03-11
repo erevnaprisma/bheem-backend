@@ -23,21 +23,11 @@ const qrSchema = new mongoose.Schema({
     type: String,
     enum: ['ACTIVE', 'INACTIVE']
   },
-  user_id: {
-    type: String,
-    ref: 'User',
-    default: null
-  },
   merchant_id: {
     type: String,
     ref: 'Merchant',
     default: null
-  },
-  transaction_id: {
-    type: String,
-    ref: 'Transaction',
-    default: null
   }
 })
 
-module.exports = mongoose.model('Qr', qrSchema)
+module.exports = mongoose.model('QrCode', qrSchema)

@@ -3,15 +3,10 @@ const { generateID, getUnixTime } = require('../../utils/services/supportService
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const addBillingService = async (amount) => {
-  const { error } = Billing.validation({ amount })
-  if (error) return { status: 400, error: error.details[0].message }
-
-  if (!amount) return { status: 400, error: 'Invalid amount' }
-
   try {
     let bill = await new Billing({
-      amount,
       bill_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      amount,
       created_at: getUnixTime(),
       updated_at: getUnixTime()
     })
@@ -23,4 +18,9 @@ const addBillingService = async (amount) => {
   }
 }
 
+const updateBillingAmount = () => {
+  console.log('update')
+}
+
 module.exports.addBillingService = addBillingService
+module.exports.updateBillingAmount = updateBillingAmount

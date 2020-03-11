@@ -6,7 +6,8 @@ const billSchema = new mongoose.Schema({
     type: String
   },
   amount: {
-    type: Number
+    type: Number,
+    default: null
   },
   created_at: {
     type: String
