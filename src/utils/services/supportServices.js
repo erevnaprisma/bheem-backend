@@ -17,7 +17,16 @@ const generateRandomString = (length) => {
   })
 }
 
+const generateRandomNumber = (length) => {
+  return randomString.generate({
+    length,
+    charset: 'numeric'
+  })
+}
+
 const sendMailVerification = async (model) => {
+  var mailOptions
+
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     secure: true,
@@ -26,14 +35,23 @@ const sendMailVerification = async (model) => {
       pass: config.get('mongoDB.password')
     }
   })
-
-  const mailOptions = {
-    from: config.get('mongoDB.email'),
-    to: model.email,
-    subject: 'RayaPay',
-    text: `Thank you for applying on RayaPay. We are looking forward for your action in changing your name and password.
-        name: ${model.username}
-        password: ${model.password}`
+  if (model.type === 'otp') {
+    mailOptions = {
+      from: config.get('mongoDB.email'),
+      to: model.email,
+      subject: 'RayaPay',
+      text: `Your OTP is ${model.otp}`
+    }
+  }
+  if (model.type === 'signup') {
+    mailOptions = {
+      from: config.get('mongoDB.email'),
+      to: model.email,
+      subject: 'RayaPay',
+      text: `Thank you for applying on RayaPay. We are looking forward for your action in changing your name and password.
+          name: ${model.username}
+          password: ${model.password}`
+    }
   }
 
   transporter.sendMail(mailOptions, function (error, info) {
@@ -55,6 +73,7 @@ const getUnixTime = () => {
 
 module.exports.generateRandomStringAndNumber = generateRandomStringAndNumber
 module.exports.generateRandomString = generateRandomString
+module.exports.generateRandomNumber = generateRandomNumber
 module.exports.sendMailVerification = sendMailVerification
 module.exports.generateID = generateID
 module.exports.getUnixTime = getUnixTime

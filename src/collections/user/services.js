@@ -36,7 +36,7 @@ const userSignup = async (email, deviceID) => {
     user = await user.save()
 
     user.password = localPassword
-
+    user.type = 'signup'
     await sendMailVerification(user)
 
     return { status: 200, user_id: user.user_id, access_token: accessToken, success: WORD_SIGN_UP }
@@ -195,6 +195,20 @@ const checkerValidUser = async (userID) => {
   if (!res) throw new Error('Invalid user id')
 }
 
+const userChangesValidation = async ({ userID, password }) => {
+  return new Promise((resolve, reject) => {
+    reusableFindUserByID(userID)
+      .then((res) => {
+        try {
+          resolve(res.comparedPassword(password))
+        } catch (err) {
+          reject(err)
+        }
+      })
+      .catch((err) => reject(err))
+  })
+}
+
 module.exports.userSignup = userSignup
 module.exports.userLogin = userLogin
 module.exports.changeEmail = changeEmail
@@ -204,3 +218,4 @@ module.exports.changeProfile = changeProfile
 module.exports.getUserProfile = getUserProfile
 module.exports.serviceLogout = serviceLogout
 module.exports.checkerValidUser = checkerValidUser
+module.exports.userChangesValidation = userChangesValidation
