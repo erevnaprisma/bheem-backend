@@ -43,7 +43,7 @@ const transactionSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['PNDNG', 'SETLD', 'REJEC'],
+    enum: ['PNDNG', 'SETLD', 'REJEC', 'CANCEL'],
     default: 'PNDNG'
   }
 })

@@ -21,6 +21,13 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID) 
   if (!transactionID) return { status: 400, error: 'Invalid transaction id' }
 
   try {
+    const checkerStatusTransaction = await Transaction.findOne({ transaction_id: transactionID })
+    if (checkerStatusTransaction) {
+      if (checkerStatusTransaction.status === 'CANCEL') {
+        return { status: 400, error: 'Transaction already been canceled' }
+      }
+    }
+
     // get current saldo
     getSaldoInstance = await Saldo.findOne({ user_id: userID })
     if (!getSaldoInstance) {
