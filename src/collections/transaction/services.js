@@ -20,4 +20,9 @@ const addUserTransaction = async ({ bill, userID, qrID, amount }) => {
   return transaction
 }
 
+const getTransactionDetailService = async (transactionID) => {
+  return Transaction.findOne({ transaction_id: transactionID })
+}
+
 module.exports.addUserTransaction = addUserTransaction
+module.exports.getTransactionDetailService = getTransactionDetailService
