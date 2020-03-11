@@ -6,6 +6,7 @@ const serviceTopupVaService = require('../payment_services/topUpVa')
 const serviceStaticPaymentService = require('../payment_services/static_payment/staticPayment')
 const scanPaymentStaticService = require('../payment_services/static_payment/scanPaymentStatic')
 const detailPaymentService = require('../payment_services/static_payment/detailPayment')
+const cancelStaticPaymentService = require('../payment_services/static_payment/cancelPayment')
 
 const {
   GraphQLNonNull,
@@ -61,7 +62,18 @@ const detailPayment = {
   }
 }
 
+const cancelStaticPayment = {
+  type: ResponseType,
+  args: {
+    transaction_id: { type: new GraphQLNonNull(GraphQLID) }
+  },
+  resolve (parent, args) {
+    return cancelStaticPaymentService(args.transaction_id)
+  }
+}
+
 module.exports.topupVa = topupVa
 module.exports.staticPayment = staticPayment
 module.exports.scanPaymentStatic = scanPaymentStatic
 module.exports.detailPayment = detailPayment
+module.exports.cancelStaticPayment = cancelStaticPayment

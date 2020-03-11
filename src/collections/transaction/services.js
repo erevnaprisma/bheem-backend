@@ -20,9 +20,22 @@ const addUserTransaction = async ({ bill, userID, qrID, amount }) => {
   return transaction
 }
 
-const getTransactionDetailService = async (transactionID) => {
+const getTransaction = async (transactionID) => {
   return Transaction.findOne({ transaction_id: transactionID })
 }
 
+const cancelTransaction = async (transactionID) => {
+  return Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
+}
+
+const transactionStatusPendingChecker = async (transactionID) => {
+  const res = await getTransaction(transactionID)
+  if (res) {
+    if (res.status !== 'PNDNG') throw new Error('Transaction status is not pending anymore')
+  }
+}
+
 module.exports.addUserTransaction = addUserTransaction
-module.exports.getTransactionDetailService = getTransactionDetailService
+module.exports.getTransaction = getTransaction
+module.exports.cancelTransaction = cancelTransaction
+module.exports.transactionStatusPendingChecker = transactionStatusPendingChecker

@@ -14,7 +14,7 @@ const { signUpMerchant } = require('./src/collections/merchant/graphql/mutation'
 const { createQrStatic } = require('./src/collections/qr/graphql/mutation')
 
 // Services
-const { topupVa, staticPayment, scanPaymentStatic, detailPayment } = require('./src/services/graphql/mutation')
+const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment } = require('./src/services/graphql/mutation')
 
 const {
   GraphQLObjectType,
@@ -45,6 +45,7 @@ const Mutation = new GraphQLObjectType({
     createQrStatic,
     scanPaymentStatic,
     detailPayment,
+    cancelStaticPayment,
     logout
   }
 })
