@@ -31,7 +31,7 @@ const userSignup = async (email, deviceID) => {
   const localPassword = user.password
 
   try {
-    const accessToken = await jwt.sign({ user_id: user._id }, config.get('privateKey'), { expiresIn: '30min' })
+    const accessToken = await jwt.sign({ user_id: user.user_id }, config.get('privateKey'), { expiresIn: '30min' })
 
     user = await user.save()
 
@@ -57,7 +57,6 @@ const userLogin = async (username, password, token, isLoggedInWithToken) => {
 
   const user = await User.findOne({ username })
   if (!user) return { status: 400, error: 'Invalid username or password' }
-  console.log('sini bro')
   try {
     // verified password
     await user.comparedPassword(password)
@@ -69,7 +68,7 @@ const userLogin = async (username, password, token, isLoggedInWithToken) => {
     return {
       status: 200,
       access_token: accessToken,
-      user_id: user._id,
+      user_id: user.user_id,
       success: WORD_LOGIN
     }
   } catch (err) {

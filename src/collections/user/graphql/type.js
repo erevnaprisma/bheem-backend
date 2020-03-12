@@ -42,7 +42,7 @@ const AuthType = new GraphQLObjectType({
     success: { type: GraphQLString },
     user: {
       type: UserType,
-      resolve (parent, args) {
+      async resolve (parent, args) {
         return findUser(parent.user_id)
       }
     }
