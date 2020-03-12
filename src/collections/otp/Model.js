@@ -23,6 +23,11 @@ const otpSchema = new mongoose.Schema({
     type: Number,
     max: 3,
     default: 0
+  },
+  status: {
+    type: String,
+    enum: ['ACTIVE', 'INACTIVE'],
+    default: 'ACTIVE'
   }
 })
 

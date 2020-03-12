@@ -2,6 +2,7 @@ const { sendMailVerification } = require('../../utils/services/supportServices')
 const { userChangesValidation } = require('../user/services')
 const { generateRandomNumber } = require('../../utils/services/supportServices')
 const { generateID } = require('../../utils/services/supportServices')
+const { checkerValidUser } = require('../user/services')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const Otp = require('./Model')
@@ -37,12 +38,33 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
   if (!otp) return { status: 400, error: 'Invalid otp' }
   if (!newEmail) return { status: 400, error: 'Invalid email' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
-  try {
-    const res = await Otp.findOne({ otp_number: otp })
-    console.log(res)
-    if (!res) return { status: 400, error: 'Invalid otp' }
 
-    await User.updateOne({ user_id: userID }, { email: newEmail })
+  await checkerValidUser(userID)
+  try {
+    // Check if otp is on database using otp number
+    const res = await Otp.findOne({ otp_number: otp })
+
+    if (!res) {
+      // Check otp using user id
+      const otp = await Otp.findOne({ user_id: userID })
+      if (!otp) {
+        throw new Error('Invalid otp')
+      } else {
+        if (otp.status === 'ACTIVE') {
+          if (otp.isValidLimit >= 3) {
+            await Otp.updateOne({ user_id: userID }, { status: 'INACTIVE' })
+            return { status: 400, error: 'Otp expired' }
+          }
+          await Otp.updateOne({ user_id: userID }, { isValidLimit: otp.isValidLimit + 1 })
+
+          return { status: 400, error: 'Invalid otp' }
+        } else {
+          return { status: 400, error: 'Otp expired' }
+        }
+      }
+    }
+
+    await User.updateOne({ user_id: userID }, { email: newEmail, status: 'INACTIVE' })
     return { status: 200, success: 'successfully change email' }
   } catch (err) {
     return { status: 400, error: err || 'Submit otp failed' }
