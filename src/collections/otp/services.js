@@ -49,17 +49,15 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
     if (!res) {
       // Check otp using user id
       otp = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
-      console.log(otp)
       if (!otp) {
         throw new Error('Invalid otp')
       } else {
         if (otp.status === 'ACTIVE') {
           if (otp.isValidLimit >= 3) {
-            await Otp.updateOne({ user_id: userID }, { status: 'INACTIVE' })
+            await Otp.updateOne({ user_id: userID, status: 'ACTIVE' }, { status: 'INACTIVE' })
             return { status: 400, error: 'Otp expired' }
           } else {
-            console.log('sampe sini')
-            const res = await Otp.updateOne({ user_id: userID, states: 'ACTIVE' }, { isValidLimit: otp.isValidLimit + 1 })
+            await Otp.updateOne({ user_id: userID, status: 'ACTIVE' }, { isValidLimit: otp.isValidLimit + 1 })
             return { status: 400, error: 'Invalid otp' }
           }
         } else {
