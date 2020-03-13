@@ -1,6 +1,7 @@
 const User = require('../../collections/user/Model')
 
 const findUser = (args) => {
+  if (!args) return
   return User.findOne({ user_id: args })
 }
 

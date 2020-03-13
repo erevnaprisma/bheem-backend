@@ -56,14 +56,13 @@ const userLogin = async (username, password, token, isLoggedInWithToken) => {
   if (!username || !password) return { status: 400, error: 'Username or Password can\'t be empty' }
 
   const user = await User.findOne({ username })
-  if (!user) return { status: 400, error: 'Invalid username or password' }
+  if (!user) return { status: 400, error: 'Invalid username or password', user: null }
   try {
     // verified password
     await user.comparedPassword(password)
 
     // generate access token
     const accessToken = await jwt.sign({ user_id: user._id }, config.get('privateKey'), { expiresIn: '30min' })
-
     // login with username & password
     return {
       status: 200,

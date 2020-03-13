@@ -21,8 +21,8 @@ const sendOTPService = async ({ userID, password, newEmail }) => {
       otp_number: otp,
       user_id: userID,
       new_email: newEmail,
-      created_at: new Date(),
-      updated_at: new Date()
+      created_at: Date.now(),
+      updated_at: Date.now()
     })
 
     await res.save()
@@ -39,6 +39,8 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
   if (!newEmail) return { status: 400, error: 'Invalid email' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
 
+  var otp
+
   await checkerValidUser(userID)
   try {
     // Check if otp is on database using otp number
@@ -46,7 +48,8 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
 
     if (!res) {
       // Check otp using user id
-      const otp = await Otp.findOne({ user_id: userID })
+      otp = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
+      console.log(otp)
       if (!otp) {
         throw new Error('Invalid otp')
       } else {
@@ -54,15 +57,18 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
           if (otp.isValidLimit >= 3) {
             await Otp.updateOne({ user_id: userID }, { status: 'INACTIVE' })
             return { status: 400, error: 'Otp expired' }
+          } else {
+            console.log('sampe sini')
+            const res = await Otp.updateOne({ user_id: userID, states: 'ACTIVE' }, { isValidLimit: otp.isValidLimit + 1 })
+            return { status: 400, error: 'Invalid otp' }
           }
-          await Otp.updateOne({ user_id: userID }, { isValidLimit: otp.isValidLimit + 1 })
-
-          return { status: 400, error: 'Invalid otp' }
         } else {
           return { status: 400, error: 'Otp expired' }
         }
       }
     }
+
+    console.log(res.created_at)
 
     await User.updateOne({ user_id: userID }, { email: newEmail, status: 'INACTIVE' })
     return { status: 200, success: 'successfully change email' }
