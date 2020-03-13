@@ -21,8 +21,8 @@ const sendOTPService = async ({ userID, password, newEmail }) => {
       otp_number: otp,
       user_id: userID,
       new_email: newEmail,
-      created_at: Date.now(),
-      updated_at: Date.now()
+      created_at: new Date(),
+      updated_at: new Date()
     })
 
     await res.save()
@@ -40,6 +40,7 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
   if (!userID) return { status: 400, error: 'Invalid user id' }
 
   var otp
+  const maximumTime = 900000
 
   await checkerValidUser(userID)
   try {
@@ -65,10 +66,17 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
         }
       }
     }
+    // Check if otp above time limit
+    const getOtpTime = res.created_at.getTime()
+    const maxDate = getOtpTime + maximumTime
 
-    console.log(res.created_at)
+    if (Date.now() > maxDate) {
+      await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
+      return { status: 400, error: 'Otp expired'}
+    }
 
-    await User.updateOne({ user_id: userID }, { email: newEmail, status: 'INACTIVE' })
+    await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
+    await User.updateOne({ user_id: userID }, { email: newEmail })
     return { status: 200, success: 'successfully change email' }
   } catch (err) {
     return { status: 400, error: err || 'Submit otp failed' }
