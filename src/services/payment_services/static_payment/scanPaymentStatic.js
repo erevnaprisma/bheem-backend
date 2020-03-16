@@ -15,7 +15,7 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID }) => {
 
   try {
     // Validate Merchant ID
-    await checkerValidMerchant({ MerhchantID: merchantID })
+    await checkerValidMerchant(merchantID)
 
     // Validate QR Code ID
     await checkerValidQr({ QrID: qrID })

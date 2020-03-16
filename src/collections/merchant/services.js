@@ -34,10 +34,11 @@ const addMerchantAccount = async (email, deviceID) => {
   }
 }
 
-const checkerValidMerchant = async ({ MerhchantID }) => {
-  if (!MerhchantID) throw new Error('Invalid Merchant ID')
+const checkerValidMerchant = async (MerchantID) => {
+  console.log(MerchantID)
+  if (!MerchantID) throw new Error('Invalid Merchant ID')
 
-  const res = await Merchant.findOne({ merchant_id: MerhchantID })
+  const res = await Merchant.findOne({ merchant_id: MerchantID })
   if (!res) throw new Error('Invalid Merchant ID')
 }
 

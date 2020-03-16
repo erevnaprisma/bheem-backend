@@ -22,5 +22,13 @@ const updateBillingAmount = () => {
   console.log('update')
 }
 
+const checkerValidBill = async (billID) => {
+  if (!billID) throw new Error('Invalid Bill ID')
+
+  const res = await Billing.findOne({ bill_id: billID })
+  if (!res) throw new Error('Invalid Bill ID')
+}
+
 module.exports.addBillingService = addBillingService
 module.exports.updateBillingAmount = updateBillingAmount
+module.exports.checkerValidBill = checkerValidBill

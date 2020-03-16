@@ -10,15 +10,23 @@ const Transaction = require('../../../collections/transaction/Model')
 const Billing = require('../../../collections/billing/Model')
 // Services
 const { addUserPayment } = require('../../../collections/emoney/services')
+const { checkerValidMerchant } = require('../../../collections/merchant/services')
+const { checkerValidUser } = require('../../../collections/user/services')
+const { checkerValidTransaction } = require('../../../collections/transaction/services')
+const { checkerValidBill } = require('../../../collections/billing/services')
 
 let finalAmount
 let getSaldoInstance
 
 const staticPayment = async (merchantID, amount, userID, transactionID, billID) => {
-  if (!merchantID) return { status: 400, error: 'Invalid merchant id' }
   if (!amount || amount < 0) return { status: 400, error: 'Invalid amount' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
   if (!transactionID) return { status: 400, error: 'Invalid transaction id' }
+
+  await checkerValidMerchant(merchantID)
+  await checkerValidUser(userID)
+  await checkerValidTransaction(transactionID)
+  await checkerValidBill(billID)
 
   try {
     const checkerStatusTransaction = await Transaction.findOne({ transaction_id: transactionID })

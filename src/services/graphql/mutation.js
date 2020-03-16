@@ -18,7 +18,7 @@ const {
 const topupVa = {
   type: ResponseType,
   args: {
-    user_id: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
     amount: { type: new GraphQLNonNull(GraphQLInt) }
   },
   resolve (parent, args) {

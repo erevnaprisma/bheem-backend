@@ -36,7 +36,15 @@ const transactionStatusPendingChecker = async (transactionID) => {
   }
 }
 
+const checkerValidTransaction = async (transactionID) => {
+  if (!transactionID) throw new Error('Invalid Transaction ID')
+
+  const res = await Transaction.findOne({ transaction_id: transactionID })
+  if (!res) throw new Error('Invalid Transaction ID')
+}
+
 module.exports.addUserTransaction = addUserTransaction
 module.exports.getTransaction = getTransaction
 module.exports.cancelTransaction = cancelTransaction
 module.exports.transactionStatusPendingChecker = transactionStatusPendingChecker
+module.exports.checkerValidTransaction = checkerValidTransaction

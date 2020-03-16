@@ -193,6 +193,15 @@ const checkerValidUser = async (userID) => {
   if (!res) throw new Error('Invalid user id')
 }
 
+const checkValidUserUsingEmail = async (email) => {
+  if (!email) throw new Error('Invalid email')
+
+  const res = await User.findOne({ email })
+  if (!res) throw new Error('Invalid email')
+
+  return res
+}
+
 const userChangesValidation = async ({ userID, password }) => {
   return new Promise((resolve, reject) => {
     reusableFindUserByID(userID)
@@ -217,3 +226,4 @@ module.exports.getUserProfile = getUserProfile
 module.exports.serviceLogout = serviceLogout
 module.exports.checkerValidUser = checkerValidUser
 module.exports.userChangesValidation = userChangesValidation
+module.exports.checkValidUserUsingEmail = checkValidUserUsingEmail
