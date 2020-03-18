@@ -38,7 +38,7 @@ const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     signUp,
-    changeUserEmail,
+    // changeUserEmail,
     changeUserName,
     changeUserPassword,
     changeUserProfile,

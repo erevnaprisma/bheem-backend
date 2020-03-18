@@ -75,29 +75,32 @@ const userLogin = async (username, password, token, isLoggedInWithToken) => {
   }
 }
 
-const changeEmail = async (newEmail, userID, password, token = null) => {
-  if (!newEmail || !password) return { status: 400, error: 'Must provide email or password' }
+// const changeEmail = async (newEmail, userID, password, token = null) => {
+//   if (!newEmail || !password) return { status: 400, error: 'Must provide email or password' }
 
-  if (!userID) return { status: 400, error: 'User ID not found' }
+//   if (!userID) return { status: 400, error: 'User ID not found' }
 
-  const emailChecker = await User.findOne({ email: newEmail })
-  if (emailChecker) return { status: 400, error: 'Email already used' }
+//   const emailChecker = await User.findOne({ email: newEmail })
+//   if (emailChecker) return { status: 400, error: 'Email already used' }
 
-  const { error } = User.validation({ email: newEmail })
-  if (error) return { status: 400, error: error.details[0].message }
+//   await checkerValidUser(userID)
+//   console.log('sampai sini')
 
-  try {
-    const user = await reusableFindUserByID(userID)
+//   const { error } = User.validation({ email: newEmail })
+//   if (error) return { status: 400, error: error.details[0].message }
 
-    await user.comparedPassword(password)
+//   try {
+//     const user = await reusableFindUserByID(userID)
 
-    await User.updateOne({ user_id: userID }, { email: newEmail }).catch(() => { errorHandling('Failed updating user') })
+//     await user.comparedPassword(password)
 
-    return { status: 200, success: WORD_CHANGE_EMAIL, new_token: token }
-  } catch (err) {
-    return { status: 400, error: err || 'Update failed' }
-  }
-}
+//     await User.updateOne({ user_id: userID }, { email: newEmail }).catch(() => { errorHandling('Failed updating user') })
+
+//     return { status: 200, success: WORD_CHANGE_EMAIL, new_token: token }
+//   } catch (err) {
+//     return { status: 400, error: err || 'Update failed' }
+//   }
+// }
 
 const changePassword = async (userID, newPassword, password, token = null) => {
   if (!newPassword || !password) return { status: 400, error: 'Must provide new password or old password' }
@@ -125,6 +128,8 @@ const changeName = async (userID, newUsername, password, token = null) => {
   if (!newUsername || !password) return { status: 400, error: 'Must provide username or password' }
 
   if (!userID) return { status: 400, error: 'User id not found' }
+
+  await checkerValidUser(userID)
 
   const usernameChecker = await User.findOne({ username: newUsername })
   if (usernameChecker) return { status: 400, error: 'Username already used' }
@@ -218,7 +223,7 @@ const userChangesValidation = async ({ userID, password }) => {
 
 module.exports.userSignup = userSignup
 module.exports.userLogin = userLogin
-module.exports.changeEmail = changeEmail
+// module.exports.changeEmail = changeEmail
 module.exports.changePassword = changePassword
 module.exports.changeName = changeName
 module.exports.changeProfile = changeProfile

@@ -1,8 +1,6 @@
 const mongoose = require('mongoose')
 const Joi = require('@hapi/joi')
 
-const User = require('../user/Model')
-
 const saldoSchema = new mongoose.Schema({
   saldo_id: {
     type: String
@@ -14,7 +12,7 @@ const saldoSchema = new mongoose.Schema({
   },
   user_id: {
     type: String,
-    ref: User
+    ref: 'User'
   },
   created_at: {
     type: String

@@ -9,6 +9,11 @@ const Otp = require('./Model')
 const User = require('../user/Model')
 
 const sendOTPService = async ({ userID, password, newEmail }) => {
+  await checkerValidUser(userID)
+
+  const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
+  if (res) return { status: 400, error: 'We already sent your otp, please do check your email'}
+
   try {
     await userChangesValidation({ password, userID: userID })
 
@@ -34,12 +39,13 @@ const sendOTPService = async ({ userID, password, newEmail }) => {
 }
 
 const submitOtpService = async ({ otp, newEmail, userID }) => {
-  console.log('otp', typeof otp)
   if (!otp) return { status: 400, error: 'Invalid otp' }
   if (!newEmail) return { status: 400, error: 'Invalid email' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
 
-  var otp
+  await checkerValidUser(userID)
+
+  var otp 
   const maximumTime = 900000
 
   await checkerValidUser(userID)

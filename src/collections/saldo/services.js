@@ -1,8 +1,11 @@
 const Saldo = require('./Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
+const { checkerValidUser } = require('../user/services')
 
 const createSaldo = async (userID, finalAmount) => {
+  await checkerValidUser(userID)
+
   const { error } = Saldo.validation({ user_id: userID, saldo: finalAmount })
   if (error) return { status: 400, error: error.details[0].message }
   var saldo

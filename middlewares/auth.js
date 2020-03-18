@@ -48,7 +48,7 @@ const authMiddleware = {
   Mutation: {
     changeUserName: token,
     changeUserPassword: token,
-    changeUserEmail: token,
+    // changeUserEmail: token,
     changeUserProfile: token
     // signUp: isAuth
     // login: isAuth
