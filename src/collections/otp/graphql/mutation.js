@@ -28,7 +28,7 @@ const submitOtp = {
     user_id: { type: new GraphQLNonNull(GraphQLID) }
   },
   resolve (parent, args) {
-    return submitOtpService({ newEmail: args.new_email, otp: args.otp, userID: args.user_id })
+    return submitOtpService({ email: args.new_email, otp: args.otp, userID: args.user_id })
   }
 }
 
