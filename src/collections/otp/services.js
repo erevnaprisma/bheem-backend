@@ -24,18 +24,21 @@ const sendOTPService = async ({ userID, password, email }) => {
   if (emailAlreadyUsed) return { status: 400, error: 'Email already used' }
 
   const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
-  if (res) return { status: 400, error: 'We already sent your otp, please do check your email'}
+  if (res) {
+    const res2 = await expireOtpChecker({ getOtpTime: res.created_at.getTime(), otp: res.otp })
+    if (res2) return { status: 400, error: 'We already sent your otp, please do check your email' }
+  }
 
   try {
     await userChangesValidation({ password, userID: userID })
 
     const otp = generateRandomNumber(6)
-
-    await sendMailVerification({ email: email, type: 'otp', otp })
+    const otpRefNum = generateRandomNumber(6)
 
     const res = await new Otp({
       otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
       otp_number: otp,
+      otp_reference_number: otpRefNum,
       user_id: userID,
       new_email: email,
       created_at: new Date(),
@@ -44,13 +47,15 @@ const sendOTPService = async ({ userID, password, email }) => {
 
     await res.save()
 
-    return { status: 200, success: 'Please do check your email' }
+    await sendMailVerification({ email: email, type: 'otp', otp })
+
+    return { status: 200, success: 'Please do check your email', otpRefNum: res.otp_reference_number }
   } catch (err) {
     return { status: 400, error: err || 'Otp failed' }
   }
 }
 
-const submitOtpService = async ({ otp, email, userID }) => {
+const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
   if (!otp) return { status: 400, error: 'Invalid otp' }
   if (!email) return { status: 400, error: 'Invalid email' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
@@ -58,12 +63,12 @@ const submitOtpService = async ({ otp, email, userID }) => {
   await checkerValidUser(userID)
 
   var otp
-  const maximumTime = 900000
 
-  await checkerValidUser(userID)
   try {
     // Check if otp is on database using otp number
     const res = await Otp.findOne({ otp_number: otp })
+
+    if (otpRefNum !== res.otp_reference_number) return { status: 400, error: 'Otp reference number is invalid'}
 
     if (!res) {
       // Check otp using user id
@@ -84,14 +89,14 @@ const submitOtpService = async ({ otp, email, userID }) => {
         }
       }
     }
-    // Check if otp above time limit
-    const getOtpTime = res.created_at.getTime()
-    const maxDate = getOtpTime + maximumTime
 
-    if (Date.now() > maxDate) {
-      await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
-      return { status: 400, error: 'Otp expired'}
-    }
+    // Check if otp already expired or not
+    const otpCreateAt = res.created_at.getTime()
+    await expireOtpChecker({ getOtpTime: otpCreateAt, otp })
+
+    // Check if otp above time limit
+    // const getOtpTime = res.created_at.getTime()
+    // const maxDate = getOtpTime + maximumTime
 
     await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
     await User.updateOne({ user_id: userID }, { email: email })
@@ -99,6 +104,22 @@ const submitOtpService = async ({ otp, email, userID }) => {
   } catch (err) {
     return { status: 400, error: err || 'Submit otp failed' }
   }
+}
+
+const expireOtpChecker = async ({ getOtpTime, otp }) => {
+  const maximumTime = 900000
+
+  // Check if otp above time limit
+  const maxDate = getOtpTime + maximumTime
+  console.log('date now= ' + Date.now())
+  console.log('max date= ' + maxDate)
+
+  console.log('benar ato salah jamnya= ' + Date.now() > maxDate)
+  if (Date.now() > maxDate) {
+    await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
+    throw new Error('Otp expired')
+  }
+  return true
 }
 
 module.exports.sendOTPService = sendOTPService

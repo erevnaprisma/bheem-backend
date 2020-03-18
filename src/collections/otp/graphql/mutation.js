@@ -2,7 +2,8 @@ const graphql = require('graphql')
 const {
   GraphQLNonNull,
   GraphQLString,
-  GraphQLID
+  GraphQLID,
+  GraphQLInt
 } = graphql
 
 const { OtpResponseType } = require('./type')
@@ -23,12 +24,13 @@ const sendOtp = {
 const submitOtp = {
   type: OtpResponseType,
   args: {
+    otpRefNum: { type: new GraphQLNonNull(GraphQLString) },
     otp: { type: new GraphQLNonNull(GraphQLString) },
     new_email: { type: new GraphQLNonNull(GraphQLString) },
     user_id: { type: new GraphQLNonNull(GraphQLID) }
   },
   resolve (parent, args) {
-    return submitOtpService({ email: args.new_email, otp: args.otp, userID: args.user_id })
+    return submitOtpService({ email: args.new_email, otp: args.otp, userID: args.user_id, otpRefNum: args.otpRefNum })
   }
 }
 

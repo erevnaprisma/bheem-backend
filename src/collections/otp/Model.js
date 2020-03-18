@@ -8,6 +8,10 @@ const otpSchema = new mongoose.Schema({
   otp_number: {
     type: String
   },
+  otp_reference_number: {
+    type: String,
+    min: 5
+  },
   new_email: {
     type: String
   },
