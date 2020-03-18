@@ -16,7 +16,7 @@ const sendOtp = {
     user_id: { type: new GraphQLNonNull(GraphQLID) }
   },
   resolve (parent, args) {
-    return sendOTPService({ password: args.password, newEmail: args.new_email, userID: args.user_id })
+    return sendOTPService({ password: args.password, email: args.new_email, userID: args.user_id })
   }
 }
 

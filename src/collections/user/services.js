@@ -2,10 +2,9 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const User = require('./Model')
-const Saldo = require('../saldo/Model')
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
 const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = require('../../utils/services/supportServices')
-const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_EMAIL, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
+const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
 const { generateID } = require('../../utils/services/supportServices')
@@ -105,13 +104,13 @@ const userLogin = async (username, password, token, isLoggedInWithToken) => {
 const changePassword = async (userID, newPassword, password, token = null) => {
   if (!newPassword || !password) return { status: 400, error: 'Must provide new password or old password' }
 
-  if (!userID) return { status: 400, error: 'user id not found' }
+  if (!userID) return { status: 400, error: 'Invalid user id' }
 
   const { error } = User.validation({ password: newPassword })
   if (error) return { status: 400, error: error.details[0].message }
 
   try {
-    const user = await reusableFindUserByID(userID)
+    const user = await checkerValidUser(userID)
 
     await user.comparedPassword(password)
 
@@ -127,9 +126,7 @@ const changePassword = async (userID, newPassword, password, token = null) => {
 const changeName = async (userID, newUsername, password, token = null) => {
   if (!newUsername || !password) return { status: 400, error: 'Must provide username or password' }
 
-  if (!userID) return { status: 400, error: 'User id not found' }
-
-  await checkerValidUser(userID)
+  if (!userID) return { status: 400, error: 'Invalid user id' }
 
   const usernameChecker = await User.findOne({ username: newUsername })
   if (usernameChecker) return { status: 400, error: 'Username already used' }
@@ -138,7 +135,7 @@ const changeName = async (userID, newUsername, password, token = null) => {
   if (error) return { status: 400, error: error.details[0].message }
 
   try {
-    const user = await reusableFindUserByID(userID)
+    const user = await checkerValidUser(userID)
 
     await user.comparedPassword(password)
 
@@ -151,14 +148,13 @@ const changeName = async (userID, newUsername, password, token = null) => {
 }
 
 const changeProfile = async args => {
-  if (!args.user_id) return { status: 400, error: 'User ID not found' }
+  if (!args.user_id) return { status: 400, error: 'Invalid user id' }
 
-  if (!args.password) return { status: 400, error: 'Must provide password' }
+  if (!args.password) return { status: 400, error: 'Invalid password' }
 
+  var user = await checkerValidUser(args.user_id)
   try {
     await User.where({ user_id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address } }).catch(() => { errorHandling('Failed updating user profile') })
-
-    const user = await reusableFindUserByID(args.user_id)
 
     await user.comparedPassword(args.password)
 
@@ -168,15 +164,15 @@ const changeProfile = async args => {
   }
 }
 
-const getUserProfile = async (args) => {
-  if (!args) return { status: 400, error: 'Must provide user' }
+const getUserProfile = async (userID) => {
+  if (!userID) return { status: 400, error: 'Invalid user id' }
+
+  await checkerValidUser(userID)
 
   try {
-    await reusableFindUserByID(args)
-
-    return { user_id: args, success: 'Success', status: 200 }
+    return { user_id: userID, success: 'Success', status: 200 }
   } catch (err) {
-    return { status: 400, error: 'User not found' }
+    return { status: 400, error: err || 'User not found' }
   }
 }
 
@@ -196,6 +192,8 @@ const checkerValidUser = async (userID) => {
 
   const res = await User.findOne({ user_id: userID })
   if (!res) throw new Error('Invalid user id')
+
+  return res
 }
 
 const checkValidUserUsingEmail = async (email) => {

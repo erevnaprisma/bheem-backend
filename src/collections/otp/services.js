@@ -8,8 +8,20 @@ const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const Otp = require('./Model')
 const User = require('../user/Model')
 
-const sendOTPService = async ({ userID, password, newEmail }) => {
+const sendOTPService = async ({ userID, password, email }) => {
+  if (!password) return { status: 400, error: 'Invalid password' }
+  if (!email) return { status: 400, error: 'Invalid email' }
+
+  // Check email format
+  const { error } = Otp.validation({ email })
+  if (error) return { status: 400, error: error.details[0].message }
+
+  // Check if user valid
   await checkerValidUser(userID)
+
+  // Check if email already exist
+  const emailAlreadyUsed = await User.findOne({ email: email })
+  if (emailAlreadyUsed) return { status: 400, error: 'Email already used' }
 
   const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
   if (res) return { status: 400, error: 'We already sent your otp, please do check your email'}
@@ -19,13 +31,13 @@ const sendOTPService = async ({ userID, password, newEmail }) => {
 
     const otp = generateRandomNumber(6)
 
-    await sendMailVerification({ email: newEmail, type: 'otp', otp })
+    await sendMailVerification({ email: email, type: 'otp', otp })
 
     const res = await new Otp({
       otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
       otp_number: otp,
       user_id: userID,
-      new_email: newEmail,
+      new_email: email,
       created_at: new Date(),
       updated_at: new Date()
     })
@@ -38,14 +50,14 @@ const sendOTPService = async ({ userID, password, newEmail }) => {
   }
 }
 
-const submitOtpService = async ({ otp, newEmail, userID }) => {
+const submitOtpService = async ({ otp, email, userID }) => {
   if (!otp) return { status: 400, error: 'Invalid otp' }
-  if (!newEmail) return { status: 400, error: 'Invalid email' }
+  if (!email) return { status: 400, error: 'Invalid email' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
 
   await checkerValidUser(userID)
 
-  var otp 
+  var otp
   const maximumTime = 900000
 
   await checkerValidUser(userID)
@@ -82,7 +94,7 @@ const submitOtpService = async ({ otp, newEmail, userID }) => {
     }
 
     await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
-    await User.updateOne({ user_id: userID }, { email: newEmail })
+    await User.updateOne({ user_id: userID }, { email: email })
     return { status: 200, success: 'successfully change email' }
   } catch (err) {
     return { status: 400, error: err || 'Submit otp failed' }

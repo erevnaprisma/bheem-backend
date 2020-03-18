@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Joi = require('joi')
 
 const otpSchema = new mongoose.Schema({
   otp_id: {
@@ -30,5 +31,14 @@ const otpSchema = new mongoose.Schema({
     default: 'ACTIVE'
   }
 })
+
+otpSchema.statics.validation = (args) => {
+  const schema = Joi.object({
+    user_id: Joi.string(),
+    email: Joi.string().email()
+  })
+
+  return schema.validate(args)
+}
 
 module.exports = mongoose.model('OTP', otpSchema)
