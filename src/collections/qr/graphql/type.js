@@ -8,6 +8,7 @@ const {
 const QrResponseType = new GraphQLObjectType({
   name: 'QrResponse',
   fields: () => ({
+    qr_code: { type: GraphQLString },
     success: { type: GraphQLString },
     status: { type: GraphQLID },
     error: { type: GraphQLString }

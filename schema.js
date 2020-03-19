@@ -11,7 +11,7 @@ const { allTransaction } = require('./src/collections/emoney/graphql/query')
 const { signUpMerchant } = require('./src/collections/merchant/graphql/mutation')
 
 // Qr
-const { createQrStatic } = require('./src/collections/qr/graphql/mutation')
+const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutation')
 
 // Otp
 const { sendOtp, submitOtp } = require('./src/collections/otp/graphql/mutation')
@@ -51,6 +51,7 @@ const Mutation = new GraphQLObjectType({
     cancelStaticPayment,
     sendOtp,
     submitOtp,
+    testing,
     logout
   }
 })

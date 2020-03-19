@@ -2,10 +2,11 @@ const graphql = require('graphql')
 
 const {
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLString
 } = graphql
 
-const { createQrStaticService } = require('../services')
+const { createQrStaticService, testingService } = require('../services')
 const { QrResponseType } = require('./type')
 
 const createQrStatic = {
@@ -18,4 +19,15 @@ const createQrStatic = {
   }
 }
 
+const testing = {
+  type: QrResponseType,
+  args: {
+    content: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return testingService(args.content)
+  }
+}
+
 module.exports.createQrStatic = createQrStatic
+module.exports.testing = testing

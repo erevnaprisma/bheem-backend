@@ -7,6 +7,10 @@ const qrSchema = new mongoose.Schema({
   qr_id: {
     type: String
   },
+  qr_code: {
+    type: Object,
+    default: null
+  },
   created_at: {
     type: String,
     default: new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
