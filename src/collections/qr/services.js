@@ -1,10 +1,10 @@
 const Qr = require('./Model')
-const QRCode = require('qrcode')
+const QRCode = require('qr-image')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const { checkerValidMerchant } = require('../merchant/services')
 
-const createQrStaticService = async (merchantID) => {
+const createQrStaticService = async (merchantID, context) => {
   const type = 'STATIC'
   const status = 'ACTIVE'
 
@@ -19,18 +19,17 @@ const createQrStaticService = async (merchantID) => {
       status,
       merchant_id: merchantID
     })
-
     // create a png qrcode
-    const qrCode = await generateQrPng(qr)
+    const qrCode = await generateQrPng(merchantID)
 
     // save created qrcode to collection
-    qr.qr_code = qrCode
+    qr.qr_value = { merchant_id: merchantID }
 
     await qr.save()
 
     return { status: 200, error: 'Successfully creating QR Code', qr_code: qrCode }
   } catch (err) {
-    return { status: 400, error: err }
+    return { status: 400, error: 'Failed create QR Code' }
   }
 }
 
@@ -56,10 +55,10 @@ const checkerValidQr = async ({ QrID }) => {
   if (!res) throw new Error('Invalid QR Code')
 }
 
-const generateQrPng = async (data) => {
-  const qr = await QRCode.toDataURL(JSON.stringify(data))
-    .catch((err) => new Error(err))
-  return qr
+const generateQrPng = async (merchantID) => {
+  const a = await QRCode.image(merchantID, { type: 'png', size: 10, margin: 0 })
+  console.log('a=', JSON.stringify(a))
+  return JSON.stringify(a)
 }
 
 module.exports.createQrDynamic = createQrDynamic

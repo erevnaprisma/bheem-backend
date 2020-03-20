@@ -24,8 +24,8 @@ const testing = {
   args: {
     content: { type: new GraphQLNonNull(GraphQLString) }
   },
-  resolve (parent, args) {
-    return testingService(args.content)
+  resolve (parent, args, context) {
+    return testingService(args.content, context)
   }
 }
 

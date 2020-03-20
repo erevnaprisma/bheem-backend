@@ -7,7 +7,7 @@ const qrSchema = new mongoose.Schema({
   qr_id: {
     type: String
   },
-  qr_code: {
+  qr_value: {
     type: Object,
     default: null
   },
