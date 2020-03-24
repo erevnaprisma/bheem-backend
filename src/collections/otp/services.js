@@ -68,9 +68,11 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
     // Check if otp is on database using otp number
     const res = await Otp.findOne({ otp_number: otp })
 
-    if (otpRefNum !== res.otp_reference_number) return { status: 400, error: 'Otp reference number is invalid'}
-
-    if (!res) {
+    if (res) {
+      if (res.status === 'INACTIVE') return { status: 400, error: 'Otp expired' }
+      if (res.new_email !== email) return { status: 400, error: 'New email not match' }
+      if (otpRefNum !== res.otp_reference_number) return { status: 400, error: 'Otp reference number is invalid' }
+    } else if (!res) {
       // Check otp using user id
       otp = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
       if (!otp) {

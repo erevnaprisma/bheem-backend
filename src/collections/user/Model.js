@@ -80,16 +80,17 @@ userSchema.pre('save', function (next) {
 })
 
 userSchema.statics.validation = (args) => {
+  var reg = /^[a-z][a-z.\s-]{1,255}$/i
   const schema = Joi.object({
     username: Joi.string().min(5).max(25),
-    full_name: Joi.string().min(6).max(40),
+    full_name: Joi.string().min(6).max(40).pattern(new RegExp(reg)),
     email: Joi.string().email(),
     password: Joi.string().min(5).max(15),
     device_id: Joi.string().min(2),
-    first_name: Joi.string().min(3).max(14),
-    last_name: Joi.string().min(3).max(14),
-    nickname: Joi.string().min(3).max(14),
-    address: Joi.string().min(6).max(35)
+    first_name: Joi.string().min(3).max(14).pattern(new RegExp(reg)),
+    last_name: Joi.string().min(3).max(14).pattern(new RegExp(reg)),
+    nickname: Joi.string().min(3).max(14).pattern(new RegExp(reg)),
+    address: Joi.string().min(6).max(35).pattern(new RegExp(reg))
   })
 
   return schema.validate(args)

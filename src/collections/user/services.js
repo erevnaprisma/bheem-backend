@@ -148,13 +148,25 @@ const changeName = async (userID, newUsername, password, token = null) => {
 }
 
 const changeProfile = async args => {
-  if (!args.user_id) return { status: 400, error: 'Invalid user id' }
+  const { user_id: userID, first_name: firstName, last_name: lastName, nickname, full_name: fullName, address, password } = args
+  if (!userID) return { status: 400, error: 'Invalid user_id'}
+  // !firstName ? { status: 400, error: 'Invalid user_id'} : true
+  // !lastName ? { status: 400, error: 'Invalid user_id'} : true
+  // !nickname ? { status: 400, error: 'Invalid user_id'} : true
+  // !fullName ? { status: 400, error: 'Invalid user_id'} : true
+  // !address ? { status: 400, error: 'Invalid user_id'} : true
 
-  if (!args.password) return { status: 400, error: 'Invalid password' }
+  if (!userID) return { status: 400, error: 'Invalid user id' }
 
-  var user = await checkerValidUser(args.user_id)
+  if (!password) return { status: 400, error: 'Invalid password' }
+
+  var user = await checkerValidUser(userID)
+
+  const { error } = await User.validation({ first_name: firstName, last_name: lastName, nickname, full_name: fullName, address })
+  if (error) return { status: 400, error: error.details[0].message }
+
   try {
-    await User.where({ user_id: args.user_id }).update({ $set: { first_name: args.first_name, last_name: args.last_name, nickname: args.nickname, full_name: args.full_name, address: args.address } }).catch(() => { errorHandling('Failed updating user profile') })
+    await User.where({ user_id: userID }).update({ $set: { first_name: firstName, last_name: lastName, nickname: nickname, full_name: fullName, address: address } }).catch(() => { errorHandling('Failed updating user profile') })
 
     await user.comparedPassword(args.password)
 
