@@ -10,6 +10,9 @@ const addMerchantAccount = async (email, deviceID) => {
   const { error } = Merchant.validation({ email, device_id: deviceID })
   if (error) return { status: 400, error: error.details[0].message }
 
+  const checkerValidEmail = await Merchant.findOne({ email })
+  if (!checkerValidEmail) return { status: 400, error: 'Email already used' }
+
   let user = await new Merchant({
     merchant_id: generateID(RANDOM_STRING_FOR_CONCAT),
     email,

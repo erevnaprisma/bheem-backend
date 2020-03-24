@@ -22,7 +22,10 @@ const addUserTransaction = async ({ bill, userID, qrID, amount, merchantID }) =>
 }
 
 const getTransaction = async (transactionID) => {
-  return Transaction.findOne({ transaction_id: transactionID })
+  const transaction = await Transaction.findOne({ transaction_id: transactionID })
+  if (!transaction) throw new Error('Invalid Transaction Id')
+
+  return transaction
 }
 
 const cancelTransaction = async (transactionID) => {
