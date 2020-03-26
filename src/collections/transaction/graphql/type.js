@@ -5,7 +5,8 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLID,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLList
 } = graphql
 
 const TransactionStatusType = new GraphQLEnumType({

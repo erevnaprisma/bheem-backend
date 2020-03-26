@@ -1,12 +1,16 @@
 const graphql = require('graphql')
 
+// type
 const { ResponseType, StaticPaymentScanType } = require('./type')
-const { TransactionDetailType } = require('./type')
+const { TransactionDetailType, TransactionHistoryType } = require('./type')
+
+// service
 const serviceTopupVaService = require('../payment_services/topUpVa')
 const serviceStaticPaymentService = require('../payment_services/static_payment/staticPayment')
 const scanPaymentStaticService = require('../payment_services/static_payment/scanPaymentStatic')
 const detailPaymentService = require('../payment_services/static_payment/detailPayment')
 const cancelStaticPaymentService = require('../payment_services/static_payment/cancelPayment')
+const transactionHistoryService = require('../payment_services/transactionHistory')
 
 const {
   GraphQLNonNull,
@@ -83,9 +87,21 @@ const cancelStaticPayment = {
   }
 }
 
+const transactionHistory = {
+  type: TransactionHistoryType,
+  args: {
+    user_id: { type: new GraphQLNonNull(GraphQLID) }
+  },
+  resolve (parent, args) {
+    console.log(args.user_id)
+    return transactionHistoryService(args.user_id)
+  }
+}
+
 module.exports.topupVa = topupVa
 module.exports.staticPayment = staticPayment
 module.exports.scanPaymentStatic = scanPaymentStatic
 module.exports.detailPayment = detailPayment
 module.exports.cancelStaticPayment = cancelStaticPayment
 module.exports.transactionReceipt = transactionReceipt
+module.exports.transactionHistory = transactionHistory

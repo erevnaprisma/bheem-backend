@@ -5,7 +5,8 @@ const { TransactionType } = require('../../collections/transaction/graphql/type'
 const {
   GraphQLString,
   GraphQLInt,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLList
 } = graphql
 
 const ResponseType = new GraphQLObjectType({
@@ -39,6 +40,17 @@ const TransactionDetailType = new GraphQLObjectType({
   })
 })
 
+const TransactionHistoryType = new GraphQLObjectType({
+  name: 'TransactionHistoryResponse',
+  fields: () => ({
+    status: { type: GraphQLInt },
+    success: { type: GraphQLString },
+    error: { type: GraphQLString },
+    transaction_history: { type: GraphQLList(TransactionType) }
+  })
+})
+
 module.exports.ResponseType = ResponseType
 module.exports.StaticPaymentScanType = StaticPaymentScanType
 module.exports.TransactionDetailType = TransactionDetailType
+module.exports.TransactionHistoryType = TransactionHistoryType

@@ -17,7 +17,7 @@ const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutati
 const { sendOtp, submitOtp } = require('./src/collections/otp/graphql/mutation')
 
 // Services
-const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt } = require('./src/services/graphql/mutation')
+const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt, transactionHistory } = require('./src/services/graphql/mutation')
 
 const {
   GraphQLObjectType,
@@ -53,6 +53,7 @@ const Mutation = new GraphQLObjectType({
     submitOtp,
     testing,
     transactionReceipt,
+    transactionHistory,
     logout
   }
 })
