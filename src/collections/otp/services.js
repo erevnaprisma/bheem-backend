@@ -65,7 +65,12 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
 
   try {
     // Check if otp is on database using otp number
-    const res = await Otp.findOne({ otp_number: otp })
+    let res = await Otp.findOne({ otp_number: otp })
+    if (res) {
+      if (res.isValidLimit === 3) {
+        res = null
+      }
+    }
 
     if (res) {
       if (res.status === 'INACTIVE') return { status: 400, error: 'Otp already expired' }
