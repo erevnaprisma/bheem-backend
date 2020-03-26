@@ -25,10 +25,9 @@ const sendOTPService = async ({ userID, password, email }) => {
 
   const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
   if (res) {
-    const res2 = await expireOtpChecker({ getOtpTime: res.created_at.getTime(), otp: res.otp })
+    const res2 = await expireOtpChecker({ getOtpTime: res.created_at.getTime(), otp: res.otp_number })
     if (res2) return { status: 400, error: 'We already sent your otp, please do check your email' }
   }
-
   try {
     await userChangesValidation({ password, userID: userID })
 
@@ -113,13 +112,10 @@ const expireOtpChecker = async ({ getOtpTime, otp }) => {
 
   // Check if otp above time limit
   const maxDate = getOtpTime + maximumTime
-  console.log('date now= ' + Date.now())
-  console.log('max date= ' + maxDate)
 
-  console.log('benar ato salah jamnya= ' + Date.now() > maxDate)
   if (Date.now() > maxDate) {
     await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
-    throw new Error('Otp expired')
+    return false
   }
   return true
 }
