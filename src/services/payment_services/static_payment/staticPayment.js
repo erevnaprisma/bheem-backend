@@ -18,13 +18,13 @@ const { checkerValidBill } = require('../../../collections/billing/services')
 let finalAmount
 let getSaldoInstance
 
-const staticPayment = async (merchantID, amount, userID, transactionID, billID) => {
+const staticPayment = async (merchantID, amount, userID, transactionID, billID, password) => {
   if (!amount || amount < 0) return { status: 400, error: 'Invalid amount' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
   if (!transactionID) return { status: 400, error: 'Invalid transaction id' }
 
   await checkerValidMerchant(merchantID)
-  await checkerValidUser(userID)
+  const user = await checkerValidUser(userID)
   await checkerValidTransaction(transactionID)
   await checkerValidBill(billID)
 
@@ -53,6 +53,9 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID) 
       return { status: 400, error: 'Please top up your wallet first...' }
     }
 
+    // check password
+    await user.comparedPassword(password)
+
     // add e-money
     const emoney = await addUserPayment({ saldo: finalAmount, transactionAmount: amount, type, userID })
 
@@ -67,7 +70,7 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID) 
 
     return { status: 200, success: 'Payment Success' }
   } catch (err) {
-    return { status: 400, success: err | 'Payment failed'}
+    return { status: 400, success: err || 'Payment failed' }
   }
 }
 

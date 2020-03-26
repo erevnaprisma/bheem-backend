@@ -33,10 +33,11 @@ const staticPayment = {
     transaction_id: { type: new GraphQLNonNull(GraphQLID) },
     bill_id: { type: new GraphQLNonNull(GraphQLID) },
     amount: { type: new GraphQLNonNull(GraphQLInt) },
-    user_id: { type: new GraphQLNonNull(GraphQLID) }
+    user_id: { type: new GraphQLNonNull(GraphQLID) },
+    password: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return serviceStaticPaymentService(args.merchant_id, args.amount, args.user_id, args.transaction_id, args.bill_id)
+    return serviceStaticPaymentService(args.merchant_id, args.amount, args.user_id, args.transaction_id, args.bill_id, args.password)
   }
 }
 
@@ -62,6 +63,16 @@ const detailPayment = {
   }
 }
 
+const transactionReceipt = {
+  type: TransactionDetailType,
+  args: {
+    transaction_id: { type: new GraphQLNonNull(GraphQLID) }
+  },
+  resolve (parent, args) {
+    return detailPaymentService(args.transaction_id)
+  }
+}
+
 const cancelStaticPayment = {
   type: ResponseType,
   args: {
@@ -77,3 +88,4 @@ module.exports.staticPayment = staticPayment
 module.exports.scanPaymentStatic = scanPaymentStatic
 module.exports.detailPayment = detailPayment
 module.exports.cancelStaticPayment = cancelStaticPayment
+module.exports.transactionReceipt = transactionReceipt
