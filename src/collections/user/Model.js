@@ -90,7 +90,7 @@ userSchema.statics.validation = (args) => {
     first_name: Joi.string().min(3).max(14).pattern(new RegExp(reg)),
     last_name: Joi.string().min(3).max(14).pattern(new RegExp(reg)),
     nickname: Joi.string().min(3).max(14).pattern(new RegExp(reg)),
-    address: Joi.string().min(6).max(35).pattern(new RegExp(reg))
+    address: Joi.string().min(6).max(35)
   })
 
   return schema.validate(args)
