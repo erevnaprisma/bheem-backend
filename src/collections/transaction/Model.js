@@ -26,6 +26,10 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
+  transaction_method: {
+    type: String,
+    default: 'E-money'
+  },
   transaction_amount: {
     type: Number,
     min: 1,
