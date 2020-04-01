@@ -28,11 +28,10 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID }) => {
 
     // add Transaction status pending
     transaction = await addUserTransaction({ userID, bill: billing.bill_id, qrID, merchantID })
+    return { transaction_id: transaction.transaction_id, merchant_id: merchantID, billing_id: billing.bill_id, status: 200, success: 'Scan merchant success' }
   } catch (err) {
     return { status: 400, error: err || 'Scan Failed' }
   }
-
-  return { transaction_id: transaction.transaction_id, merchant_id: merchantID, billing_id: billing.bill_id, status: 200, success: 'Scan merchant success' }
 }
 
 module.exports = scanPaymentStatic
