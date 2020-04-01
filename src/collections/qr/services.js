@@ -20,13 +20,14 @@ const createQrStaticService = async (merchantID, context) => {
       status,
       merchant_id: merchantID
     })
-    // create a png qrcode
-    const qrCode = await generateQrPng(merchantID)
 
     const { username } = await Merchant.findOne({ merchant_id: merchantID }).select('username -_id')
 
+    // create a png qrcode
+    const qrCode = await generateQrPng({ merchantID: merchantID, merchantName: username, qrID: qr.qr_id, type: qr.type })
+
     // save created qrcode to collection
-    qr.qr_value = { merchant_id: merchantID, merchant_name: username }
+    qr.qr_value = { merchant_id: merchantID, merchant_name: username, qr_ID: qr.qr_id, type: qr.type }
 
     await qr.save()
 
@@ -58,11 +59,11 @@ const checkerValidQr = async ({ QrID }) => {
   if (!res) throw new Error('Invalid QR Code')
 }
 
-const generateQrPng = async (merchantID) => {
+const generateQrPng = async ({ merchantID, merchantName, qrID, type }) => {
   // const a = await QRCode.image(merchantID, { type: 'png', size: 10, margin: 0 })
   // console.log('a=', JSON.stringify(a))
   // return JSON.stringify(a)
-  const a = await QRCode.toDataURL(merchantID, { type: 'image/png' })
+  const a = await QRCode.toDataURL([{ merchant_id: merchantID }, { merchant_name: merchantName }, { qr_id: qrID }, { type: type }], { type: 'image/png' })
   return a
 }
 
