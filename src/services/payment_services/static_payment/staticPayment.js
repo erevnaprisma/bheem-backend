@@ -70,7 +70,7 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
 
     return { status: 200, success: 'Payment Success' }
   } catch (err) {
-    return { status: 400, success: err || 'Payment failed' }
+    return { status: 400, error: err || 'Payment failed' }
   }
 }
 
