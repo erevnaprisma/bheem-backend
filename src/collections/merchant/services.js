@@ -11,7 +11,8 @@ const addMerchantAccount = async (email, deviceID) => {
   if (error) return { status: 400, error: error.details[0].message }
 
   const checkerValidEmail = await Merchant.findOne({ email })
-  if (!checkerValidEmail) return { status: 400, error: 'Email already used' }
+  console.log('hasil=', checkerValidEmail)
+  if (checkerValidEmail) return { status: 400, error: 'Email already used' }
 
   let user = await new Merchant({
     merchant_id: generateID(RANDOM_STRING_FOR_CONCAT),
@@ -28,7 +29,7 @@ const addMerchantAccount = async (email, deviceID) => {
     const accessToken = await jwt.sign({ user_id: user._id }, config.get('privateKey'), { expiresIn: '30min' })
 
     user.password = localPassword
-
+    user.type = 'signup'
     await sendMailVerification(user)
 
     return { status: 200, success: 'Add merchant success', access_token: accessToken }
