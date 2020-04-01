@@ -54,13 +54,11 @@ const sendMailVerification = async (model) => {
     }
   }
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error)
-    } else {
-      console.log('Email sent: ' + info.response)
-    }
-  })
+  try {
+    await transporter.sendMail(mailOptions)
+  } catch (err) {
+    throw new Error(err)
+  }
 }
 
 const generateID = () => {

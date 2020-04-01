@@ -25,6 +25,7 @@ const userSignup = async (email, deviceID) => {
   }
 
   await sendMailVerification(userBeforeSentEmail)
+  // if (!emailSent) return { status: 400, error: 'Failed sent email' }
 
   let user = new User({
     user_id: generateID(RANDOM_STRING_FOR_CONCAT),
