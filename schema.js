@@ -12,6 +12,7 @@ const { signUpMerchant } = require('./src/collections/merchant/graphql/mutation'
 
 // Qr
 const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutation')
+const { showQR } = require('./src/collections/qr/graphql/query')
 
 // Otp
 const { sendOtp, submitOtp } = require('./src/collections/otp/graphql/mutation')
@@ -30,7 +31,8 @@ const RootQuery = new GraphQLObjectType({
     login,
     getProfile,
     allUser,
-    allTransaction
+    allTransaction,
+    showQR
   }
 })
 
