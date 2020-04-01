@@ -17,26 +17,35 @@ const userSignup = async (email, deviceID) => {
   const emailCheck = await User.findOne({ email })
   if (emailCheck) return { status: 400, error: 'Email already used' }
 
+  const userBeforeSentEmail = {
+    type: 'signup',
+    username: generateRandomStringAndNumber(8),
+    password: generateRandomStringAndNumber(6),
+    email
+  }
+
+  await sendMailVerification(userBeforeSentEmail)
+
   let user = new User({
     user_id: generateID(RANDOM_STRING_FOR_CONCAT),
     email,
     device_id: deviceID,
-    username: generateRandomStringAndNumber(8),
-    password: generateRandomStringAndNumber(6),
+    username: userBeforeSentEmail.username,
+    password: userBeforeSentEmail.password,
     created_at: getUnixTime(),
     updated_at: getUnixTime()
   })
 
-  const localPassword = user.password
+  // const localPassword = user.password
 
   try {
     const accessToken = await jwt.sign({ user_id: user.user_id }, config.get('privateKey'), { expiresIn: '30min' })
 
     user = await user.save()
 
-    user.password = localPassword
-    user.type = 'signup'
-    await sendMailVerification(user)
+    // user.password = localPassword
+    // user.type = 'signup'
+    // await sendMailVerification(user)
 
     return { status: 200, user_id: user.user_id, access_token: accessToken, success: WORD_SIGN_UP }
   } catch (err) {
