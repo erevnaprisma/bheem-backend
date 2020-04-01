@@ -63,7 +63,7 @@ const generateQrPng = async ({ merchantID, merchantName, qrID, type }) => {
   // const a = await QRCode.image(merchantID, { type: 'png', size: 10, margin: 0 })
   // console.log('a=', JSON.stringify(a))
   // return JSON.stringify(a)
-  const a = await QRCode.toDataURL([{ merchant_id: merchantID }, { merchant_name: merchantName }, { qr_id: qrID }, { type: type }], { type: 'image/png' })
+  const a = await QRCode.toDataURL(merchantName, { type: 'image/png' })
   return a
 }
 
