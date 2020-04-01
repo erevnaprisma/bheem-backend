@@ -1,5 +1,5 @@
 const Qr = require('./Model')
-const QRCode = require('qr-image')
+const QRCode = require('qrcode')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const { checkerValidMerchant } = require('../merchant/services')
@@ -55,10 +55,11 @@ const checkerValidQr = async ({ QrID }) => {
   if (!res) throw new Error('Invalid QR Code')
 }
 
-const generateQrPng = async (merchantID) => {
-  const a = await QRCode.image(merchantID, { type: 'png', size: 10, margin: 0 })
-  console.log('a=', JSON.stringify(a))
-  return JSON.stringify(a)
+const generateQrPng = (merchantID) => {
+  // const a = await QRCode.image(merchantID, { type: 'png', size: 10, margin: 0 })
+  // console.log('a=', JSON.stringify(a))
+  // return JSON.stringify(a)
+  return QRCode.toDataURL(merchantID, { type: 'image/png' })
 }
 
 module.exports.createQrDynamic = createQrDynamic
