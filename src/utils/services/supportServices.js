@@ -27,14 +27,26 @@ const generateRandomNumber = (length) => {
 const sendMailVerification = async (model) => {
   var mailOptions
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    secure: true,
+  var smtpConfig = {
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // use SSL
     auth: {
       user: config.get('mongoDB.email'),
       pass: config.get('mongoDB.password')
     }
-  })
+  }
+
+  const transporter = nodemailer.createTransport(smtpConfig)
+  // const transporter = nodemailer.createTransport({
+  //   service: 'smtp.gmail.com',
+  //   port: 465,
+  //   secure: true,
+  //   auth: {
+  //     user: config.get('mongoDB.email'),
+  //     pass: config.get('mongoDB.password')
+  //   }
+  // })
   if (model.type === 'otp') {
     mailOptions = {
       from: config.get('mongoDB.email'),

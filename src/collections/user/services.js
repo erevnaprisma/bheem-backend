@@ -159,7 +159,7 @@ const changeName = async (userID, newUsername, password, token = null) => {
 
 const changeProfile = async args => {
   const { user_id: userID, first_name: firstName, last_name: lastName, nickname, full_name: fullName, address, password } = args
-  if (!userID) return { status: 400, error: 'Invalid user_id'}
+  if (!userID) return { status: 400, error: 'Invalid user_id' }
   // !firstName ? { status: 400, error: 'Invalid user_id'} : true
   // !lastName ? { status: 400, error: 'Invalid user_id'} : true
   // !nickname ? { status: 400, error: 'Invalid user_id'} : true
