@@ -6,12 +6,11 @@ const { sendMailVerification, generateRandomStringAndNumber } = require('../../u
 const { generateID } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const addMerchantAccount = async (email, deviceID) => {
-  const { error } = Merchant.validation({ email, device_id: deviceID })
+const addMerchantAccount = async (email, deviceID, address) => {
+  const { error } = Merchant.validation({ email, device_id: deviceID, address })
   if (error) return { status: 400, error: error.details[0].message }
 
   const checkerValidEmail = await Merchant.findOne({ email })
-  console.log('hasil=', checkerValidEmail)
   if (checkerValidEmail) return { status: 400, error: 'Email already used' }
 
   let user = await new Merchant({
@@ -19,7 +18,8 @@ const addMerchantAccount = async (email, deviceID) => {
     email,
     device_id: deviceID,
     username: generateRandomStringAndNumber(8),
-    password: generateRandomStringAndNumber(6)
+    password: generateRandomStringAndNumber(6),
+    address
   })
 
   const localPassword = user.password
@@ -45,15 +45,15 @@ const checkerValidMerchant = async (MerchantID) => {
   if (!res) throw new Error('Invalid Merchant ID')
 }
 
-// const getAllMerchantService = async () => {
-//   try {
-//     const merchant = await Merchant.find()
-//     return { status: 200, success: 'Successfully get all merchant', merchant }
-//   } catch (err) {
-//     return { status: 400, error: 'Failed get all Merchant' }
-//   }
-// }
+const getAllMerchantService = async () => {
+  try {
+    const merchant = await Merchant.find()
+    return { status: 200, success: 'Successfully get all merchant', merchant }
+  } catch (err) {
+    return { status: 400, error: 'Failed get all Merchant' }
+  }
+}
 
 module.exports.addMerchantAccount = addMerchantAccount
 module.exports.checkerValidMerchant = checkerValidMerchant
-// module.exports.getAllMerchantService = getAllMerchantService
+module.exports.getAllMerchantService = getAllMerchantService

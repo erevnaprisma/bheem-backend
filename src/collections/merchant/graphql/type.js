@@ -16,6 +16,7 @@ const MerchantType = new GraphQLObjectType({
     username: { type: GraphQLString },
     password: { type: GraphQLString },
     device_id: { type: GraphQLString },
+    address: { type: GraphQLString }
   })
 })
 
@@ -29,16 +30,16 @@ const MerchantResponseType = new GraphQLObjectType({
   })
 })
 
-// const AllMerchantResponseType = new GraphQLObjectType({
-//   name: 'AllMerchantResponse',
-//   fields: () => ({
-//     status: { type: GraphQLInt },
-//     error: { type: GraphQLString },
-//     success: { type: GraphQLString },
-//     merchant: { type: GraphQLList }
-//   })
-// })
+const AllMerchantResponseType = new GraphQLObjectType({
+  name: 'AllMerchantResponse',
+  fields: () => ({
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    merchant: { type: GraphQLList(MerchantType) }
+  })
+})
 
 module.exports.MerchantType = MerchantType
 module.exports.MerchantResponseType = MerchantResponseType
-// module.exports.AllMerchantResponseType = AllMerchantResponseType
+module.exports.AllMerchantResponseType = AllMerchantResponseType

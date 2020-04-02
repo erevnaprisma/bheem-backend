@@ -87,21 +87,9 @@ const cancelStaticPayment = {
   }
 }
 
-const transactionHistory = {
-  type: TransactionHistoryType,
-  args: {
-    user_id: { type: new GraphQLNonNull(GraphQLID) }
-  },
-  resolve (parent, args) {
-    console.log(args.user_id)
-    return transactionHistoryService(args.user_id)
-  }
-}
-
 module.exports.topupVa = topupVa
 module.exports.staticPayment = staticPayment
 module.exports.scanPaymentStatic = scanPaymentStatic
 module.exports.detailPayment = detailPayment
 module.exports.cancelStaticPayment = cancelStaticPayment
 module.exports.transactionReceipt = transactionReceipt
-module.exports.transactionHistory = transactionHistory

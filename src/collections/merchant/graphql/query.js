@@ -1,23 +1,13 @@
-// const graphql = require('graphql')
+const graphql = require('graphql')
 
-// const { AllMerchantResponseType } = require('./type')
+const { AllMerchantResponseType } = require('./type')
+const { getAllMerchantService } = require('../services')
 
-// const {
-//   GraphQLString,
-//   GraphQLNonNull,
-//   GraphQLID,
-//   GraphQLList
-// } = graphql
+const AllMerchant = {
+  type: AllMerchantResponseType,
+  resolve (parent, args) {
+    return getAllMerchantService()
+  }
+}
 
-// const allUser = {
-//   type: new GraphQLList(UserType),
-//   args: {
-//     email: { type: GraphQLString }
-//   },
-//   resolve (parent, args) {
-//     return getAllUser()
-//   }
-// }
-// module.exports.login = login
-// module.exports.getProfile = getProfile
-// module.exports.allUser = allUser
+module.exports.AllMerchant = AllMerchant

@@ -9,6 +9,7 @@ const { allTransaction } = require('./src/collections/emoney/graphql/query')
 
 // Merchant
 const { signUpMerchant } = require('./src/collections/merchant/graphql/mutation')
+const { AllMerchant } = require('./src/collections/merchant/graphql/query')
 
 // Qr
 const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutation')
@@ -18,7 +19,8 @@ const { showQR } = require('./src/collections/qr/graphql/query')
 const { sendOtp, submitOtp } = require('./src/collections/otp/graphql/mutation')
 
 // Services
-const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt, transactionHistory } = require('./src/services/graphql/mutation')
+const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt } = require('./src/services/graphql/mutation')
+const { transactionHistory } = require('./src/services/graphql/query')
 
 const {
   GraphQLObjectType,
@@ -32,7 +34,9 @@ const RootQuery = new GraphQLObjectType({
     getProfile,
     allUser,
     allTransaction,
-    showQR
+    transactionHistory,
+    showQR,
+    AllMerchant
   }
 })
 
@@ -55,7 +59,6 @@ const Mutation = new GraphQLObjectType({
     submitOtp,
     testing,
     transactionReceipt,
-    transactionHistory,
     logout
   }
 })

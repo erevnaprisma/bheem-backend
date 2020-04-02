@@ -24,6 +24,12 @@ const merchantSchema = new mongoose.Schema({
   device_id: {
     type: String,
     min: 2
+  },
+  address: {
+    type: String,
+    min: 6,
+    max: 50,
+    default: null
   }
 })
 
@@ -45,9 +51,12 @@ merchantSchema.pre('save', function (next) {
 })
 
 merchantSchema.statics.validation = (args) => {
+  var addRegex = /^[a-zA-Z0-9,.:/ ]*$/
+
   const schema = Joi.object({
     email: Joi.string().email().required(),
-    device_id: Joi.string().min(2).required()
+    device_id: Joi.string().min(2).required(),
+    address: Joi.string().min(6).max(50).pattern(new RegExp(addRegex, 'm'))
   })
 
   return schema.validate(args)
