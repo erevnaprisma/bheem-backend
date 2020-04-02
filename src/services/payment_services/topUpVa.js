@@ -22,7 +22,7 @@ const serviceTopupVa = async (args) => {
     const billing = await addBillingService(args.amount)
 
     // create new transaction
-    const transaction = await addUserTransaction({ bill: billing.bill_id, amount: args.amount, userID: user.user_id })
+    const transaction = await addUserTransaction({ bill: billing.bill_id, amount: args.amount, userID: user.user_id, transactionMethod: 'Top-up' })
 
     // get saldo in saldo collection
     const getSaldoInstance = await Saldo.findOne({ user_id: user.user_id })

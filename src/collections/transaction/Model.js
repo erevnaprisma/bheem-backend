@@ -28,6 +28,7 @@ const transactionSchema = new mongoose.Schema({
   },
   transaction_method: {
     type: String,
+    enum: ['Top-up', 'E-money'],
     default: 'E-money'
   },
   transaction_amount: {

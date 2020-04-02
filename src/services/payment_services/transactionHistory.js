@@ -6,7 +6,7 @@ const transactionHistory = async (id) => {
   try {
     await checkerValidUser(id)
 
-    const transaction = await Transaction.find({ user_id: id, status: 'SETLD' })
+    const transaction = await Transaction.find({ user_id: id, status: 'SETLD' }).populate('Merchant')
     if (!transaction) return { status: 400, error: 'No Transaction' }
 
     return { status: 200, success: 'Successfully get Transaction History', transaction_history: transaction }

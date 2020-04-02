@@ -5,8 +5,7 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLID,
-  GraphQLObjectType,
-  GraphQLList
+  GraphQLObjectType
 } = graphql
 
 const TransactionStatusType = new GraphQLEnumType({
@@ -15,6 +14,14 @@ const TransactionStatusType = new GraphQLEnumType({
     PENDING: { value: 'PNDNG' },
     SETTLED: { value: 'SETLD' },
     REJECT: { value: 'REJEC' }
+  }
+})
+
+const TransactionMethodType = new GraphQLEnumType({
+  name: 'TransactionMethod',
+  values: {
+    TOPUP: { value: 'Top-up' },
+    EMONEY: { value: 'E-money' }
   }
 })
 
@@ -30,7 +37,7 @@ const TransactionType = new GraphQLObjectType({
     created_at: { type: GraphQLString },
     updated_at: { type: GraphQLString },
     status: { type: TransactionStatusType },
-    transaction_method: { type: GraphQLString },
+    transaction_method: { type: TransactionMethodType },
     merchant_name: { type: GraphQLString }
   })
 })
@@ -46,3 +53,4 @@ const TransactionResponseType = new GraphQLObjectType({
 
 module.exports.TransactionType = TransactionType
 module.exports.TransactionResponseType = TransactionResponseType
+module.exports.TransactionMethodType = TransactionMethodType

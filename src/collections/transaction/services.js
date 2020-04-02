@@ -2,7 +2,7 @@ const Transaction = require('./Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const addUserTransaction = async ({ bill, userID, qrID, amount, merchantID }) => {
+const addUserTransaction = async ({ bill, userID, qrID, amount, merchantID, transactionMethod }) => {
   const { error } = Transaction.validation({ user_id: userID, billing_id: bill })
   if (error) return { status: 400, error: error.details[0].message }
 
@@ -11,6 +11,7 @@ const addUserTransaction = async ({ bill, userID, qrID, amount, merchantID }) =>
     user_id: userID,
     qr_id: qrID,
     merchant_id: merchantID,
+    transaction_method: transactionMethod,
     transaction_amount: amount,
     transaction_id: generateID(RANDOM_STRING_FOR_CONCAT),
     created_at: getUnixTime(),
