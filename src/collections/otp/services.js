@@ -113,7 +113,7 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
 }
 
 const expireOtpChecker = async ({ getOtpTime, otp }) => {
-  const maximumTime = 900000
+  const maximumTime = 120000
 
   // Check if otp above time limit
   const maxDate = getOtpTime + maximumTime
