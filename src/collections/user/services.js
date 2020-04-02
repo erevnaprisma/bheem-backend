@@ -178,9 +178,9 @@ const changeProfile = async args => {
   if (error) return { status: 400, error: error.details[0].message }
 
   try {
-    await User.where({ user_id: userID }).update({ $set: { first_name: firstName, last_name: lastName, nickname: nickname, full_name: fullName, address: address } }).catch(() => { errorHandling('Failed updating user profile') })
-
     await user.comparedPassword(args.password)
+
+    await User.where({ user_id: userID }).update({ $set: { first_name: firstName, last_name: lastName, nickname: nickname, full_name: fullName, address: address } }).catch(() => { errorHandling('Failed updating user profile') })
 
     return { status: 200, success: 'Update profile success', new_token: args.newToken }
   } catch (err) {
