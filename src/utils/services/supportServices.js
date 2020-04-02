@@ -32,8 +32,8 @@ const sendMailVerification = async (model) => {
     port: 465,
     secure: true, // use SSL
     auth: {
-      user: config.get('mongoDB.email'),
-      pass: config.get('mongoDB.password')
+      user: 'dev.erevna@gmail.com',
+      pass: 'jgoonkkwkympqdmq'
     }
   }
 
@@ -57,7 +57,7 @@ const sendMailVerification = async (model) => {
   }
   if (model.type === 'signup') {
     mailOptions = {
-      from: config.get('mongoDB.email'),
+      from: 'dev.erevna@gmail.com',
       to: model.email,
       subject: 'RayaPay',
       text: `Thank you for applying on RayaPay. We are looking forward for your action in changing your name and password.

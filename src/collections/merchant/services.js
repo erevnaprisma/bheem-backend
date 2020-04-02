@@ -45,5 +45,15 @@ const checkerValidMerchant = async (MerchantID) => {
   if (!res) throw new Error('Invalid Merchant ID')
 }
 
+// const getAllMerchantService = async () => {
+//   try {
+//     const merchant = await Merchant.find()
+//     return { status: 200, success: 'Successfully get all merchant', merchant }
+//   } catch (err) {
+//     return { status: 400, error: 'Failed get all Merchant' }
+//   }
+// }
+
 module.exports.addMerchantAccount = addMerchantAccount
 module.exports.checkerValidMerchant = checkerValidMerchant
+// module.exports.getAllMerchantService = getAllMerchantService

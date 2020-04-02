@@ -4,7 +4,8 @@ const {
   GraphQLString,
   GraphQLObjectType,
   GraphQLID,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLList
 } = graphql
 
 const MerchantType = new GraphQLObjectType({
@@ -28,5 +29,16 @@ const MerchantResponseType = new GraphQLObjectType({
   })
 })
 
+// const AllMerchantResponseType = new GraphQLObjectType({
+//   name: 'AllMerchantResponse',
+//   fields: () => ({
+//     status: { type: GraphQLInt },
+//     error: { type: GraphQLString },
+//     success: { type: GraphQLString },
+//     merchant: { type: GraphQLList }
+//   })
+// })
+
 module.exports.MerchantType = MerchantType
 module.exports.MerchantResponseType = MerchantResponseType
+// module.exports.AllMerchantResponseType = AllMerchantResponseType
