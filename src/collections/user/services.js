@@ -7,7 +7,7 @@ const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = req
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
-const { generateID } = require('../../utils/services/supportServices')
+const { generateID, isEqual } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const userSignup = async (email, deviceID) => {
@@ -138,13 +138,15 @@ const changeName = async (userID, newUsername, password, token = null) => {
 
   if (!userID) return { status: 400, error: 'Invalid user id' }
 
-  const usernameChecker = await User.findOne({ username: newUsername })
-  if (usernameChecker) return { status: 400, error: 'Username already used' }
-
-  const { error } = User.validation({ username: newUsername })
-  if (error) return { status: 400, error: error.details[0].message }
-
   try {
+    // check if username already used
+    const regex = isEqual(newUsername)
+    const usernameChecker = await User.findOne({ username: regex })
+    if (usernameChecker) return { status: 400, error: 'Username already used' }
+
+    const { error } = User.validation({ username: newUsername })
+    if (error) return { status: 400, error: error.details[0].message }
+
     const user = await checkerValidUser(userID)
 
     await user.comparedPassword(password)

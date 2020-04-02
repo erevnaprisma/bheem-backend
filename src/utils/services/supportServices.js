@@ -81,9 +81,15 @@ const getUnixTime = () => {
   return new Date().getTime()
 }
 
+const isEqual = (newUsername) => {
+  var regex = new RegExp(['^', newUsername, '$'].join(''), 'i')
+  return regex
+}
+
 module.exports.generateRandomStringAndNumber = generateRandomStringAndNumber
 module.exports.generateRandomString = generateRandomString
 module.exports.generateRandomNumber = generateRandomNumber
 module.exports.sendMailVerification = sendMailVerification
 module.exports.generateID = generateID
 module.exports.getUnixTime = getUnixTime
+module.exports.isEqual = isEqual
