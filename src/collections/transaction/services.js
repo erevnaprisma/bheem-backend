@@ -1,12 +1,20 @@
 const Transaction = require('./Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
+const Merchant = require('../merchant/Model')
 
 const addUserTransaction = async ({ bill, userID, qrID, amount, merchantID, transactionMethod }) => {
   const { error } = Transaction.validation({ user_id: userID, billing_id: bill })
   if (error) return { status: 400, error: error.details[0].message }
 
+  if (merchantID) {
+    var nativeMerchantID = await Merchant.findOne({ merchant_id: merchantID }).select('_id')
+  } else {
+    nativeMerchantID = null
+  }
+
   let transaction = await new Transaction({
+    merchant_id_native: nativeMerchantID,
     billing_id: bill,
     user_id: userID,
     qr_id: qrID,

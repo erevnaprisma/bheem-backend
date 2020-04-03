@@ -66,6 +66,16 @@ const sendMailVerification = async (model) => {
     }
   }
 
+  if (model.type === 'signupUser') {
+    mailOptions = {
+      from: 'dev.erevna@gmail.com',
+      to: model.email,
+      subject: 'RayaPay',
+      text: `Thank you for applying on RayaPay. We are looking forward for your action in changing your name and password.
+          password: ${model.password}`
+    }
+  }
+
   try {
     await transporter.sendMail(mailOptions)
   } catch (err) {

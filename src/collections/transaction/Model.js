@@ -4,6 +4,10 @@ const Joi = require('@hapi/joi')
 const transactionSchema = new mongoose.Schema({
   merchant_id: {
     type: String,
+    default: null
+  },
+  merchant_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
     ref: 'Merchant',
     default: null
   },

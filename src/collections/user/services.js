@@ -3,7 +3,7 @@ const config = require('config')
 
 const User = require('./Model')
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
-const { generateRandomStringAndNumber, sendMailVerification, getUnixTime } = require('../../utils/services/supportServices')
+const { generateRandomStringAndNumber, sendMailVerification, getUnixTime, generateRandomNumber } = require('../../utils/services/supportServices')
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
@@ -17,10 +17,10 @@ const userSignup = async (email, deviceID) => {
   const emailCheck = await User.findOne({ email })
   if (emailCheck) return { status: 400, error: 'Email already used' }
 
+  // for send Email
   const userBeforeSentEmail = {
-    type: 'signup',
-    username: generateRandomStringAndNumber(8),
-    password: generateRandomStringAndNumber(6),
+    type: 'signupUser',
+    password: generateRandomNumber(4),
     email
   }
 
@@ -31,7 +31,7 @@ const userSignup = async (email, deviceID) => {
     user_id: generateID(RANDOM_STRING_FOR_CONCAT),
     email,
     device_id: deviceID,
-    username: userBeforeSentEmail.username,
+    username: generateRandomStringAndNumber(8),
     password: userBeforeSentEmail.password,
     created_at: getUnixTime(),
     updated_at: getUnixTime()
@@ -54,7 +54,7 @@ const userSignup = async (email, deviceID) => {
   }
 }
 
-const userLogin = async (username, password, token, isLoggedInWithToken) => {
+const userLogin = async (email, password, token, isLoggedInWithToken) => {
   const checkerToken = await Blacklist.findOne({ token })
   if (checkerToken) return { status: 400, error: 'Token already expired' }
 
@@ -62,10 +62,10 @@ const userLogin = async (username, password, token, isLoggedInWithToken) => {
   if (isLoggedInWithToken) {
     return { status: 200, success: WORD_LOGIN }
   }
-  if (!username || !password) return { status: 400, error: 'Username or Password can\'t be empty' }
+  if (!email || !password) return { status: 400, error: 'Email or Password can\'t be empty' }
 
-  const user = await User.findOne({ username })
-  if (!user) return { status: 400, error: 'Invalid username or password', user: null }
+  const user = await User.findOne({ email })
+  if (!user) return { status: 400, error: 'Invalid email or password', user: null }
   try {
     // verified password
     await user.comparedPassword(password)
