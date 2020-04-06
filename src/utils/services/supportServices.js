@@ -76,6 +76,16 @@ const sendMailVerification = async (model) => {
     }
   }
 
+  if (model.type === 'forgetPassword') {
+    mailOptions = {
+      from: 'dev.erevna@gmail.com',
+      to: model.email,
+      subject: 'RayaPay',
+      text: `This is your new Password. Please don't give it to anyone else
+          password: ${model.password}`
+    }
+  }
+
   try {
     await transporter.sendMail(mailOptions)
   } catch (err) {

@@ -188,6 +188,32 @@ const changeProfile = async args => {
   }
 }
 
+const forgetPasswordService = async (email) => {
+  if (!email) return { status: 400, error: 'Invalid email' }
+
+  const { error } = User.validation({ email })
+  if (error) return { status: 400, error: error.details[0].message }
+
+  try {
+    const user = await User.findOne({ email })
+    if (!user) return { status: 400, error: 'Email not found' }
+
+    const model = {
+      type: 'forgetPassword',
+      email,
+      password: generateRandomNumber(4)
+    }
+    await sendMailVerification(model)
+
+    const password = await User.hashing(model.password.toString())
+    await User.findOneAndUpdate({ email }, { password })
+
+    return { status: 200, error: 'Successfully change password' }
+  } catch (err) {
+    return { status: 400, error: 'Failed send new password' }
+  }
+}
+
 const getUserProfile = async (userID) => {
   if (!userID) return { status: 400, error: 'Invalid user id' }
 
@@ -254,3 +280,4 @@ module.exports.serviceLogout = serviceLogout
 module.exports.checkerValidUser = checkerValidUser
 module.exports.userChangesValidation = userChangesValidation
 module.exports.checkValidUserUsingEmail = checkValidUserUsingEmail
+module.exports.forgetPasswordService = forgetPasswordService

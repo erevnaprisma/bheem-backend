@@ -106,6 +106,7 @@ userSchema.statics.hashing = (password) => {
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return reject(err)
 
+        console.log('hash=', hash)
         resolve(hash)
       })
     })
