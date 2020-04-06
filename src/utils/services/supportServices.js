@@ -86,6 +86,17 @@ const sendMailVerification = async (model) => {
     }
   }
 
+  if (model.type === 'forgetPasswordSendOtp') {
+    mailOptions = {
+      from: 'dev.erevna@gmail.com',
+      to: model.email,
+      subject: 'RayaPay',
+      text: `Thank you for trusting us. This is the link changing your password
+          otp: ${model.otp}.
+          If you click the link, we will send your new password to this email immediately`
+    }
+  }
+
   try {
     await transporter.sendMail(mailOptions)
   } catch (err) {

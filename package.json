@@ -11,6 +11,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.0",
     "bcrypt": "^3.0.8",
+    "body-parser": "^1.19.0",
     "config": "^3.2.5",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -31,7 +32,8 @@
     "pug": "^2.0.4",
     "qr-image": "^3.2.0",
     "qrcode": "^1.4.4",
-    "randomstring": "^1.1.5"
+    "randomstring": "^1.1.5",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.2",

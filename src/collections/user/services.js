@@ -1,13 +1,16 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
+const express = require('express')
+const router = express()
+const { v4: uuidv4 } = require('uuid')
 
 const User = require('./Model')
+const Otp = require('../otp/Model')
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
-const { generateRandomStringAndNumber, sendMailVerification, getUnixTime, generateRandomNumber } = require('../../utils/services/supportServices')
-const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
+const { generateRandomStringAndNumber, sendMailVerification, getUnixTime, generateRandomNumber, generateID, isEqual } = require('../../utils/services/supportServices')
+const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling  } = require('../../utils/constants/word')
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
-const { generateID, isEqual } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const userSignup = async (email, deviceID) => {
@@ -188,7 +191,7 @@ const changeProfile = async args => {
   }
 }
 
-const forgetPasswordService = async (email) => {
+const forgetPasswordSendOtpService = async (email) => {
   if (!email) return { status: 400, error: 'Invalid email' }
 
   const { error } = User.validation({ email })
@@ -199,20 +202,87 @@ const forgetPasswordService = async (email) => {
     if (!user) return { status: 400, error: 'Email not found' }
 
     const model = {
-      type: 'forgetPassword',
+      type: 'forgetPasswordSendOtp',
       email,
-      password: generateRandomNumber(4)
+      otp: generateRandomNumber(4)
     }
     await sendMailVerification(model)
 
-    const password = await User.hashing(model.password.toString())
-    await User.findOneAndUpdate({ email }, { password })
+    const otp = await new Otp({
+      status: 'ACTIVE',
+      otp_number: model.otp,
+      otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      otp_reference_number: generateRandomNumber(6),
+      email,
+      type: 'FORGET PASSWORD',
+      created_at: new Date(),
+      updated_at: new Date(),
+      user_id: user.user_id
+    })
 
-    return { status: 200, error: 'Successfully change password' }
+    await otp.save()
+
+    return { status: 200, error: 'Successfully send otp' }
   } catch (err) {
     return { status: 400, error: 'Failed send new password' }
   }
 }
+
+const changePasswordViaForgetPasswordService = async (otp, password) => {
+  if (!otp) return { status: 400, error: 'Invalid otp' }
+  if (!password) return { status: 400, error: 'Invalid password' }
+
+  try {
+    const otpChecker = await Otp.findOne({ otp_number: otp })
+    if (!otpChecker) return { status: 400, error: 'Invalid otp' }
+
+    const hashedPassword = await User.hashing(password)
+
+    await User.findOneAndUpdate({ user_id: otpChecker.user_id }, { password: hashedPassword })
+
+    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE' })
+
+    return { status: 200, success: 'Successfully change password' }
+  } catch (err) {
+    return { status: 400, error: 'Failed change password' }
+  }
+}
+
+// router.post('/sendLinkForgetPassword', async (req, res) => {
+//   console.log('sampe sini')
+//   const { email, name } = req
+//   console.log(email + name)
+//   // if (!req.email) res.status(400).send({ error: 'Invalid email' })
+
+//   // const { error } = User.validation({ email: req.email })
+//   // if (error) res.status(400).send({ error: error.details[0].message })
+
+//   try {
+//     // const user = await User.findOne({ email: req.email })
+//     // if (!user) return { status: 400, error: 'Email not found' }
+
+//     const uuid = await uuidv4()
+
+//     const model = {
+//       type: 'sendLinkForgetPassword',
+//       email: 'michaelleopold2016@gmail.com',
+//       link: `http://localhost:3000/send/${uuid}`
+//     }
+//     console.log('sebelum email')
+//     await sendMailVerification(model)
+//     console.log('sesudah email')
+//     res.status(200).send('Successfully send link')
+//   } catch (err) {
+//     res.status(400).send('Failded to send new password')
+//   }
+// })
+
+// router.get('/send/:codeConfirmation', (req, res) => {
+//   // console.log('sampe sini')
+//   console.log('uuid', req.params)
+
+//   res.send('berhasil')
+// })
 
 const getUserProfile = async (userID) => {
   if (!userID) return { status: 400, error: 'Invalid user id' }
@@ -280,4 +350,6 @@ module.exports.serviceLogout = serviceLogout
 module.exports.checkerValidUser = checkerValidUser
 module.exports.userChangesValidation = userChangesValidation
 module.exports.checkValidUserUsingEmail = checkValidUserUsingEmail
-module.exports.forgetPasswordService = forgetPasswordService
+module.exports.forgetPasswordSendOtpService = forgetPasswordSendOtpService
+module.exports.changePasswordViaForgetPasswordService = changePasswordViaForgetPasswordService
+// module.exports.router = router
