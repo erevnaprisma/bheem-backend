@@ -222,7 +222,7 @@ const forgetPasswordSendOtpService = async (email) => {
 
     await otp.save()
 
-    return { status: 200, error: 'Successfully send otp' }
+    return { status: 200, success: 'Successfully send otp' }
   } catch (err) {
     return { status: 400, error: 'Failed send new password' }
   }
