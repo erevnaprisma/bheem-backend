@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 // User
-const { signUp, changeUserPassword, changeUserName, changeUserProfile, logout, forgetPasswordSendOtp, changePasswordViaForgetPassword } = require('./src/collections/user/graphql/mutation')
+const { signUp, changeUserPassword, changeUserName, changeUserProfile, logout } = require('./src/collections/user/graphql/mutation')
 const { login, getProfile, allUser } = require('./src/collections/user/graphql/query')
 
 // Emoney
@@ -16,7 +16,7 @@ const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutati
 const { showQR } = require('./src/collections/qr/graphql/query')
 
 // Otp
-const { sendOtp, submitOtp } = require('./src/collections/otp/graphql/mutation')
+const { sendOtp, submitOtp, changePasswordViaForgetPassword, forgetPasswordSendOtp } = require('./src/collections/otp/graphql/mutation')
 
 // Services
 const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt } = require('./src/services/graphql/mutation')
@@ -60,8 +60,8 @@ const Mutation = new GraphQLObjectType({
     testing,
     transactionReceipt,
     logout,
-    forgetPasswordSendOtp,
-    changePasswordViaForgetPassword
+    changePasswordViaForgetPassword,
+    forgetPasswordSendOtp
   }
 })
 

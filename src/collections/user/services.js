@@ -191,62 +191,65 @@ const changeProfile = async args => {
   }
 }
 
-const forgetPasswordSendOtpService = async (email) => {
-  if (!email) return { status: 400, error: 'Invalid email' }
+// const forgetPasswordSendOtpService = async (email) => {
+//   if (!email) return { status: 400, error: 'Invalid email' }
 
-  const { error } = User.validation({ email })
-  if (error) return { status: 400, error: error.details[0].message }
+//   const { error } = User.validation({ email })
+//   if (error) return { status: 400, error: error.details[0].message }
 
-  try {
-    const user = await User.findOne({ email })
-    if (!user) return { status: 400, error: 'Email not found' }
+//   try {
+//     const user = await User.findOne({ email })
+//     if (!user) return { status: 400, error: 'Email not found' }
 
-    const model = {
-      type: 'forgetPasswordSendOtp',
-      email,
-      otp: generateRandomNumber(4)
-    }
-    await sendMailVerification(model)
+//     const model = {
+//       type: 'forgetPasswordSendOtp',
+//       email,
+//       otp: generateRandomNumber(4)
+//     }
+//     await sendMailVerification(model)
 
-    const otp = await new Otp({
-      status: 'ACTIVE',
-      otp_number: model.otp,
-      otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
-      otp_reference_number: generateRandomNumber(6),
-      email,
-      type: 'FORGET PASSWORD',
-      created_at: new Date(),
-      updated_at: new Date(),
-      user_id: user.user_id
-    })
+//     const otp = await new Otp({
+//       status: 'ACTIVE',
+//       otp_number: model.otp,
+//       otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
+//       otp_reference_number: generateRandomNumber(6),
+//       email,
+//       type: 'FORGET PASSWORD',
+//       created_at: new Date(),
+//       updated_at: new Date(),
+//       user_id: user.user_id
+//     })
 
-    await otp.save()
+//     await otp.save()
 
-    return { status: 200, success: 'Successfully send otp' }
-  } catch (err) {
-    return { status: 400, error: 'Failed send new password' }
-  }
-}
+//     return { status: 200, success: 'Successfully send otp', otpRefNum: otp.otp_reference_number }
+//   } catch (err) {
+//     return { status: 400, error: 'Failed send new password' }
+//   }
+// }
 
-const changePasswordViaForgetPasswordService = async (otp, password) => {
-  if (!otp) return { status: 400, error: 'Invalid otp' }
-  if (!password) return { status: 400, error: 'Invalid password' }
+// const changePasswordViaForgetPasswordService = async (email, otp, password) => {
+//   if (!otp) return { status: 400, error: 'Invalid otp' }
+//   if (!password) return { status: 400, error: 'Invalid password' }
 
-  try {
-    const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE' })
-    if (!otpChecker) return { status: 400, error: 'Invalid otp' }
+//   try {
+//     const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE' })
+//     if (!otpChecker) {
+//       await Otp.findOneAndUpdate({ })
+//       return { status: 400, error: 'Invalid otp' }
+//     }
 
-    const hashedPassword = await User.hashing(password)
+//     const hashedPassword = await User.hashing(password)
 
-    await User.findOneAndUpdate({ user_id: otpChecker.user_id }, { password: hashedPassword })
+//     await User.findOneAndUpdate({ user_id: otpChecker.user_id }, { password: hashedPassword })
 
-    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE' })
+//     await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE' })
 
-    return { status: 200, success: 'Successfully change password' }
-  } catch (err) {
-    return { status: 400, error: 'Failed change password' }
-  }
-}
+//     return { status: 200, success: 'Successfully change password' }
+//   } catch (err) {
+//     return { status: 400, error: 'Failed change password' }
+//   }
+// }
 
 // router.post('/sendLinkForgetPassword', async (req, res) => {
 //   console.log('sampe sini')
@@ -350,6 +353,4 @@ module.exports.serviceLogout = serviceLogout
 module.exports.checkerValidUser = checkerValidUser
 module.exports.userChangesValidation = userChangesValidation
 module.exports.checkValidUserUsingEmail = checkValidUserUsingEmail
-module.exports.forgetPasswordSendOtpService = forgetPasswordSendOtpService
-module.exports.changePasswordViaForgetPasswordService = changePasswordViaForgetPasswordService
 // module.exports.router = router
