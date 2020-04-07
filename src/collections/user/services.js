@@ -233,7 +233,7 @@ const changePasswordViaForgetPasswordService = async (otp, password) => {
   if (!password) return { status: 400, error: 'Invalid password' }
 
   try {
-    const otpChecker = await Otp.findOne({ otp_number: otp })
+    const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE' })
     if (!otpChecker) return { status: 400, error: 'Invalid otp' }
 
     const hashedPassword = await User.hashing(password)
