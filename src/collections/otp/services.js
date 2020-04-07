@@ -39,7 +39,7 @@ const sendOTPService = async ({ userID, password, email }) => {
       otp_number: otp,
       otp_reference_number: otpRefNum,
       user_id: userID,
-      email,
+      new_email: email,
       created_at: new Date(),
       updated_at: new Date()
     })
@@ -78,16 +78,16 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
       if (otpRefNum !== res.otp_reference_number) return { status: 400, error: 'Otp reference number is invalid' }
     } else if (!res) {
       // Check otp using user id
-      otp = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
+      otp = await Otp.findOne({ user_id: userID, status: 'ACTIVE', otp_reference_number: otpRefNum })
       if (!otp) {
         throw new Error('Invalid otp')
       } else {
         if (otp.status === 'ACTIVE') {
-          if (otp.isValidLimit >= 3) {
-            await Otp.updateOne({ user_id: userID, status: 'ACTIVE' }, { status: 'INACTIVE' })
+          if (otp.isValidLimit >= 2) {
+            await Otp.updateOne({ user_id: userID, status: 'ACTIVE', otp_reference_number: otpRefNum }, { status: 'INACTIVE', isValidLimit: otp.isValidLimit + 1 })
             return { status: 400, error: 'Otp expired' }
           } else {
-            await Otp.updateOne({ user_id: userID, status: 'ACTIVE' }, { isValidLimit: otp.isValidLimit + 1 })
+            await Otp.updateOne({ user_id: userID, status: 'ACTIVE', otp_reference_number: otpRefNum }, { isValidLimit: otp.isValidLimit + 1 })
             return { status: 400, error: 'Invalid otp' }
           }
         } else {
@@ -156,14 +156,17 @@ const changePasswordViaForgetPasswordService = async (otp, password, email, otpR
   try {
     const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE', otp_reference_number: otpRefNum })
     if (!otpChecker) {
-      const isEmailValid = await Otp.findOne({ email, status: 'ACTIVE' })
+      const isEmailValid = await Otp.findOne({ new_email: email, otp_reference_number: otpRefNum })
       if (isEmailValid) {
+        if (isEmailValid.status !== 'ACTIVE') {
+          return { status: 400, error: 'Otp expired' }
+        }
         if (isEmailValid.isValidLimit <= 2) {
           if (isEmailValid.isValidLimit >= 2) {
-            await Otp.findOneAndUpdate({ email }, { status: 'INACTIVE' })
-            return { status: 400, error: 'Otp expired' }
+            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1 })
+            return { status: 400, error: 'Invalid otp' }
           }
-          await Otp.findOneAndUpdatea({ email }, { isValidLimit: isEmailValid.isValidLimit + 1 })
+          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum }, { isValidLimit: isEmailValid.isValidLimit + 1 })
           return { status: 400, error: 'Invalid otp' }
         } else {
           await Otp.findOneAndUpdate({ email }, { status: 'INACTIVE' })
