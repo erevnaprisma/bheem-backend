@@ -1,7 +1,7 @@
 const { sendMailVerification } = require('../../utils/services/supportServices')
 const { userChangesValidation } = require('../user/services')
 const { generateRandomNumber } = require('../../utils/services/supportServices')
-const { generateID } = require('../../utils/services/supportServices')
+const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { checkerValidUser } = require('../user/services')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
@@ -25,13 +25,13 @@ const sendOTPService = async ({ userID, password, email }) => {
 
   const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
   if (res) {
-    const res2 = await expireOtpChecker({ getOtpTime: res.created_at.getTime(), otp: res.otp_number })
+    const res2 = await expireOtpChecker({ getOtpTime: res.created_at, otp: res.otp_number })
     if (res2) return { status: 400, error: 'We already sent your otp, please do check your email' }
   }
   try {
     await userChangesValidation({ password, userID: userID })
 
-    const otp = generateRandomNumber(6)
+    const otp = generateRandomNumber(4)
     const otpRefNum = generateRandomNumber(6)
 
     const res = await new Otp({
@@ -40,8 +40,9 @@ const sendOTPService = async ({ userID, password, email }) => {
       otp_reference_number: otpRefNum,
       user_id: userID,
       new_email: email,
-      created_at: new Date(),
-      updated_at: new Date()
+      type: 'CHANGE EMAIL',
+      created_at: getUnixTime(),
+      updated_at: getUnixTime()
     })
 
     await res.save()
@@ -97,9 +98,8 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
     }
 
     // Check if otp already expired or not
-    const otpCreateAt = res.created_at.getTime()
+    const otpCreateAt = parseInt(res.created_at)
     const time = await expireOtpChecker({ getOtpTime: otpCreateAt, otp })
-    console.log('time=', time)
     if (!time) return { status: 400, error: 'Otp expired' }
 
     // Check if otp above time limit
@@ -124,11 +124,18 @@ const forgetPasswordSendOtpService = async (email) => {
     const user = await User.findOne({ email })
     if (!user) return { status: 400, error: 'Email not found' }
 
+    // check if already sent forget password otp before
+    const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE' })
+    if (alreadySentOtp) {
+      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE' }, { status: 'INACTIVE' })
+    }
+
     const model = {
       type: 'forgetPasswordSendOtp',
       email,
       otp: generateRandomNumber(4)
     }
+
     await sendMailVerification(model)
 
     const otp = await new Otp({
@@ -138,10 +145,13 @@ const forgetPasswordSendOtpService = async (email) => {
       otp_reference_number: generateRandomNumber(6),
       new_email: email,
       type: 'FORGET PASSWORD',
-      created_at: new Date(),
-      updated_at: new Date(),
+      created_at: new Date().getTime(),
+      updated_at: new Date().getTime(),
       user_id: user.user_id
     })
+
+    console.log(new Date().getTime())
+    console.log('created_at=', otp.created_at)
 
     await otp.save()
 
@@ -178,8 +188,8 @@ const changePasswordViaForgetPasswordService = async (otp, password, email, otpR
         return { status: 400, error: 'Invalid otp' }
       }
     }
-
-    const time = await expireOtpChecker({ getOtpTime: otpChecker.created_at, otp })
+    const otpTime = parseInt(otpChecker.created_at)
+    const time = await expireOtpChecker({ getOtpTime: otpTime, otp })
     if (!time) return { status: 400, error: 'Otp expired' }
 
     const hashedPassword = await User.hashing(password)
@@ -200,7 +210,7 @@ const expireOtpChecker = async ({ getOtpTime, otp }) => {
   // Check if otp above time limit
   const maxDate = getOtpTime + maximumTime
 
-  if (Date.now() > maxDate) {
+  if (getUnixTime() > maxDate) {
     await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
     return false
   }

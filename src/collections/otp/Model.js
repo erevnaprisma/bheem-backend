@@ -21,10 +21,10 @@ const otpSchema = new mongoose.Schema({
     default: 'CHANGE EMAIL'
   },
   created_at: {
-    type: Date
+    type: String
   },
   updated_at: {
-    type: Date
+    type: String
   },
   user_id: {
     type: String
