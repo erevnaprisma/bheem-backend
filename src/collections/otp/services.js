@@ -98,7 +98,9 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
 
     // Check if otp already expired or not
     const otpCreateAt = res.created_at.getTime()
-    await expireOtpChecker({ getOtpTime: otpCreateAt, otp })
+    const time = await expireOtpChecker({ getOtpTime: otpCreateAt, otp })
+    console.log('time=', time)
+    if (!time) return { status: 400, error: 'Otp expired' }
 
     // Check if otp above time limit
     // const getOtpTime = res.created_at.getTime()
@@ -164,18 +166,21 @@ const changePasswordViaForgetPasswordService = async (otp, password, email, otpR
         if (isEmailValid.isValidLimit <= 2) {
           if (isEmailValid.isValidLimit >= 2) {
             await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1 })
-            return { status: 400, error: 'Invalid otp' }
+            return { status: 400, error: 'Otp expired' }
           }
           await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum }, { isValidLimit: isEmailValid.isValidLimit + 1 })
           return { status: 400, error: 'Invalid otp' }
         } else {
-          await Otp.findOneAndUpdate({ email }, { status: 'INACTIVE' })
+          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum }, { status: 'INACTIVE' })
           return { status: 400, error: 'Otp expired' }
         }
       } else {
         return { status: 400, error: 'Invalid otp' }
       }
     }
+
+    const time = await expireOtpChecker({ getOtpTime: otpChecker.created_at, otp })
+    if (!time) return { status: 400, error: 'Otp expired' }
 
     const hashedPassword = await User.hashing(password)
 
