@@ -11,10 +11,15 @@ const merchantSchema = new mongoose.Schema({
     type: mongoose.SchemaTypes.Email,
     unique: true
   },
-  username: {
+  fullname: {
     type: String,
-    max: 25,
-    min: 5
+    min: 6,
+    max: 40
+  },
+  business_name: {
+    type: String,
+    min: 3,
+    max: 20
   },
   password: {
     type: String,
@@ -61,15 +66,12 @@ merchantSchema.statics.validation = (args) => {
   var addRegex = /^[a-zA-Z0-9,.:/ ]*$/
 
   const schema = Joi.object({
-    username: Joi.string().min(5).max(25),
-    full_name: Joi.string().min(6).max(40).pattern(new RegExp(regex)),
+    fullname: Joi.string().min(6).max(40).pattern(new RegExp(regex)),
     email: Joi.string().email(),
-    password: Joi.string().min(4).max(15),
-    device_id: Joi.string().min(2),
-    first_name: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
-    last_name: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
-    nickname: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
-    address: Joi.string().min(6).max(50).pattern(new RegExp(addRegex, 'm'))
+    deviceID: Joi.string().min(2),
+    businessName: Joi.string().min(3).max(20),
+    address: Joi.string().min(6).max(50).pattern(new RegExp(addRegex, 'm')),
+    password: Joi.string()
   })
 
   return schema.validate(args)

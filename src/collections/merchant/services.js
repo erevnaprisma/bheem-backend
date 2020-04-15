@@ -7,14 +7,15 @@ const Blacklist = require('../blacklist/Model')
 const { serviceAddBlacklist } = require('../blacklist/services')
 
 // services & constants
-const { sendMailVerification, generateRandomStringAndNumber, generateRandomNumber, getUnixTime } = require('../../utils/services/supportServices')
+const { sendMailVerification, generateRandomNumber, getUnixTime } = require('../../utils/services/supportServices')
 const { generateID, Response } = require('../../utils/services/supportServices')
 const word = require('../../utils/constants/word')
 const number = require('../../utils/constants/number')
 
-const addMerchantService = async (email, deviceID) => {
+const addMerchantService = async (args) => {
+  const { email, deviceID, fullname, address, businessName } = args
   // joi validation
-  const { error } = Merchant.validation({ email, device_id: deviceID })
+  const { error } = Merchant.validation(args)
   if (error) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: error.details[0].message })
 
   // null input checker
@@ -40,7 +41,9 @@ const addMerchantService = async (email, deviceID) => {
       merchant_id: generateID(),
       email,
       device_id: deviceID,
-      username: generateRandomStringAndNumber(number.USERNAME),
+      fullname,
+      address,
+      business_name: businessName,
       password: model.password,
       created_at: getUnixTime(),
       updated_at: getUnixTime()

@@ -12,10 +12,13 @@ const signUpMerchant = {
   type: MerchantResponseType,
   args: {
     email: { type: new GraphQLNonNull(GraphQLString) },
-    device_id: { type: new GraphQLNonNull(GraphQLString) }
+    deviceID: { type: new GraphQLNonNull(GraphQLString) },
+    fullname: { type: new GraphQLNonNull(GraphQLString) },
+    address: { type: new GraphQLNonNull(GraphQLString) },
+    businessName: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return addMerchantService(args.email, args.device_id)
+    return addMerchantService(args)
   }
 }
 
