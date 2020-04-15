@@ -84,7 +84,6 @@ const loginService = async (email, password, token, isLoggedInWithToken) => {
 
     return { status: number.STATUS_CODE_SUCCESS, success: word.MERCHANT_LOGIN_SUCCESS, access_token: accessToken, merchant_id: merchant.merchant_id }
   } catch (err) {
-    console.log('error=', err)
     return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: err || word.MERCHANT_LOGIN_FAILED })
   }
 }
@@ -124,6 +123,7 @@ const serviceLogout = async (token) => {
   if (!token) return { status: 400, error: 'Invalid token' }
 
   try {
+    await jwt.verify(token, config.get('privateKey'))
     await serviceAddBlacklist(token)
     return { status: 200, success: 'Successfully logout' }
   } catch (err) {
