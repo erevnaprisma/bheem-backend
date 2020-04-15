@@ -75,14 +75,17 @@ const loginService = async (email, password, token, isLoggedInWithToken) => {
     const merchant = await Merchant.findOne({ email })
     if (!merchant) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.MERCHANT_ID_NOT_FOUND })
 
+    console.log('sini')
     await merchant.comparedPassword(password)
+    console.log('so disini')
 
     // create access token
     const accessToken = await jwt.sign({ merchant: merchant.merchant_id }, config.get('privateKey'), { expiresIn: '30min' })
 
     return { status: number.STATUS_CODE_SUCCESS, success: word.MERCHANT_LOGIN_SUCCESS, access_token: accessToken, merchant_id: merchant.merchant_id }
   } catch (err) {
-    return Response({ statusCode: number.STATUS_CODE_FAIL, error: word.MERCHANT_LOGIN_FAILED })
+    console.log('error=', err)
+    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: err || word.MERCHANT_LOGIN_FAILED })
   }
 }
 
