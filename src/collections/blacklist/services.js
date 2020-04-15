@@ -13,8 +13,14 @@ const serviceAddBlacklist = async (token) => {
 
 const checkerBlacklist = async (token) => {
   const res = await Blacklist.findOne({ token })
-  if (res) throw new Error('Token is not valid anymore')
+  if (res) return new Error('Token is not valid anymore')
+}
+
+const checkerBlacklistMerchant = async (token) => {
+  const res = await Blacklist.findOne({ token })
+  if (res) return new Error('Token is not valid anymore')
 }
 
 module.exports.serviceAddBlacklist = serviceAddBlacklist
 module.exports.checkerBlacklist = checkerBlacklist
+module.exports.checkerBlacklistMerchant = checkerBlacklistMerchant

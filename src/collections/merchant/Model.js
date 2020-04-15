@@ -18,7 +18,7 @@ const merchantSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    min: 5,
+    min: 4,
     max: 15
   },
   device_id: {
@@ -30,6 +30,12 @@ const merchantSchema = new mongoose.Schema({
     min: 6,
     max: 50,
     default: null
+  },
+  created_at: {
+    type: String
+  },
+  updated_at: {
+    type: String
   }
 })
 
@@ -51,15 +57,40 @@ merchantSchema.pre('save', function (next) {
 })
 
 merchantSchema.statics.validation = (args) => {
+  var regex = /^[a-z][a-z.\s-]{1,255}$/i
   var addRegex = /^[a-zA-Z0-9,.:/ ]*$/
 
   const schema = Joi.object({
-    email: Joi.string().email().required(),
-    device_id: Joi.string().min(2).required(),
+    username: Joi.string().min(5).max(25),
+    full_name: Joi.string().min(6).max(40).pattern(new RegExp(regex)),
+    email: Joi.string().email(),
+    password: Joi.string().min(4).max(15),
+    device_id: Joi.string().min(2),
+    first_name: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
+    last_name: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
+    nickname: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
     address: Joi.string().min(6).max(50).pattern(new RegExp(addRegex, 'm'))
   })
 
   return schema.validate(args)
+}
+
+merchantSchema.methods.comparedPassword = function (candidatePassword) {
+  const user = this
+  console.log(user)
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
+      if (err) {
+        return reject('Invalid password')
+      }
+
+      if (!isMatch) {
+        return reject('Invalid password')
+      }
+
+      resolve(true)
+    })
+  })
 }
 
 module.exports = mongoose.model('Merchant', merchantSchema)

@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 const { MerchantResponseType } = require('./type')
-const { addMerchantAccount } = require('../services')
+const { addMerchantService, serviceLogout } = require('../services')
 
 const {
   GraphQLString,
@@ -12,12 +12,22 @@ const signUpMerchant = {
   type: MerchantResponseType,
   args: {
     email: { type: new GraphQLNonNull(GraphQLString) },
-    device_id: { type: new GraphQLNonNull(GraphQLString) },
-    address: { type: new GraphQLNonNull(GraphQLString) }
+    device_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return addMerchantAccount(args.email, args.device_id, args.address)
+    return addMerchantService(args.email, args.device_id)
+  }
+}
+
+const logoutMerchant = {
+  type: MerchantResponseType,
+  args: {
+    access_token: { type: GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return serviceLogout(args.access_token)
   }
 }
 
 module.exports.signUpMerchant = signUpMerchant
+module.exports.logoutMerchant = logoutMerchant

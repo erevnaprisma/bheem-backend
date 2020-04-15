@@ -86,6 +86,16 @@ const sendMailVerification = async (model) => {
     }
   }
 
+  if (model.type === 'merchantSignup') {
+    mailOptions = {
+      from: config.get('mongoDB.email'),
+      to: model.email,
+      subject: 'RayaPay',
+      text: `Thank you for joining Rayapay. We are looking forward for your action in finishing your identification.
+            password: ${model.password}`
+    }
+  }
+
   try {
     await transporter.sendMail(mailOptions)
   } catch (err) {
@@ -106,6 +116,14 @@ const isEqual = (newUsername) => {
   return regex
 }
 
+const Response = ({ statusCode = null, errorMessage = null, successMessage = null }) => {
+  return {
+    status: statusCode,
+    error: errorMessage,
+    success: successMessage
+  }
+}
+
 module.exports.generateRandomStringAndNumber = generateRandomStringAndNumber
 module.exports.generateRandomString = generateRandomString
 module.exports.generateRandomNumber = generateRandomNumber
@@ -113,3 +131,4 @@ module.exports.sendMailVerification = sendMailVerification
 module.exports.generateID = generateID
 module.exports.getUnixTime = getUnixTime
 module.exports.isEqual = isEqual
+module.exports.Response = Response
