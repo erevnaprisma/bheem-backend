@@ -96,6 +96,16 @@ const sendMailVerification = async (model) => {
     }
   }
 
+  if (model.type === 'institutionSignup') {
+    mailOptions = {
+      from: config.get('mongoDB.email'),
+      to: model.email,
+      subject: 'RayaPay',
+      text: `Thank you for joining Rayapay. We are looking forward for your action in finishing your identification.
+            password: ${model.password}`
+    }
+  }
+
   try {
     await transporter.sendMail(mailOptions)
   } catch (err) {

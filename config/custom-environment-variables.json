@@ -1,4 +1,5 @@
 {
     "privateKey": "PRIVATE_KEY",
-    "privateKeyMerchant": "PRIVATE_KEY_MERCHANT"
+    "privateKeyMerchant": "PRIVATE_KEY_MERCHANT",
+    "privateKeyInstitution": "PRIVATE_KEY_INSTITUTION"
 }

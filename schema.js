@@ -11,6 +11,10 @@ const { allTransaction } = require('./src/collections/emoney/graphql/query')
 const { signUpMerchant, logoutMerchant } = require('./src/collections/merchant/graphql/mutation')
 const { AllMerchant, MerchantInfo, loginMerchant } = require('./src/collections/merchant/graphql/query')
 
+// Institution
+const { logoutInstitution, signUpInstitution } = require('./src/collections/institution/graphql/mutation')
+const { AllInstitution, loginInstitution, InstitutionInfo } = require('./src/collections/institution/graphql/query')
+
 // Qr
 const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutation')
 const { showQR } = require('./src/collections/qr/graphql/query')
@@ -38,7 +42,10 @@ const RootQuery = new GraphQLObjectType({
     showQR,
     AllMerchant,
     MerchantInfo,
-    loginMerchant
+    loginMerchant,
+    AllInstitution,
+    loginInstitution,
+    InstitutionInfo
   }
 })
 
@@ -64,7 +71,9 @@ const Mutation = new GraphQLObjectType({
     logout,
     changePasswordViaForgetPassword,
     forgetPasswordSendOtp,
-    logoutMerchant
+    logoutMerchant,
+    logoutInstitution,
+    signUpInstitution
   }
 })
 

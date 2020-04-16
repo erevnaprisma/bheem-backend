@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 // model
-const Merchant = require('./Model')
+const Institution = require('./Model')
 const Blacklist = require('../blacklist/Model')
 const { serviceAddBlacklist } = require('../blacklist/services')
 
@@ -12,10 +12,10 @@ const { generateID, Response } = require('../../utils/services/supportServices')
 const word = require('../../utils/constants/word')
 const number = require('../../utils/constants/number')
 
-const addMerchantService = async (args) => {
+const addInstitutionService = async (args) => {
   const { email, deviceID, fullname, address, businessName } = args
   // joi validation
-  const { error } = Merchant.validation(args)
+  const { error } = Institution.validation(args)
   if (error) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: error.details[0].message })
 
   // null input checker
@@ -23,22 +23,22 @@ const addMerchantService = async (args) => {
   if (!deviceID) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.INVALID_DEVICE_ID })
 
   // check if email already in used
-  const isUsed = await Merchant.findOne({ email })
+  const isUsed = await Institution.findOne({ email })
   if (isUsed) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.IS_USED_EMAIL })
 
   const model = {
-    type: 'merchantSignup',
+    type: 'institutionSignup',
     password: generateRandomNumber(number.PASSWORD),
     email
   }
 
-  // sending email to merchant
+  // sending email to institution
   await sendMailVerification(model)
 
   try {
-    // save new merchant to db
-    const merchant = new Merchant({
-      merchant_id: generateID(),
+    // save new institution to db
+    const institution = new Institution({
+      institution_id: generateID(),
       email,
       device_id: deviceID,
       fullname,
@@ -49,7 +49,7 @@ const addMerchantService = async (args) => {
       updated_at: getUnixTime()
     })
 
-    await merchant.save()
+    await institution.save()
 
     return { status: number.STATUS_CODE_SUCCESS, success: word.CHECK_EMAIL }
   } catch (err) {
@@ -63,62 +63,59 @@ const loginService = async (email, password, token, isLoggedInWithToken) => {
 
   // login with token
   if (isLoggedInWithToken) {
-    return { status: 200, success: word.WORD_LOGIN_MERCHANT }
+    return { status: 200, success: word.WORD_LOGIN_INSTITUTION }
   }
 
   // null input checker
   if (!email || !password) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.CANNOT_EMPTY })
 
   // joi validation
-  const { error } = Merchant.validation({ email, password })
+  const { error } = Institution.validation({ email, password })
   if (error) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: error.details[0].message })
 
   try {
-    // check if merchant exist
-    const merchant = await Merchant.findOne({ email })
-    if (!merchant) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.MERCHANT_ID_NOT_FOUND })
+    // check if institution exist
+    const institution = await Institution.findOne({ email })
+    if (!institution) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.INSTITUTION_ID_NOT_FOUND })
 
-    console.log('sini')
-    await merchant.comparedPassword(password)
-    console.log('so disini')
+    await institution.comparedPassword(password)
 
     // create access token
-    const accessToken = await jwt.sign({ merchant: merchant.merchant_id }, config.get('privateKeyMerchant'), { expiresIn: '30min' })
+    const accessToken = await jwt.sign({ institution: institution.merchant_id }, config.get('privateKeyInstitution'), { expiresIn: '30min' })
 
-    return { status: number.STATUS_CODE_SUCCESS, success: word.WORD_LOGIN_MERCHANT, access_token: accessToken, merchant_id: merchant.merchant_id }
+    return { status: number.STATUS_CODE_SUCCESS, success: word.WORD_LOGIN_INSTITUTION, access_token: accessToken, institution_id: institution.institution_id }
   } catch (err) {
-    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: err || word.MERCHANT_LOGIN_FAILED })
+    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: err || word.INSTITUTION_LOGIN_FAILED })
   }
 }
 
-const getMerchantInfoService = async (merchantID) => {
-  if (!merchantID) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.MERCHANT_INVALID_ID })
+const getInstitutionInfoService = async (institutionID) => {
+  if (!institutionID) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.INSTITUTION_INVALID_ID })
 
   try {
-    // check if merchant exist
-    const merchant = await Merchant.findOne({ merchant_id: merchantID })
-    console.log(merchant)
-    if (!merchant) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.MERCHANT_ID_NOT_FOUND })
+    // check if institution exist
+    const institution = await Institution.findOne({ institution_id: institutionID })
+    if (!institution) return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.INSTITUTION_ID_NOT_FOUND })
 
-    return { status: 200, success: word.MERCHANT_GET_SUCCESS, merchant }
+    return { status: 200, success: word.MERCHANT_GET_SUCCESS, institution }
   } catch (err) {
-    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.MERCHANT_ID_NOT_FOUND })
+    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: word.INSTITUTION_ID_NOT_FOUND })
   }
 }
 
-const checkerValidMerchant = async (MerchantID) => {
-  if (!MerchantID) throw new Error('Invalid Merchant ID')
+const checkerValidInstitution = async (institutionID) => {
+  if (!institutionID) throw new Error(word.INSTITUTION_INVALID_ID)
 
-  const res = await Merchant.findOne({ merchant_id: MerchantID })
-  if (!res) throw new Error('Invalid Merchant ID')
+  const res = await Institution.findOne({ institution_id: institutionID })
+  if (!res) throw new Error(word.INSTITUTION_INVALID_ID)
 }
 
-const getAllMerchantService = async () => {
+const getAllInstitutionService = async () => {
   try {
-    const merchant = await Merchant.find()
-    return { status: 200, success: 'Successfully get all merchant', merchant }
+    const institution = await Institution.find()
+    return { status: 200, success: 'Successfully get all Institution', institution }
   } catch (err) {
-    return { status: 400, error: 'Failed get all Merchant' }
+    return { status: 400, error: 'Failed get all Institution' }
   }
 }
 
@@ -126,7 +123,7 @@ const serviceLogout = async (token) => {
   if (!token) return { status: 400, error: 'Invalid token' }
 
   try {
-    await jwt.verify(token, config.get('privateKeyMerchant'))
+    await jwt.verify(token, config.get('privateKeyInstitution'))
     await serviceAddBlacklist(token)
     return { status: 200, success: 'Successfully logout' }
   } catch (err) {
@@ -134,9 +131,9 @@ const serviceLogout = async (token) => {
   }
 }
 
-module.exports.addMerchantService = addMerchantService
-module.exports.checkerValidMerchant = checkerValidMerchant
-module.exports.getAllMerchantService = getAllMerchantService
+module.exports.addInstitutionService = addInstitutionService
+module.exports.checkerValidInstitution = checkerValidInstitution
+module.exports.getAllInstitutionService = getAllInstitutionService
 module.exports.loginService = loginService
-module.exports.getMerchantInfoService = getMerchantInfoService
+module.exports.getInstitutionInfoService = getInstitutionInfoService
 module.exports.serviceLogout = serviceLogout

@@ -1,6 +1,7 @@
 const WORD_SIGN_UP = 'Success, please check your email'
 const WORD_LOGIN = 'Welcome to RayaPay'
 const WORD_LOGIN_MERCHANT = 'Welcome to RayaPay Merchant'
+const WORD_LOGIN_INSTITUTION = 'Welcome to Rayapay Institution'
 const WORD_CHANGE_PASSWORD = 'Change password success'
 const WORD_CHANGE_EMAIL = 'Change email success'
 const WORD_CHANGE_USERNAME = 'Change username success'
@@ -21,6 +22,11 @@ const MERCHANT_LOGIN_SUCCESS = 'Successfully login'
 const MERCHANT_INVALID_ID = 'Invalid Merchant ID'
 const MERCHANT_ID_NOT_FOUND = 'Merchant ID Not Found'
 const MERCHANT_LOGIN_FAILED = 'Login Failed'
+
+// Institution
+const INSTITUTION_ID_NOT_FOUND = 'Institution ID Not Found'
+const INSTITUTION_LOGIN_FAILED = 'Login Failed'
+const INSTITUTION_INVALID_ID = 'Invalid Institution ID'
 
 // Error
 const errorHandling = (text) => {
@@ -48,5 +54,9 @@ module.exports = {
   FALSY,
   WORD_LOGIN_MERCHANT,
   CANNOT_EMPTY,
+  INSTITUTION_ID_NOT_FOUND,
+  WORD_LOGIN_INSTITUTION,
+  INSTITUTION_LOGIN_FAILED,
+  INSTITUTION_INVALID_ID,
   errorHandling
 }

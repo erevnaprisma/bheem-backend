@@ -21,6 +21,12 @@ const checkerBlacklistMerchant = async (token) => {
   if (res) return new Error('Token is not valid anymore')
 }
 
+const checkerBlacklistInstitution = async (token) => {
+  const res = await Blacklist.findOne({ token })
+  if (res) return new Error('Token is not valid anymore')
+}
+
 module.exports.serviceAddBlacklist = serviceAddBlacklist
 module.exports.checkerBlacklist = checkerBlacklist
 module.exports.checkerBlacklistMerchant = checkerBlacklistMerchant
+module.exports.checkerBlacklistInstitution = checkerBlacklistInstitution

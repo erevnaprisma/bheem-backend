@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
 
-const { checkerBlacklist, checkerBlacklistMerchant } = require('../src/collections/blacklist/services')
+const { checkerBlacklist, checkerBlacklistMerchant, checkerBlacklistInstitution } = require('../src/collections/blacklist/services')
 
 const isAuth = async (
   resolve,
@@ -34,7 +34,30 @@ const isAuthMerchant = async (
 
   if (args.access_token) {
     try {
-      await jwt.verify(args.access_token, config.get('privateKey'))
+      await jwt.verify(args.access_token, config.get('privateKeyMerchant'))
+      args.isLoggedInWithToken = true
+    } catch (err) {
+      args.isLoggedInWithToken = false
+    }
+  } else {
+    args.isLoggedInWithToken = false
+  }
+  return resolve(parent, args, context, info)
+}
+
+const isAuthInstitution = async (
+  resolve,
+  parent,
+  args,
+  context,
+  info
+) => {
+  // check if token in blacklist or not
+  await checkerBlacklistInstitution(args.access_token)
+
+  if (args.access_token) {
+    try {
+      await jwt.verify(args.access_token, config.get('privateKeyInstitution'))
       args.isLoggedInWithToken = true
     } catch (err) {
       args.isLoggedInWithToken = false
@@ -78,7 +101,8 @@ const authMiddleware = {
   },
   RootQueryType: {
     login: isAuth,
-    loginMerchant: isAuthMerchant
+    loginMerchant: isAuthMerchant,
+    loginInstitution: isAuthInstitution
   }
 }
 
