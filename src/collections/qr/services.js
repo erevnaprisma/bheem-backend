@@ -18,7 +18,9 @@ const createQrStaticService = async (merchantID, context) => {
       updated_at: getUnixTime(),
       type,
       status,
-      merchant_id: merchantID
+      merchant_id: merchantID,
+      institution_id: '1587035784928IqsCQ',
+      institution_id_native: '5e983e882f3db0ff40ce7847'
     })
 
     const { username } = await Merchant.findOne({ merchant_id: merchantID }).select('username -_id')
@@ -79,9 +81,6 @@ const showQrService = async (merchantID) => {
   } catch (err) {
     return { status: 400, error: err || 'Show Qr Failed' }
   }
-
-  
-
 }
 
 module.exports.createQrDynamic = createQrDynamic

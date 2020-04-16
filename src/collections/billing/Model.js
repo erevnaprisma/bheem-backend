@@ -14,6 +14,15 @@ const billSchema = new mongoose.Schema({
   },
   updated_at: {
     type: String
+  },
+  institution_id: {
+    type: String,
+    ref: 'Institution'
+  },
+  institution_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Institution',
+    default: null
   }
 })
 

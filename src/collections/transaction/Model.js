@@ -54,6 +54,15 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     enum: ['PNDNG', 'SETLD', 'REJEC', 'CANCEL'],
     default: 'PNDNG'
+  },
+  institution_id: {
+    type: String,
+    ref: 'Institution'
+  },
+  institution_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Institution',
+    default: null
   }
 })
 

@@ -10,6 +10,10 @@ const blacklistSchema = new mongoose.Schema({
   },
   updated_at: {
     type: String
+  },
+  institution_id: {
+    type: String,
+    
   }
 })
 
