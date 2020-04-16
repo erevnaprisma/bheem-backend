@@ -57,7 +57,8 @@ const transactionSchema = new mongoose.Schema({
   },
   institution_id: {
     type: String,
-    ref: 'Institution'
+    ref: 'Institution',
+    default: null
   },
   institution_id_native: {
     type: mongoose.SchemaTypes.ObjectId,
