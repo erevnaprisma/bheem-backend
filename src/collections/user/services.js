@@ -303,6 +303,7 @@ const serviceLogout = async (token) => {
   if (!token) return { status: 400, error: 'Invalid token' }
 
   try {
+    await jwt.verify(token, config.get('privateKey'))
     await serviceAddBlacklist(token)
     return { status: 200, success: 'Successfully logout' }
   } catch (err) {
