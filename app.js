@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 const mongoose = require('mongoose')
 const config = require('config')
+const cors = require('cors')
 // const bodyParser = require('body-parser')
 
 var indexRouter = require('./routes/index')
@@ -28,6 +29,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+
+app.use(cors())
 
 app.use('/', indexRouter)
 // app.use(forgetPassword)

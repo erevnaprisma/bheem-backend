@@ -34,7 +34,7 @@ const isAuthMerchant = async (
   info
 ) => {
   // cors
-  app.use(cors())
+  // app.use(cors())
 
   // check if token in blacklist or not
   await checkerBlacklistMerchant(args.access_token)
@@ -115,18 +115,18 @@ const authMiddleware = {
     changeUserName: token,
     changeUserPassword: token,
     // changeUserEmail: token,
-    changeUserProfile: token,
+    changeUserProfile: token
     // signUp: isAuth
     // login: isAuth,
-    signUpMerchant: corsMiddleware,
-    logoutMerchant: corsMiddleware
+    // signUpMerchant: corsMiddleware,
+    // logoutMerchant: corsMiddleware
   },
   RootQueryType: {
     login: isAuth,
     loginMerchant: isAuthMerchant,
-    loginInstitution: isAuthInstitution,
-    AllMerchant: corsMiddleware,
-    MerchantInfo: corsMiddleware
+    loginInstitution: isAuthInstitution
+    // AllMerchant: corsMiddleware,
+    // MerchantInfo: corsMiddleware
   }
 }
 
