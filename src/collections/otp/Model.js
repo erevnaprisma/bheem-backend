@@ -27,7 +27,13 @@ const otpSchema = new mongoose.Schema({
     type: String
   },
   user_id: {
-    type: String
+    type: String,
+    ref: 'User'
+  },
+  user_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    default: null,
+    ref: 'User'
   },
   isValidLimit: {
     type: Number,

@@ -11,6 +11,11 @@ const emoneySchema = new mongoose.Schema({
     type: String,
     ref: User
   },
+  user_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'User',
+    default: null
+  },
   transaction_amount: {
     type: Number,
     min: 1

@@ -16,19 +16,34 @@ const transactionSchema = new mongoose.Schema({
     ref: 'Emoney',
     default: null
   },
+  emoney_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Emoney',
+    default: null
+  },
   qr_id: {
     type: String,
-    ref: 'Qr',
+    ref: 'QrCode',
     default: null
+  },
+  qr_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'QrCode'
   },
   user_id: {
     type: String,
     ref: 'User',
     default: null
   },
+  user_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    default: null,
+    ref: 'User'
+  },
   transaction_id: {
     type: String,
-    unique: true
+    unique: true,
+    ref: 'Transaction'
   },
   transaction_method: {
     type: String,
@@ -43,6 +58,11 @@ const transactionSchema = new mongoose.Schema({
   billing_id: {
     type: String,
     default: null
+  },
+  billing_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    default: null,
+    ref: 'Billing'
   },
   created_at: {
     type: String

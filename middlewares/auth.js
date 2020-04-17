@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
+const express = require('express')
+var cors = require('cors')
+
+const app = express()
 
 const { checkerBlacklist, checkerBlacklistMerchant, checkerBlacklistInstitution } = require('../src/collections/blacklist/services')
 
@@ -29,6 +33,9 @@ const isAuthMerchant = async (
   context,
   info
 ) => {
+  // cors
+  app.use(cors())
+
   // check if token in blacklist or not
   await checkerBlacklistMerchant(args.access_token)
 
@@ -90,19 +97,36 @@ const token = async (
   return resolve(parent, args, context, info)
 }
 
+const corsMiddleware = (
+  resolve,
+  parent,
+  args,
+  context,
+  info
+) => {
+  // cors
+  app.use(cors())
+
+  return resolve(parent, args, context, info)
+}
+
 const authMiddleware = {
   Mutation: {
     changeUserName: token,
     changeUserPassword: token,
     // changeUserEmail: token,
-    changeUserProfile: token
+    changeUserProfile: token,
     // signUp: isAuth
-    // login: isAuth
+    // login: isAuth,
+    signUpMerchant: corsMiddleware,
+    logoutMerchant: corsMiddleware
   },
   RootQueryType: {
     login: isAuth,
     loginMerchant: isAuthMerchant,
-    loginInstitution: isAuthInstitution
+    loginInstitution: isAuthInstitution,
+    AllMerchant: corsMiddleware,
+    MerchantInfo: corsMiddleware
   }
 }
 

@@ -32,6 +32,11 @@ const qrSchema = new mongoose.Schema({
     ref: 'Merchant',
     default: null
   },
+  merchant_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Merchant',
+    default: null
+  },
   institution_id: {
     type: String,
     ref: 'Institution'

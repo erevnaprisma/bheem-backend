@@ -3,6 +3,19 @@ require('mongoose-type-email')
 const bcrypt = require('bcrypt')
 const Joi = require('@hapi/joi')
 
+const merchantInstitutionSchema = new mongoose.Schema({
+  institution_id: {
+    type: String,
+    ref: 'Institution',
+    default: null
+  },
+  institution_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Institution',
+    default: null
+  }
+})
+
 const merchantSchema = new mongoose.Schema({
   merchant_id: {
     type: String
@@ -42,14 +55,8 @@ const merchantSchema = new mongoose.Schema({
   updated_at: {
     type: String
   },
-  institution_id: {
-    type: String,
-    ref: 'Institution',
-    default: null
-  },
-  institution_id_native: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Institution',
+  institution: {
+    type: [merchantInstitutionSchema],
     default: null
   }
 })
