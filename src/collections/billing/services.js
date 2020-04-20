@@ -1,9 +1,28 @@
 const Billing = require('./Model')
+const Institution = require('../institution/Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const addBillingService = async (amount) => {
+const addBillingService = async (amount, institution_id = null) => {
   try {
+    // if institution id provided
+    if (institution_id) {
+      const { _id } = await Institution.findOne({ institution_id })
+
+      let bill = await new Billing({
+        bill_id: generateID(RANDOM_STRING_FOR_CONCAT),
+        amount,
+        institution_id,
+        institution_id_native: _id,
+        created_at: getUnixTime(),
+        updated_at: getUnixTime()
+      })
+      bill = await bill.save()
+
+      return bill
+    }
+
+    // if not
     let bill = await new Billing({
       bill_id: generateID(RANDOM_STRING_FOR_CONCAT),
       amount,

@@ -6,6 +6,7 @@ const { TransactionDetailType, TransactionHistoryType } = require('./type')
 
 // service
 const serviceTopupVaService = require('../payment_services/top_up/topUpVa')
+const serviceTopUpInstitution = require('../payment_services/top_up/topUpInstitution')
 const serviceStaticPaymentService = require('../payment_services/static_payment/staticPayment')
 const scanPaymentStaticService = require('../payment_services/static_payment/scanPaymentStatic')
 const detailPaymentService = require('../payment_services/static_payment/detailPayment')
@@ -27,6 +28,18 @@ const topupVa = {
   },
   resolve (parent, args) {
     return serviceTopupVaService(args)
+  }
+}
+
+const topupInstitution = {
+  type: ResponseType,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    amount: { type: new GraphQLNonNull(GraphQLInt) },
+    institution_id: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return serviceTopUpInstitution(args)
   }
 }
 
@@ -95,3 +108,4 @@ module.exports.scanPaymentStatic = scanPaymentStatic
 module.exports.detailPayment = detailPayment
 module.exports.cancelStaticPayment = cancelStaticPayment
 module.exports.transactionReceipt = transactionReceipt
+module.exports.topupInstitution = topupInstitution

@@ -104,11 +104,10 @@ const getInstitutionInfoService = async (institutionID) => {
   }
 }
 
-const checkerValidInstitution = async ({ institutionID, institutionIdNative }) => {
+const checkerValidInstitution = async (institutionID) => {
   if (!institutionID || institutionID === '') throw new Error(word.INSTITUTION_INVALID_ID)
-  if (!institutionIdNative || institutionIdNative === '') throw new Error(word.INSTITUTION_INVALID_ID_NATIVE)
 
-  const res = await Institution.findOne({ institution_id: institutionID, _id: institutionIdNative })
+  const res = await Institution.findOne({ institution_id: institutionID })
   if (!res) throw new Error(word.INSTITUTION_ID_NOT_FOUND)
 }
 

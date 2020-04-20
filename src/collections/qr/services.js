@@ -1,6 +1,7 @@
 const QRCode = require('qrcode')
 const Qr = require('./Model')
 const Merchant = require('../merchant/Model')
+const Institution = require('../institution/Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const { checkerValidMerchant } = require('../merchant/services')
@@ -12,13 +13,16 @@ const createQrStaticService = async (merchantID, context) => {
 
   // static prisma institution id
   const institutionID = '1587036707463uIQYe'
-  const institutionIdNative = '5e98422399032800662df9cc'
+
   try {
     // check if merchant id valid
     await checkerValidMerchant(merchantID)
 
     // check if institution id valid
-    await checkerValidInstitution({ institutionID, institutionIdNative })
+    await checkerValidInstitution(institutionID)
+
+    // get native _id 
+    const { _id: institutionIdNative } = await Institution.findOne({ institution_id: institutionID })
 
     // check relation between merchant and institution
     const relation = await institutionRelationChecker(merchantID, institutionID)
@@ -33,13 +37,13 @@ const createQrStaticService = async (merchantID, context) => {
       merchant_id: merchantID
     })
 
-    const { business_name: businessName, _id } = await Merchant.findOne({ merchant_id: merchantID })
+    const { business_name: businessName, _id: merchantIdNative } = await Merchant.findOne({ merchant_id: merchantID })
 
     // create a png qrcode
     const qrCode = await generateQrPng({ merchantID: merchantID, merchantName: businessName, qrID: qr.qr_id, type: qr.type, institutionID })
 
     // save created qrcode to collection
-    qr.qr_value = { merchant_id_native: _id, merchant_id: merchantID, merchant_name: businessName, qr_id: qr.qr_id, type: qr.type, institution_id: institutionID, institution_id_native: institutionIdNative }
+    qr.qr_value = { merchantIdNative, merchant_id: merchantID, merchant_name: businessName, qr_id: qr.qr_id, type: qr.type, institution_id: institutionID, institution_id_native: institutionIdNative }
 
     await qr.save()
 
