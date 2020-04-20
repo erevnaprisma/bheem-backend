@@ -5,7 +5,7 @@ const { ResponseType, StaticPaymentScanType } = require('./type')
 const { TransactionDetailType, TransactionHistoryType } = require('./type')
 
 // service
-const serviceTopupVaService = require('../payment_services/topUpVa')
+const serviceTopupVaService = require('../payment_services/top_up/topUpVa')
 const serviceStaticPaymentService = require('../payment_services/static_payment/staticPayment')
 const scanPaymentStaticService = require('../payment_services/static_payment/scanPaymentStatic')
 const detailPaymentService = require('../payment_services/static_payment/detailPayment')
@@ -38,10 +38,11 @@ const staticPayment = {
     bill_id: { type: new GraphQLNonNull(GraphQLID) },
     amount: { type: new GraphQLNonNull(GraphQLInt) },
     user_id: { type: new GraphQLNonNull(GraphQLID) },
-    password: { type: new GraphQLNonNull(GraphQLString) }
+    password: { type: new GraphQLNonNull(GraphQLString) },
+    institution_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return serviceStaticPaymentService(args.merchant_id, args.amount, args.user_id, args.transaction_id, args.bill_id, args.password)
+    return serviceStaticPaymentService(args.merchant_id, args.amount, args.user_id, args.transaction_id, args.bill_id, args.password, args.institution_id)
   }
 }
 
@@ -50,10 +51,11 @@ const scanPaymentStatic = {
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLID) },
     qr_id: { type: new GraphQLNonNull(GraphQLID) },
-    user_id: { type: new GraphQLNonNull(GraphQLID) }
+    user_id: { type: new GraphQLNonNull(GraphQLID) },
+    institution_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return scanPaymentStaticService({ merchantID: args.merchant_id, userID: args.user_id, qrID: args.qr_id })
+    return scanPaymentStaticService({ merchantID: args.merchant_id, userID: args.user_id, qrID: args.qr_id, institutionID: args.institution_id })
   }
 }
 

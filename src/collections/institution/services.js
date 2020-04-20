@@ -4,6 +4,7 @@ const config = require('config')
 // model
 const Institution = require('./Model')
 const Blacklist = require('../blacklist/Model')
+const Merchant = require('../merchant/Model')
 const { serviceAddBlacklist } = require('../blacklist/services')
 
 // services & constants
@@ -103,11 +104,12 @@ const getInstitutionInfoService = async (institutionID) => {
   }
 }
 
-const checkerValidInstitution = async (institutionID) => {
-  if (!institutionID) throw new Error(word.INSTITUTION_INVALID_ID)
+const checkerValidInstitution = async ({ institutionID, institutionIdNative }) => {
+  if (!institutionID || institutionID === '') throw new Error(word.INSTITUTION_INVALID_ID)
+  if (!institutionIdNative || institutionIdNative === '') throw new Error(word.INSTITUTION_INVALID_ID_NATIVE)
 
-  const res = await Institution.findOne({ institution_id: institutionID })
-  if (!res) throw new Error(word.INSTITUTION_INVALID_ID)
+  const res = await Institution.findOne({ institution_id: institutionID, _id: institutionIdNative })
+  if (!res) throw new Error(word.INSTITUTION_ID_NOT_FOUND)
 }
 
 const getAllInstitutionService = async () => {
@@ -131,9 +133,29 @@ const serviceLogout = async (token) => {
   }
 }
 
+const institutionRelationChecker = async (merchantID, institutionID) => {
+  const merchant = await Merchant.findOne({ merchant_id: merchantID })
+  let checker = false
+  if (merchant) {
+    merchant.institution.forEach(e => {
+      if (e.institution_id === institutionID) {
+        checker = true
+      }
+    })
+  } else {
+    return false
+  }
+  if (checker) {
+    return true
+  } else {
+    return false
+  }
+}
+
 module.exports.addInstitutionService = addInstitutionService
 module.exports.checkerValidInstitution = checkerValidInstitution
 module.exports.getAllInstitutionService = getAllInstitutionService
 module.exports.loginService = loginService
 module.exports.getInstitutionInfoService = getInstitutionInfoService
 module.exports.serviceLogout = serviceLogout
+module.exports.institutionRelationChecker = institutionRelationChecker

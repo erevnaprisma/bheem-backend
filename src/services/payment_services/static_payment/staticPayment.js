@@ -14,16 +14,22 @@ const { checkerValidMerchant } = require('../../../collections/merchant/services
 const { checkerValidUser } = require('../../../collections/user/services')
 const { checkerValidTransaction } = require('../../../collections/transaction/services')
 const { checkerValidBill } = require('../../../collections/billing/services')
+const { institutionRelationChecker } = require('../../../collections/institution/services')
 
 let finalAmount
 let getSaldoInstance
 
-const staticPayment = async (merchantID, amount, userID, transactionID, billID, password) => {
+const staticPayment = async (merchantID, amount, userID, transactionID, billID, password, institutionID) => {
   if (!amount || amount < 0) return { status: 400, error: 'Invalid amount' }
   if (!userID) return { status: 400, error: 'Invalid user id' }
   if (!transactionID) return { status: 400, error: 'Invalid transaction id' }
 
   await checkerValidMerchant(merchantID)
+
+  // check relation between merchant and institution
+  const relation = await institutionRelationChecker(merchantID, institutionID)
+  if (!relation) return { status: 400, error: 'Institution and Merchant doesn\'t have relation' }
+
   const user = await checkerValidUser(userID)
   await checkerValidTransaction(transactionID)
   await checkerValidBill(billID)

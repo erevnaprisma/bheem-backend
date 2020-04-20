@@ -1,12 +1,14 @@
-const { addBillingService } = require('../../collections/billing/services')
-const { addUserPayment } = require('../../collections/emoney/services')
-const { addUserTransaction } = require('../../collections/transaction/services')
-const { createSaldo, updateSaldo } = require('../../collections/saldo/services')
-const { checkerValidUser, checkValidUserUsingEmail } = require('../../collections/user/services')
+const { addBillingService } = require('../../../collections/billing/services')
+const { addUserPayment } = require('../../../collections/emoney/services')
+const { addUserTransaction } = require('../../../collections/transaction/services')
+const { createSaldo, updateSaldo } = require('../../../collections/saldo/services')
+const { checkerValidUser, checkValidUserUsingEmail } = require('../../../collections/user/services')
+const { checkerValidInstitution } = require('../../../collections/institution/services')
+const word = require('../../../utils/constants/word')
 
-const User = require('../../collections/user/Model')
-const Transaction = require('../../collections/transaction/Model')
-const Saldo = require('../../collections/saldo/Model')
+const User = require('../../../collections/user/Model')
+const Transaction = require('../../../collections/transaction/Model')
+const Saldo = require('../../../collections/saldo/Model')
 
 let finalAmount
 let emoney

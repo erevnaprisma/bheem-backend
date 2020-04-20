@@ -3,11 +3,13 @@ const { checkerValidMerchant } = require('../../../collections/merchant/services
 const { addBillingService } = require('../../../collections/billing/services')
 const { addUserTransaction } = require('../../../collections/transaction/services')
 const { checkerValidUser } = require('../../../collections/user/services')
+const { institutionRelationChecker } = require('../../../collections/institution/services')
 
 const Merchant = require('../../../collections/merchant/Model')
+const Qr = require('../../../collections/qr/Model')
 
-const scanPaymentStatic = async ({ merchantID, qrID, userID }) => {
-  // 1.Extract Date for QR
+const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID }) => {
+  // 1. Extract Date for QR
   // 2. Validate Merchant
   // 3. Validate Qr
   // 4. Create Bill
@@ -21,6 +23,13 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID }) => {
 
     // Validate QR Code ID
     await checkerValidQr({ QrID: qrID })
+
+    // check relation between merchant and institution
+    const relation = await institutionRelationChecker(merchantID, institutionID)
+    if (!relation) {
+      await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE' })
+      return { status: 400, error: 'Institution and Merchant doesn\'t have relation' }
+    }
 
     // Validate Valid User ID
     await checkerValidUser(userID)

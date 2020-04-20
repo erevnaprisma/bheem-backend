@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const express = require('express')
-var cors = require('cors')
+// var cors = require('cors')
 
-const app = express()
+// const app = express()
 
 const { checkerBlacklist, checkerBlacklistMerchant, checkerBlacklistInstitution } = require('../src/collections/blacklist/services')
 
@@ -97,18 +97,18 @@ const token = async (
   return resolve(parent, args, context, info)
 }
 
-const corsMiddleware = (
-  resolve,
-  parent,
-  args,
-  context,
-  info
-) => {
-  // cors
-  app.use(cors())
+// const corsMiddleware = (
+//   resolve,
+//   parent,
+//   args,
+//   context,
+//   info
+// ) => {
+//   // cors
+//   app.use(cors())
 
-  return resolve(parent, args, context, info)
-}
+//   return resolve(parent, args, context, info)
+// }
 
 const authMiddleware = {
   Mutation: {

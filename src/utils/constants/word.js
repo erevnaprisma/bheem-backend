@@ -27,6 +27,7 @@ const MERCHANT_LOGIN_FAILED = 'Login Failed'
 const INSTITUTION_ID_NOT_FOUND = 'Institution ID Not Found'
 const INSTITUTION_LOGIN_FAILED = 'Login Failed'
 const INSTITUTION_INVALID_ID = 'Invalid Institution ID'
+const INSTITUTION_INVALID_ID_NATIVE = 'Invalid Institution ID Native'
 
 // Error
 const errorHandling = (text) => {
@@ -58,5 +59,6 @@ module.exports = {
   WORD_LOGIN_INSTITUTION,
   INSTITUTION_LOGIN_FAILED,
   INSTITUTION_INVALID_ID,
+  INSTITUTION_INVALID_ID_NATIVE,
   errorHandling
 }
