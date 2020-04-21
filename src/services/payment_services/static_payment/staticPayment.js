@@ -24,17 +24,20 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
   if (!userID) return { status: 400, error: 'Invalid user id' }
   if (!transactionID) return { status: 400, error: 'Invalid transaction id' }
 
-  await checkerValidMerchant(merchantID)
-
-  // check relation between merchant and institution
-  const relation = await institutionRelationChecker(merchantID, institutionID)
-  if (!relation) return { status: 400, error: 'Institution and Merchant doesn\'t have relation' }
-
-  const user = await checkerValidUser(userID)
-  await checkerValidTransaction(transactionID)
-  await checkerValidBill(billID)
-
   try {
+    await checkerValidMerchant(merchantID)
+
+    // check relation between merchant and institution
+    const relation = await institutionRelationChecker(merchantID, institutionID)
+    if (!relation) return { status: 400, error: 'Institution and Merchant doesn\'t have relation' }
+
+    const user = await checkerValidUser(userID)
+    await checkerValidTransaction(transactionID)
+    await checkerValidBill(billID)
+
+    // check password
+    await user.comparedPassword(password)
+
     const checkerStatusTransaction = await Transaction.findOne({ transaction_id: transactionID })
     if (checkerStatusTransaction) {
       if (checkerStatusTransaction.status === 'CANCEL') {
@@ -58,9 +61,6 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
       await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC' })
       return { status: 400, error: 'Please top up your wallet first...' }
     }
-
-    // check password
-    await user.comparedPassword(password)
 
     // add e-money
     const emoney = await addUserPayment({ saldo: finalAmount, transactionAmount: amount, type, userID })
