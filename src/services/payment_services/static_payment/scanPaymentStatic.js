@@ -7,6 +7,7 @@ const { institutionRelationChecker } = require('../../../collections/institution
 
 const Merchant = require('../../../collections/merchant/Model')
 const Qr = require('../../../collections/qr/Model')
+const Transaction = require('../../../collections/transaction/Model')
 
 const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID }) => {
   // 1. Extract Date for QR
@@ -32,7 +33,7 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID }) =>
     }
 
     // Validate Valid User ID
-    await checkerValidUser(userID)
+    const user = await checkerValidUser(userID)
 
     // add Billing
     billing = await addBillingService({ institution_id: institutionID })
@@ -41,9 +42,9 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID }) =>
     const merchant = await Merchant.findOne({ merchant_id: merchantID })
 
     // add Transaction status pending
-    transaction = await addUserTransaction({ userID, bill: billing.bill_id, qrID, merchantID, transactionMethod: 'E-money' })
+    transaction = await addUserTransaction({ userID, bill: billing.bill_id, qrID, merchantID, transactionMethod: 'E-money', billing_id_native: billing._id, user_id_native: user._id })
 
-    return { transaction_id: transaction.transaction_id, merchant_id: merchantID, billing_id: billing.bill_id, status: 200, success: 'Scan merchant success', merchant_name: merchant.username }
+    return { transaction_id: transaction.transaction_id, merchant_id: merchantID, billing_id: billing.bill_id, status: 200, success: 'Scan merchant success', merchant_name: merchant.business_name }
   } catch (err) {
     return { status: 400, error: err || 'Scan Failed' }
   }
