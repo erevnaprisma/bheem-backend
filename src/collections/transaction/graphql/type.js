@@ -25,6 +25,14 @@ const TransactionMethodType = new GraphQLEnumType({
   }
 })
 
+const TopupType = new GraphQLEnumType({
+  name: 'TopupMethod',
+  values: {
+    INSTITUTION: { value: 'Institution' },
+    VIRTUAL_ACCOUNT: { value: 'Virtual Account' }
+  }
+})
+
 const TransactionType = new GraphQLObjectType({
   name: 'Transaction',
   fields: () => ({
@@ -54,3 +62,4 @@ const TransactionResponseType = new GraphQLObjectType({
 module.exports.TransactionType = TransactionType
 module.exports.TransactionResponseType = TransactionResponseType
 module.exports.TransactionMethodType = TransactionMethodType
+module.exports.TopupType = TopupType

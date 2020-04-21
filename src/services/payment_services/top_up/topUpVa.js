@@ -24,7 +24,7 @@ const serviceTopupVa = async (args) => {
     const billing = await addBillingService(args.amount)
 
     // create new transaction
-    const transaction = await addUserTransaction({ bill: billing.bill_id, amount: args.amount, userID: user.user_id, transactionMethod: 'Top-up' })
+    const transaction = await addUserTransaction({ bill: billing.bill_id, amount: args.amount, userID: user.user_id, user_id_native: user._id, transactionMethod: 'Top-up', billing_id_native: billing._id, topup_method: 'Virtual Account' })
 
     // get saldo in saldo collection
     const getSaldoInstance = await Saldo.findOne({ user_id: user.user_id })
@@ -41,7 +41,7 @@ const serviceTopupVa = async (args) => {
     }
 
     // update transaction status & e-money id
-    await Transaction.updateOne({ _id: transaction._id }, { status: 'SETLD', emoney_id: emoney.emoney_id })
+    await Transaction.updateOne({ _id: transaction._id }, { status: 'SETLD', emoney_id: emoney.emoney_id, emoney_id_native: emoney._id })
 
     // create saldo
     if (!getSaldoInstance) {

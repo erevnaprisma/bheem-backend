@@ -50,6 +50,11 @@ const transactionSchema = new mongoose.Schema({
     enum: ['Top-up', 'E-money'],
     default: 'E-money'
   },
+  topup_method: {
+    type: String,
+    enum: ['Institution', 'Virtual Account'],
+    default: 'Institution'
+  },
   transaction_amount: {
     type: Number,
     min: 1,
