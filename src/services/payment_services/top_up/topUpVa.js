@@ -21,7 +21,7 @@ const serviceTopupVa = async (args) => {
     const user = await checkValidUserUsingEmail(args.email)
 
     // create new billing
-    const billing = await addBillingService(args.amount)
+    const billing = await addBillingService({ amount: args.amount })
 
     // create new transaction
     const transaction = await addUserTransaction({ bill: billing.bill_id, amount: args.amount, userID: user.user_id, user_id_native: user._id, transactionMethod: 'Top-up', billing_id_native: billing._id, topup_method: 'Virtual Account' })

@@ -26,7 +26,7 @@ const serviceTopUpInstitution = async (args) => {
     await checkerValidInstitution(args.institution_id)
 
     // create new billing
-    const billing = await addBillingService(args.amount, args.institution_id)
+    const billing = await addBillingService({ amount: args.amount, institution_id: args.institution_id })
 
     // create new transaction
     const transaction = await addUserTransaction({ bill: billing.bill_id, amount: args.amount, userID: user.user_id, user_id_native: user._id, transactionMethod: 'Top-up', institutionID: args.institution_id, billing_id_native: billing._id, topup_method: 'Institution' })

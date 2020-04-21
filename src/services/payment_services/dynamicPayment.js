@@ -12,7 +12,7 @@ const merchantDynamicPayment = async (amount) => {
 
   try {
     // add billing
-    const billing = await addBillingService(amount)
+    const billing = await addBillingService({ amount })
 
     // add transaction with status pending
     const transaction = await addUserTransaction({ amount, bill: billing.bill_id })

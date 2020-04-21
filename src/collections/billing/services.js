@@ -3,7 +3,7 @@ const Institution = require('../institution/Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const addBillingService = async (amount, institution_id = null) => {
+const addBillingService = async ({ amount = null, institution_id = null }) => {
   try {
     // if institution id provided
     if (institution_id) {

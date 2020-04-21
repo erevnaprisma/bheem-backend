@@ -35,7 +35,7 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID }) =>
     await checkerValidUser(userID)
 
     // add Billing
-    billing = await addBillingService()
+    billing = await addBillingService({ institution_id: institutionID })
 
     // get merchant name
     const merchant = await Merchant.findOne({ merchant_id: merchantID })
