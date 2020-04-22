@@ -28,12 +28,23 @@ const otpSchema = new mongoose.Schema({
   },
   user_id: {
     type: String,
+    default: null,
     ref: 'User'
   },
   user_id_native: {
     type: mongoose.SchemaTypes.ObjectId,
     default: null,
     ref: 'User'
+  },
+  merchant_id: {
+    type: String,
+    default: null,
+    ref: 'Merchant'
+  },
+  merchant_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    default: null,
+    ref: 'Merchant'
   },
   isValidLimit: {
     type: Number,
