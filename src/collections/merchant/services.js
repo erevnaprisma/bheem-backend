@@ -143,14 +143,13 @@ const merchantTransactionHistoryService = async (merchantID) => {
 
     const transaction = await Transaction.find({ merchant_id: merchantID }).populate('merchant_id_native')
 
-    const merchantTransaction = transaction.map(t => {
-      if (t.merchant_id_native !== null) {
-        t.merchant_name = t.merchant_id_native.business_name
-        return t
-      }
+    const filterTransaction = transaction.filter(e => e.merchant_id_native !== null)
+
+    filterTransaction.forEach(e => {
+      e.merchant_name = e.merchant_id_native.business_name
     })
 
-    return { status: 400, success: 'Successfully get Merchant Transactions', transaction: merchantTransaction }
+    return { status: number.STATUS_CODE_SUCCESS, success: 'Successfully get Merchant Transactions', transaction: filterTransaction }
   } catch (err) {
     return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: err || 'Fail get Transaction History' })
   }
