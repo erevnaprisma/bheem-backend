@@ -31,13 +31,13 @@ const sendOTPService = async ({ userID, password, email }) => {
       const res2 = await expireOtpChecker({ getOtpTime: res.created_at, otp: res.otp_number })
       if (res2) return { status: 400, error: 'We already sent your otp, please do check your email' }
     }
-  
+
     await userChangesValidation({ password, userID: userID })
 
     const otp = generateRandomNumber(4)
     const otpRefNum = generateRandomNumber(6)
 
-    const res = await new Otp({
+    const otpResult = await new Otp({
       otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
       otp_number: otp,
       otp_reference_number: otpRefNum,
@@ -48,7 +48,7 @@ const sendOTPService = async ({ userID, password, email }) => {
       updated_at: getUnixTime()
     })
 
-    await res.save()
+    await otpResult.save()
 
     await sendMailVerification({ email: email, type: 'otp', otp })
 
@@ -162,7 +162,7 @@ const forgetPasswordSendOtpService = async (email) => {
   }
 }
 
-const merchantForgetPasswordSendOtpService = (email) => {
+const merchantForgetPasswordSendOtpService = async (email) => {
   if (!email) return { status: 400, error: 'Invalid email' }
 
   const { error } = User.validation({ email })
@@ -172,7 +172,7 @@ const merchantForgetPasswordSendOtpService = (email) => {
     const merchant = await Merchant.findOne({ email })
     if (!merchant) return { status: 400, error: 'Email not found' }
 
-    //check if already send forget password otp before
+    // check if already send forget password otp before
     const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
     if (alreadySentOtp) {
       await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE' })
