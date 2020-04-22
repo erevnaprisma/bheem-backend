@@ -166,12 +166,20 @@ const merchantInstitutionRelation = async (merchantID, institutionID) => {
 
     const institution = await Institution.findOne({ institution_id: institutionID })
 
+    const merchant = await Merchant.findOne({ merchant_id: merchantID })
+
     const institutionModel = {
       institution_id: institutionID,
       institution_id_native: institution._id
     }
 
+    const merchantModel = {
+      merchant_id: merchantID,
+      merchant_id_native: merchant._id
+    }
+
     await Merchant.findOneAndUpdate({ merchant_id: merchantID }, { $push: { institution: institutionModel } })
+    await Institution.findOneAndUpdate({ institution_id: institutionID }, { $push: { merchant: merchantModel } })
 
     return Response({ statusCode: number.STATUS_CODE_SUCCESS, successMessage: 'Successfully add Relation' })
   } catch (err) {
