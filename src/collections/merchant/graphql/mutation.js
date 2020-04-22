@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 const { MerchantResponseType } = require('./type')
-const { addMerchantService, serviceLogout } = require('../services')
+const { addMerchantService, serviceLogout, merchantInstitutionRelation } = require('../services')
 
 const {
   GraphQLString,
@@ -32,5 +32,17 @@ const logoutMerchant = {
   }
 }
 
+const relationMerchantInstitution = {
+  type: MerchantResponseType,
+  args: {
+    merchant_id: { type: GraphQLNonNull(GraphQLString) },
+    institution_id: { type: GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return merchantInstitutionRelation(args.merchant_id, args.institution_id)
+  }
+}
+
 module.exports.signUpMerchant = signUpMerchant
 module.exports.logoutMerchant = logoutMerchant
+module.exports.relationMerchantInstitution = relationMerchantInstitution

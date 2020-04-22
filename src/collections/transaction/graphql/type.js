@@ -13,7 +13,8 @@ const TransactionStatusType = new GraphQLEnumType({
   values: {
     PENDING: { value: 'PNDNG' },
     SETTLED: { value: 'SETLD' },
-    REJECT: { value: 'REJEC' }
+    REJECT: { value: 'REJEC' },
+    CANCEL: { value: 'CANCEL' }
   }
 })
 

@@ -8,8 +8,8 @@ const { login, getProfile, allUser } = require('./src/collections/user/graphql/q
 const { allTransaction } = require('./src/collections/emoney/graphql/query')
 
 // Merchant
-const { signUpMerchant, logoutMerchant } = require('./src/collections/merchant/graphql/mutation')
-const { AllMerchant, MerchantInfo, loginMerchant } = require('./src/collections/merchant/graphql/query')
+const { signUpMerchant, logoutMerchant, relationMerchantInstitution } = require('./src/collections/merchant/graphql/mutation')
+const { AllMerchant, MerchantInfo, loginMerchant, MerchantTransactionHistory } = require('./src/collections/merchant/graphql/query')
 
 // Institution
 const { logoutInstitution, signUpInstitution } = require('./src/collections/institution/graphql/mutation')
@@ -45,7 +45,8 @@ const RootQuery = new GraphQLObjectType({
     loginMerchant,
     AllInstitution,
     loginInstitution,
-    InstitutionInfo
+    InstitutionInfo,
+    MerchantTransactionHistory
   }
 })
 
@@ -74,7 +75,8 @@ const Mutation = new GraphQLObjectType({
     logoutMerchant,
     logoutInstitution,
     signUpInstitution,
-    topupInstitution
+    topupInstitution,
+    relationMerchantInstitution
   }
 })
 

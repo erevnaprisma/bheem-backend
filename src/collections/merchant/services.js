@@ -4,7 +4,10 @@ const config = require('config')
 // model
 const Merchant = require('./Model')
 const Blacklist = require('../blacklist/Model')
+const Transaction = require('../transaction/Model')
+const Institution = require('../institution/Model')
 const { serviceAddBlacklist } = require('../blacklist/services')
+const { checkerValidInstitution } = require('../institution/services')
 
 // services & constants
 const { sendMailVerification, generateRandomNumber, getUnixTime } = require('../../utils/services/supportServices')
@@ -134,9 +137,53 @@ const serviceLogout = async (token) => {
   }
 }
 
+const merchantTransactionHistoryService = async (merchantID) => {
+  try {
+    await checkerValidMerchant(merchantID)
+
+    const transaction = await Transaction.find({ merchant_id: merchantID }).populate('merchant_id_native')
+
+    const merchantTransaction = transaction.map(t => {
+      if (t.merchant_id_native !== null) {
+        t.merchant_name = t.merchant_id_native.business_name
+        return t
+      }
+    })
+
+    return { status: 400, success: 'Successfully get Merchant Transactions', transaction: merchantTransaction }
+  } catch (err) {
+    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: err || 'Fail get Transaction History' })
+  }
+}
+
+const merchantInstitutionRelation = async (merchantID, institutionID) => {
+  try {
+    // check if merchant id valid
+    await checkerValidMerchant(merchantID)
+
+    // check if institution id valid
+    await checkerValidInstitution(institutionID)
+
+    const institution = await Institution.findOne({ institution_id: institutionID })
+
+    const institutionModel = {
+      institution_id: institutionID,
+      institution_id_native: institution._id
+    }
+
+    await Merchant.findOneAndUpdate({ merchant_id: merchantID }, { $push: { institution: institutionModel } })
+
+    return Response({ statusCode: number.STATUS_CODE_SUCCESS, successMessage: 'Successfully add Relation' })
+  } catch (err) {
+    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: 'Failed Creating Relation' })
+  }
+}
+
 module.exports.addMerchantService = addMerchantService
 module.exports.checkerValidMerchant = checkerValidMerchant
 module.exports.getAllMerchantService = getAllMerchantService
 module.exports.loginService = loginService
 module.exports.getMerchantInfoService = getMerchantInfoService
 module.exports.serviceLogout = serviceLogout
+module.exports.merchantTransactionHistoryService = merchantTransactionHistoryService
+module.exports.merchantInstitutionRelation = merchantInstitutionRelation
