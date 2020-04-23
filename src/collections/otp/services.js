@@ -20,13 +20,13 @@ const sendOTPService = async ({ userID, password, email }) => {
 
   try {
     // Check if user valid
-    await checkerValidUser(userID)
+    const user = await checkerValidUser(userID)
 
     // Check if email already exist
     const emailAlreadyUsed = await User.findOne({ email: email })
     if (emailAlreadyUsed) return { status: 400, error: 'Email already used' }
 
-    const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE' })
+    const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE', type: 'CHANGE EMAIL' })
     if (res) {
       const res2 = await expireOtpChecker({ getOtpTime: res.created_at, otp: res.otp_number })
       if (res2) return { status: 400, error: 'We already sent your otp, please do check your email' }
@@ -42,6 +42,7 @@ const sendOTPService = async ({ userID, password, email }) => {
       otp_number: otp,
       otp_reference_number: otpRefNum,
       user_id: userID,
+      user_id_native: user._id,
       new_email: email,
       type: 'CHANGE EMAIL',
       created_at: getUnixTime(),
@@ -52,7 +53,7 @@ const sendOTPService = async ({ userID, password, email }) => {
 
     await sendMailVerification({ email: email, type: 'otp', otp })
 
-    return { status: 200, success: 'Please do check your email', otpRefNum: res.otp_reference_number }
+    return { status: 200, success: 'Please do check your email', otpRefNum: otpResult.otp_reference_number }
   } catch (err) {
     return { status: 400, error: err || 'Otp failed' }
   }
