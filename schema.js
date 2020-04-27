@@ -20,7 +20,16 @@ const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutati
 const { showQR } = require('./src/collections/qr/graphql/query')
 
 // Otp
-const { sendOtp, submitOtp, changePasswordViaForgetPassword, forgetPasswordSendOtp } = require('./src/collections/otp/graphql/mutation')
+const {
+  sendOtp,
+  submitOtp,
+  changePasswordViaForgetPassword,
+  forgetPasswordSendOtp,
+  merchantForgetPassword,
+  merchantSubmitForgetPassword,
+  institutionForgetPassword,
+  institutionSubmitForgetPassword
+} = require('./src/collections/otp/graphql/mutation')
 
 // Services
 const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt, topupInstitution } = require('./src/services/graphql/mutation')
@@ -76,7 +85,11 @@ const Mutation = new GraphQLObjectType({
     logoutInstitution,
     signUpInstitution,
     topupInstitution,
-    relationMerchantInstitution
+    relationMerchantInstitution,
+    merchantForgetPassword,
+    merchantSubmitForgetPassword,
+    institutionForgetPassword,
+    institutionSubmitForgetPassword
   }
 })
 

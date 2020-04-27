@@ -6,6 +6,7 @@ var logger = require('morgan')
 const mongoose = require('mongoose')
 const config = require('config')
 const cors = require('cors')
+const hmac = require('./middlewares/hmac')
 // const bodyParser = require('body-parser')
 
 var indexRouter = require('./routes/index')
@@ -31,6 +32,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(cors())
+app.use(hmac())
 
 app.use('/', indexRouter)
 // app.use(forgetPassword)

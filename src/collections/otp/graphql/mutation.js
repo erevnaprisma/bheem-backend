@@ -7,7 +7,16 @@ const {
 } = graphql
 
 const { OtpResponseType } = require('./type')
-const { sendOTPService, submitOtpService, forgetPasswordSendOtpService, changePasswordViaForgetPasswordService } = require('../services')
+const {
+  sendOTPService,
+  submitOtpService,
+  forgetPasswordSendOtpService,
+  changePasswordViaForgetPasswordService,
+  merchantChangePasswordViaForgetPasswordService,
+  merchantForgetPasswordSendOtpService,
+  institutionChangePasswordViaForgetPasswordService,
+  institutionForgetPasswordSendOtpService
+} = require('../services')
 
 const sendOtp = {
   type: OtpResponseType,
@@ -57,7 +66,57 @@ const changePasswordViaForgetPassword = {
   }
 }
 
+const merchantForgetPassword = {
+  type: OtpResponseType,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return merchantForgetPasswordSendOtpService(args.email)
+  }
+}
+
+const merchantSubmitForgetPassword = {
+  type: OtpResponseType,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    otpRefNum: { type: new GraphQLNonNull(GraphQLString) },
+    otp: { type: new GraphQLNonNull(GraphQLString) },
+    new_password: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return merchantChangePasswordViaForgetPasswordService(args.otp, args.new_password, args.email, args.otpRefNum)
+  }
+}
+
+const institutionForgetPassword = {
+  type: OtpResponseType,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return institutionForgetPasswordSendOtpService(args.email)
+  }
+}
+
+const institutionSubmitForgetPassword = {
+  type: OtpResponseType,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    otpRefNum: { type: new GraphQLNonNull(GraphQLString) },
+    otp: { type: new GraphQLNonNull(GraphQLString) },
+    new_password: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return institutionChangePasswordViaForgetPasswordService(args.otp, args.new_password, args.email, args.otpRefNum)
+  }
+}
+
 module.exports.sendOtp = sendOtp
 module.exports.submitOtp = submitOtp
 module.exports.forgetPasswordSendOtp = forgetPasswordSendOtp
 module.exports.changePasswordViaForgetPassword = changePasswordViaForgetPassword
+module.exports.merchantForgetPassword = merchantForgetPassword
+module.exports.merchantSubmitForgetPassword = merchantSubmitForgetPassword
+module.exports.institutionForgetPassword = institutionForgetPassword
+module.exports.institutionSubmitForgetPassword = institutionSubmitForgetPassword

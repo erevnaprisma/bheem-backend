@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const express = require('express')
+// const hmac = require('crypto-js/hmac-sha256')
 // var cors = require('cors')
 
 // const app = express()
@@ -25,6 +26,18 @@ const isAuth = async (
   }
   return resolve(parent, args, context, info)
 }
+
+// const hmacValidation = async (
+//   resolve,
+//   parent,
+//   args,
+//   context,
+//   info
+// ) => {
+//   const { hmac } = context.headers
+//   console.log(hmac)
+//   return resolve(parent, args, context, info)
+// }
 
 const isAuthMerchant = async (
   resolve,

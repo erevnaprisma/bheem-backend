@@ -106,7 +106,6 @@ userSchema.statics.hashing = (password) => {
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return reject(err)
 
-        console.log('hash=', hash)
         resolve(hash)
       })
     })
@@ -115,7 +114,6 @@ userSchema.statics.hashing = (password) => {
 
 userSchema.methods.comparedPassword = function (candidatePassword) {
   const user = this
-  console.log(user)
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
       if (err) {

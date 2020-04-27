@@ -55,6 +55,16 @@ const otpSchema = new mongoose.Schema({
     type: String,
     enum: ['ACTIVE', 'INACTIVE'],
     default: 'ACTIVE'
+  },
+  institution_Id: {
+    type: String,
+    ref: 'Institution',
+    default: null
+  },
+  institution_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    default: null,
+    ref: 'Institution'
   }
 })
 
