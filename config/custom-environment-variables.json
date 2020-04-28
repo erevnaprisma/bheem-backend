@@ -1,5 +1,6 @@
 {
     "privateKey": "PRIVATE_KEY",
     "privateKeyMerchant": "PRIVATE_KEY_MERCHANT",
-    "privateKeyInstitution": "PRIVATE_KEY_INSTITUTION"
+    "privateKeyInstitution": "PRIVATE_KEY_INSTITUTION",
+    "hmac": "HMAC"
 }
