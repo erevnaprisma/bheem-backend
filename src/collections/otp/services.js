@@ -22,6 +22,7 @@ const sendOTPService = async ({ userID, password, email }) => {
   try {
     // Check if user valid
     const user = await checkerValidUser(userID)
+    await user.comparedPassword(password)
 
     // Check if email already exist
     const emailAlreadyUsed = await User.findOne({ email: email })
