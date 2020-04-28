@@ -52,7 +52,13 @@ const sendOTPService = async ({ userID, password, email }) => {
 
     await otpResult.save()
 
-    await sendMailVerification({ email: email, type: 'otp', otp })
+    const model = {
+      email: otpResult.new_email,
+      otp,
+      type: 'otp'
+    }
+
+    await sendMailVerification(model)
 
     return { status: 200, success: 'Please do check your email', otpRefNum: otpResult.otp_reference_number }
   } catch (err) {

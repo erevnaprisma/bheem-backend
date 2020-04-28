@@ -153,6 +153,42 @@ const merchantTransactionHistoryService = async (merchantID) => {
   }
 }
 
+const merchantDashboardService = async (merchantID) => {
+  try {
+    let totalTransaction = 0
+    let totalAmountTransaction = 0
+    let todayTotalAmountTransaction = 0
+
+    await checkerValidMerchant(merchantID)
+
+    const transaction = await Transaction.find({ merchant_id: merchantID, status: 'SETLD' }).populate('merchant_id_native')
+
+    const filterTransaction = transaction.filter(e => e.merchant_id_native !== null)
+
+    filterTransaction.forEach(e => {
+      e.merchant_name = e.merchant_id_native.business_name
+      totalAmountTransaction = totalAmountTransaction + e.transaction_amount
+      totalTransaction++
+    })
+
+    const arrayTodayTransaction = filterTransaction.filter(val =>
+      new Date(val.created_at).getUTCDate() === new Date().getUTCDate()
+    )
+
+    arrayTodayTransaction.forEach(t => {
+      todayTotalAmountTransaction = todayTotalAmountTransaction + t.transaction_amount
+    })
+
+    console.log('total transaction', totalTransaction)
+    console.log('total amount transaction', totalAmountTransaction)
+    console.log('today total amount', todayTotalAmountTransaction)
+
+    return Response({ statusCode: 200, successMessage: 'Berhasil' })
+  } catch (err) {
+    return Response({ statusCode: 400, errorMessage: 'Failed get Merchant Information' })
+  }
+}
+
 const merchantInstitutionRelation = async (merchantID, institutionID) => {
   try {
     // check if merchant id valid
@@ -192,3 +228,4 @@ module.exports.getMerchantInfoService = getMerchantInfoService
 module.exports.serviceLogout = serviceLogout
 module.exports.merchantTransactionHistoryService = merchantTransactionHistoryService
 module.exports.merchantInstitutionRelation = merchantInstitutionRelation
+module.exports.merchantDashboardService = merchantDashboardService

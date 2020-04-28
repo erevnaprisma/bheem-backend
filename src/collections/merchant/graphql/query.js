@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
-const { AllMerchantResponseType, MerchantInfoResponseType, LoginResponseType, AllMerchantTransactionResponseType } = require('./type')
-const { getAllMerchantService, getMerchantInfoService, loginService, merchantTransactionHistoryService } = require('../services')
+const { AllMerchantResponseType, MerchantInfoResponseType, LoginResponseType, AllMerchantTransactionResponseType, MerchantResponseType } = require('./type')
+const { getAllMerchantService, getMerchantInfoService, loginService, merchantTransactionHistoryService, merchantDashboardService } = require('../services')
 
 const {
   GraphQLString,
@@ -47,9 +47,20 @@ const MerchantTransactionHistory = {
   }
 }
 
+const merchantDashboard = {
+  type: MerchantResponseType,
+  args: {
+    merchant_id: { type: GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return merchantDashboardService(args.merchant_id)
+  }
+}
+
 module.exports = {
   AllMerchant,
   MerchantInfo,
   loginMerchant,
-  MerchantTransactionHistory
+  MerchantTransactionHistory,
+  merchantDashboard
 }

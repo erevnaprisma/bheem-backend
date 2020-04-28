@@ -43,6 +43,7 @@ const relationMerchantInstitution = {
   }
 }
 
+
 module.exports.signUpMerchant = signUpMerchant
 module.exports.logoutMerchant = logoutMerchant
 module.exports.relationMerchantInstitution = relationMerchantInstitution

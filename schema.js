@@ -9,7 +9,7 @@ const { allTransaction } = require('./src/collections/emoney/graphql/query')
 
 // Merchant
 const { signUpMerchant, logoutMerchant, relationMerchantInstitution } = require('./src/collections/merchant/graphql/mutation')
-const { AllMerchant, MerchantInfo, loginMerchant, MerchantTransactionHistory } = require('./src/collections/merchant/graphql/query')
+const { AllMerchant, MerchantInfo, loginMerchant, MerchantTransactionHistory, merchantDashboard } = require('./src/collections/merchant/graphql/query')
 
 // Institution
 const { logoutInstitution, signUpInstitution } = require('./src/collections/institution/graphql/mutation')
@@ -55,7 +55,8 @@ const RootQuery = new GraphQLObjectType({
     AllInstitution,
     loginInstitution,
     InstitutionInfo,
-    MerchantTransactionHistory
+    MerchantTransactionHistory,
+    merchantDashboard
   }
 })
 
