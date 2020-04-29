@@ -32,7 +32,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(cors())
-// app.use(hmac())
+app.use(hmac())
 
 app.use('/', indexRouter)
 // app.use(forgetPassword)
