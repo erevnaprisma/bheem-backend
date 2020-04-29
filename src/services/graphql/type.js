@@ -25,6 +25,7 @@ const StaticPaymentScanType = new GraphQLObjectType({
     merchant_id: { type: GraphQLString },
     billing_id: { type: GraphQLString },
     merchant_name: { type: GraphQLString },
+    institution_id: { type: GraphQLString },
     error: { type: GraphQLString },
     status: { type: GraphQLInt },
     success: { type: GraphQLString }
