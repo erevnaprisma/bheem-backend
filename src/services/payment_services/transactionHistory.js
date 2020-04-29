@@ -1,4 +1,5 @@
 const Transaction = require('../../collections/transaction/Model')
+const Institution = require('../../collections/institution/Model')
 const { checkerValidUser } = require('../../collections/user/services')
 
 const transactionHistory = async (id) => {
@@ -11,24 +12,37 @@ const transactionHistory = async (id) => {
     // add Merchant username to response
     transaction.forEach(e => {
       if (e.merchant_id_native) {
-        if (e.transaction_method !== 'Top-up') {
+        if (e.transaction_method === 'E-money' || e.transaction_method === 'Top-up') {
           e.merchant_name = e.merchant_id_native.business_name
-        } else if (e.topup_method === 'Institution') {
-          e.merchant_name = 'Prisma Manado'
-        } else if (e.topup_method === 'Virtual Account') {
-          e.merchant_name = 'Virtual Account'
         }
       } else {
-        if (e.transaction_method !== 'Top-up') {
-          e.merchant_name = 'Development'
-        } else if (e.topup_method === 'Institution') {
-          e.merchant_name = 'Prisma Manado'
-        } else if (e.topup_method === 'Virtual Account') {
-          e.merchant_name = 'Virtual Account'
-        }
+        e.merchant_name = e.topup_method
       }
-      
     })
+
+    // transaction.forEach(e => {
+    //   if (e.merchant_id_native) {
+    //     if (e.transaction_method !== 'Top-up') {
+    //       e.merchant_name = e.merchant_id_native.business_name
+    //     } else if (e.topup_method === 'Institution') {
+    //       Institution.findOne({ institution_id: transaction.institution_id }).then((institution) => { e.merchant_name = institution.business_name })
+    //     } else if (e.topup_method === 'Virtual Account') {
+    //       e.merchant_name = 'Virtual Account'
+    //     }
+    //   } else {
+    //     if (e.transaction_method !== 'Top-up') {
+    //       e.merchant_name = 'Development'
+    //     } else if (e.topup_method === 'Institution') {
+    //       Institution.findOne({ institution_id: transaction.institution_id }).then((institution) => {
+    //         console.log(institution)
+    //         e.merchant_name = institution.business_name
+    //       })
+    //     } else if (e.topup_method === 'Virtual Account') {
+    //       e.merchant_name = 'Virtual Account'
+    //     }
+    //   }
+      
+    // })
 
     return { status: 200, success: 'Successfully get Transaction History', transaction_history: transaction }
   } catch (err) {
