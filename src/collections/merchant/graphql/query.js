@@ -1,6 +1,6 @@
 const graphql = require('graphql')
 
-const { AllMerchantResponseType, MerchantInfoResponseType, LoginResponseType, AllMerchantTransactionResponseType, MerchantResponseType } = require('./type')
+const { AllMerchantResponseType, MerchantInfoResponseType, LoginResponseType, AllMerchantTransactionResponseType, MerchantResponseType, MerchantDashboardType } = require('./type')
 const { getAllMerchantService, getMerchantInfoService, loginService, merchantTransactionHistoryService, merchantDashboardService } = require('../services')
 
 const {
@@ -48,7 +48,7 @@ const MerchantTransactionHistory = {
 }
 
 const merchantDashboard = {
-  type: MerchantResponseType,
+  type: MerchantDashboardType,
   args: {
     merchant_id: { type: GraphQLNonNull(GraphQLString) }
   },

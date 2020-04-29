@@ -56,13 +56,25 @@ const AllMerchantTransactionResponseType = new GraphQLObjectType({
 
 const LoginResponseType = new GraphQLObjectType({
   name: 'MerchantLoginResponse',
-  fields: {
+  fields: () => ({
     status: { type: GraphQLInt },
     error: { type: GraphQLString },
     success: { type: GraphQLString },
     access_token: { type: GraphQLString },
     merchant_id: { type: GraphQLString }
-  }
+  })
+})
+
+const MerchantDashboardType = new GraphQLObjectType({
+  name: 'MerchantDashboardResponse',
+  fields: () => ({
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    total_transaction: { type: GraphQLString },
+    total_transaction_amount: { type: GraphQLString },
+    daily_transaction_amount: { type: GraphQLString }
+  })
 })
 
 const MerchantInfoResponseType = new GraphQLObjectType({
@@ -81,3 +93,4 @@ module.exports.AllMerchantResponseType = AllMerchantResponseType
 module.exports.LoginResponseType = LoginResponseType
 module.exports.MerchantInfoResponseType = MerchantInfoResponseType
 module.exports.AllMerchantTransactionResponseType = AllMerchantTransactionResponseType
+module.exports.MerchantDashboardType = MerchantDashboardType

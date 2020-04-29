@@ -171,19 +171,15 @@ const merchantDashboardService = async (merchantID) => {
       totalTransaction++
     })
 
-    const arrayTodayTransaction = filterTransaction.filter(val =>
-      new Date(val.created_at).getUTCDate() === new Date().getUTCDate()
+    const arrayTodayTransaction = filterTransaction.filter(val => {
+      return new Date(parseInt(val.created_at)).getUTCDate() === new Date().getUTCDate()
+    }
     )
 
     arrayTodayTransaction.forEach(t => {
       todayTotalAmountTransaction = todayTotalAmountTransaction + t.transaction_amount
     })
-
-    console.log('total transaction', totalTransaction)
-    console.log('total amount transaction', totalAmountTransaction)
-    console.log('today total amount', todayTotalAmountTransaction)
-
-    return Response({ statusCode: 200, successMessage: 'Berhasil' })
+    return { status: 200, success: 'Successfully get Merchant Dashboard ', total_transaction: totalTransaction, total_transaction_amount: totalAmountTransaction, daily_transaction_amount: todayTotalAmountTransaction }
   } catch (err) {
     return Response({ statusCode: 400, errorMessage: 'Failed get Merchant Information' })
   }

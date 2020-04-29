@@ -12,17 +12,22 @@ const transactionHistory = async (id) => {
     transaction.forEach(e => {
       if (e.merchant_id_native) {
         if (e.transaction_method !== 'Top-up') {
-          e.merchant_name = e.merchant_id_native.username
-        } else {
+          e.merchant_name = e.merchant_id_native.business_name
+        } else if (e.topup_method === 'Institution') {
+          e.merchant_name = 'Prisma Manado'
+        } else if (e.topup_method === 'Virtual Account') {
           e.merchant_name = 'Virtual Account'
         }
       } else {
         if (e.transaction_method !== 'Top-up') {
-          e.merchant_name = 'Erevna shop'
-        } else {
+          e.merchant_name = 'Development'
+        } else if (e.topup_method === 'Institution') {
+          e.merchant_name = 'Prisma Manado'
+        } else if (e.topup_method === 'Virtual Account') {
           e.merchant_name = 'Virtual Account'
         }
       }
+      
     })
 
     return { status: 200, success: 'Successfully get Transaction History', transaction_history: transaction }

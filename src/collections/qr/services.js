@@ -12,7 +12,7 @@ const createQrStaticService = async (merchantID, context) => {
   const status = 'ACTIVE'
 
   // static prisma institution id
-  const institutionID = '1587036707463uIQYe'
+  const institutionID = '1588129671681zLspL'
 
   try {
     // check if merchant id valid
