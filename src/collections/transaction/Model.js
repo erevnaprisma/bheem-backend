@@ -52,7 +52,7 @@ const transactionSchema = new mongoose.Schema({
   },
   topup_method: {
     type: String,
-    enum: ['Institution', 'Virtual Account', null],
+    enum: ['Institution', 'Virtual Account', 'Merchant', null],
     default: null
   },
   transaction_amount: {

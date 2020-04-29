@@ -32,7 +32,7 @@ const {
 } = require('./src/collections/otp/graphql/mutation')
 
 // Services
-const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt, topupInstitution } = require('./src/services/graphql/mutation')
+const { topupVa, staticPayment, scanPaymentStatic, detailPayment, cancelStaticPayment, transactionReceipt, topupInstitution, topupMerchant } = require('./src/services/graphql/mutation')
 const { transactionHistory } = require('./src/services/graphql/query')
 
 const {
@@ -91,7 +91,8 @@ const Mutation = new GraphQLObjectType({
     merchantForgetPassword,
     merchantSubmitForgetPassword,
     institutionForgetPassword,
-    institutionSubmitForgetPassword
+    institutionSubmitForgetPassword,
+    topupMerchant
   }
 })
 

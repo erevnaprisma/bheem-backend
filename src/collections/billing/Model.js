@@ -24,6 +24,16 @@ const billSchema = new mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'Institution',
     default: null
+  },
+  merchant_id: {
+    type: String,
+    ref: 'Merchant',
+    default: null
+  },
+  merchant_id_native: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Merchant',
+    default: null
   }
 })
 
