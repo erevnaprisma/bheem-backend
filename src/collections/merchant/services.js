@@ -197,6 +197,18 @@ const merchantInstitutionRelation = async (merchantID, institutionID) => {
 
     const merchant = await Merchant.findOne({ merchant_id: merchantID })
 
+    var relationChecker = false
+
+    merchant.institution.forEach(e => {
+      if (e.institution_id === institutionID) {
+        relationChecker = true
+      }
+    })
+
+    if (relationChecker) {
+      return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: 'Institution and Merchant already related' })
+    }
+
     const institutionModel = {
       institution_id: institutionID,
       institution_id_native: institution._id
