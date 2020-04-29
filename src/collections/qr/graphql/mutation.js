@@ -12,10 +12,11 @@ const { QrResponseType } = require('./type')
 const createQrStatic = {
   type: QrResponseType,
   args: {
-    merchant_id: { type: new GraphQLNonNull(GraphQLID) }
+    merchant_id: { type: new GraphQLNonNull(GraphQLString) },
+    institution_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return createQrStaticService(args.merchant_id)
+    return createQrStaticService(args.merchant_id, args.institution_id)
   }
 }
 

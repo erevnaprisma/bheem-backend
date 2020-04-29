@@ -216,6 +216,20 @@ const merchantInstitutionRelation = async (merchantID, institutionID) => {
   }
 }
 
+const InstitutionRelatedToMerchantService = async (merchantID) => {
+  try {
+    await checkerValidMerchant(merchantID)
+    const merchant = await Merchant.findOne({ merchant_id: merchantID })
+    const listInstitution = merchant.institution.map(e => {
+      return Institution.findOne({ institution_id: e.institution_id })
+    })
+
+    return { status: 200, success: 'Successfully get institution', institution: listInstitution }
+  } catch (err) {
+    return Response({ statusCode: number.STATUS_CODE_FAIL, errorMessage: 'Failed get Institution' })
+  }
+}
+
 module.exports.addMerchantService = addMerchantService
 module.exports.checkerValidMerchant = checkerValidMerchant
 module.exports.getAllMerchantService = getAllMerchantService
@@ -225,3 +239,4 @@ module.exports.serviceLogout = serviceLogout
 module.exports.merchantTransactionHistoryService = merchantTransactionHistoryService
 module.exports.merchantInstitutionRelation = merchantInstitutionRelation
 module.exports.merchantDashboardService = merchantDashboardService
+module.exports.InstitutionRelatedToMerchantService = InstitutionRelatedToMerchantService

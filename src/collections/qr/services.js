@@ -7,12 +7,9 @@ const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const { checkerValidMerchant } = require('../merchant/services')
 const { checkerValidInstitution, institutionRelationChecker } = require('../institution/services')
 
-const createQrStaticService = async (merchantID, context) => {
+const createQrStaticService = async (merchantID, institutionID) => {
   const type = 'STATIC'
   const status = 'ACTIVE'
-
-  // static prisma institution id
-  const institutionID = '1588129671681zLspL'
 
   try {
     // check if merchant id valid

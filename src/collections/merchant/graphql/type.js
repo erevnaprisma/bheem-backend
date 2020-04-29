@@ -1,6 +1,7 @@
 const graphql = require('graphql')
 
 const { TransactionType } = require('../../transaction/graphql/type')
+const { InstitutionType } = require('../../institution/graphql/type')
 
 const {
   GraphQLString,
@@ -87,6 +88,16 @@ const MerchantInfoResponseType = new GraphQLObjectType({
   })
 })
 
+const MerchantInstitutionRelation = new GraphQLObjectType({
+  name: 'MerchantInstitutionRelationResponse',
+  fields: () => ({
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    institution: { type: GraphQLList(InstitutionType) }
+  })
+})
+
 module.exports.MerchantType = MerchantType
 module.exports.MerchantResponseType = MerchantResponseType
 module.exports.AllMerchantResponseType = AllMerchantResponseType
@@ -94,3 +105,4 @@ module.exports.LoginResponseType = LoginResponseType
 module.exports.MerchantInfoResponseType = MerchantInfoResponseType
 module.exports.AllMerchantTransactionResponseType = AllMerchantTransactionResponseType
 module.exports.MerchantDashboardType = MerchantDashboardType
+module.exports.MerchantInstitutionRelation = MerchantInstitutionRelation
