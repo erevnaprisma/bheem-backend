@@ -78,7 +78,7 @@ const scanPaymentStatic = {
     merchant_id: { type: new GraphQLNonNull(GraphQLID) },
     qr_id: { type: new GraphQLNonNull(GraphQLID) },
     user_id: { type: new GraphQLNonNull(GraphQLID) },
-    institution_id: { type: new GraphQLNonNull(GraphQLString) }
+    institution_id: { type: GraphQLString }
   },
   resolve (parent, args) {
     return scanPaymentStaticService({ merchantID: args.merchant_id, userID: args.user_id, qrID: args.qr_id, institutionID: args.institution_id })

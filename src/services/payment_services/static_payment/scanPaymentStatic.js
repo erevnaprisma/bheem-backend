@@ -9,7 +9,7 @@ const Merchant = require('../../../collections/merchant/Model')
 const Qr = require('../../../collections/qr/Model')
 const Transaction = require('../../../collections/transaction/Model')
 
-const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID }) => {
+const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID = '1588133477369IntRx' }) => {
   // 1. Extract Date for QR
   // 2. Validate Merchant
   // 3. Validate Qr
