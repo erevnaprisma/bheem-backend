@@ -8,7 +8,7 @@ module.exports = function () {
     console.log('environment variable hmac', config.get('hmac'))
     console.log('body stream', req.body)
 
-    const signature = CryptoJs.HmacSHA256(req.body, config.get('hmac')).toString()
+    const signature = CryptoJs.HmacSHA256(JSON.stringify(req.body), config.get('hmac')).toString()
 
     if (signature !== hmac) {
       res.status(400).send({ errors: [{ message: 'Invalid Hmac' }] })
