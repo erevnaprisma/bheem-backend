@@ -65,7 +65,9 @@ const userLogin = async (email, password, token, isLoggedInWithToken) => {
   if (isLoggedInWithToken) {
     return { status: 200, success: WORD_LOGIN }
   }
-  if (!email || !password) return { status: 400, error: 'Email or Password can\'t be empty' }
+  if (!email || !password) {
+    return { status: 400, error: 'Email or Password can\'t be empty' }
+  }
 
   const user = await User.findOne({ email })
   if (!user) return { status: 400, error: 'Invalid email or password', user: null }

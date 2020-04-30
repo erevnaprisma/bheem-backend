@@ -15,6 +15,8 @@ const isAuth = async (
   context,
   info
 ) => {
+  // context.statusCode = 200
+  // console.log('context', context)
   // check if token in blacklist or not
   await checkerBlacklist(args.access_token)
 

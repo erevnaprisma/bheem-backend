@@ -11,7 +11,7 @@ module.exports = function () {
     const signature = CryptoJs.HmacSHA256(req.body, config.get('hmac')).toString()
 
     if (signature !== hmac) {
-      res.send({ error: 'Invalid Hmac', status: 400 })
+      res.status(400).send({ errors: [{ message: 'Invalid Hmac' }] })
       return
     }
 

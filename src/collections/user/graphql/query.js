@@ -18,7 +18,7 @@ const login = {
     username: { type: GraphQLString },
     password: { type: GraphQLString }
   },
-  async resolve (parent, args, context) {
+  async resolve (parent, args) {
     return userLogin(args.username, args.password, args.access_token, args.isLoggedInWithToken)
   }
 }
