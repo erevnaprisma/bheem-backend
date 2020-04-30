@@ -1,11 +1,17 @@
 const QRCode = require('qrcode')
+
+// model
 const Qr = require('./Model')
 const Merchant = require('../merchant/Model')
 const Institution = require('../institution/Model')
+
+// service
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const { checkerValidMerchant } = require('../merchant/services')
 const { checkerValidInstitution, institutionRelationChecker } = require('../institution/services')
+const { addBillingService } = require('../billing/services')
+const { addUserTransaction } = require('../transaction/services')
 
 const createQrStaticService = async (merchantID, institutionID) => {
   const type = 'STATIC'
@@ -50,19 +56,55 @@ const createQrStaticService = async (merchantID, institutionID) => {
   }
 }
 
-const createQrDynamic = async (type, status, transactionID) => {
-  let qr = new Qr({
-    qr_id: generateID(RANDOM_STRING_FOR_CONCAT),
-    created_at: getUnixTime(),
-    updated_at: getUnixTime(),
-    type,
-    status,
-    transaction_id: transactionID
-  })
+const createQrDynamic = async (merchantID, institutionID, amount) => {
+  const type = 'DYNAMIC'
+  const status = 'ACTIVE'
 
-  qr = await qr.save()
+  try {
+    // check if merchant id valid
+    await checkerValidMerchant(merchantID)
 
-  return qr
+    // check if institution id valid
+    await checkerValidInstitution(institutionID)
+
+    // get native _id
+    const { _id: institutionIdNative } = await Institution.findOne({ institution_id: institutionID })
+
+    // check relation between merchant and institution
+    const relation = await institutionRelationChecker(merchantID, institutionID)
+    if (!relation) return { status: 400, error: 'Institution and Merchant doens\'t have relation' }
+
+    const qr = new Qr({
+      qr_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      created_at: getUnixTime(),
+      updated_at: getUnixTime(),
+      type,
+      status,
+      merchant_id: merchantID
+    })
+
+    // get business name and merchant id native
+    const { business_name: businessName, _id: merchantIdNative } = await Merchant.findOne({ merchant_id: merchantID })
+
+    // create a png qrcode 
+    const qrCode = await generateQrPng({ merchantID, merchantName: businessName, qrID: qr.qr_id, type: qr.type, institutionID, amount })
+
+    // save created qrcode to collection
+    qr.qr_value = { merchantIdNative, merchant_id: merchantID, merchant_name: businessName, qr_id: qr.qr_id, type, institution_id: institutionID, institution_id_native: institutionIdNative, amount }
+
+    // save qr to db
+    await qr.save()
+
+    // add billing
+    const billing = await addBillingService({ amount, institution_id: institutionID })
+
+    // add transaction
+    await addUserTransaction({ bill: billing.bill_id, qrID: qr.qr_id, merchantID, transactionMethod: 'E-money', billing_id_native: billing._id, amount, institutionID: institutionID })
+
+    return { status: 200, success: 'Successfully created Qr Code', qr_code: qrCode }
+  } catch (err) {
+    return { status: 400, error: err || 'Failed create QR Code' }
+  }
 }
 
 const checkerValidQr = async ({ QrID }) => {
@@ -72,12 +114,18 @@ const checkerValidQr = async ({ QrID }) => {
   if (!res) throw new Error('Invalid QR Code')
 }
 
-const generateQrPng = async ({ merchantID, merchantName, qrID, type, institutionID }) => {
+const generateQrPng = async ({ merchantID, merchantName, qrID, type, institutionID, amount = null }) => {
   // const a = await QRCode.image(merchantID, { type: 'png', size: 10, margin: 0 })
   // console.log('a=', JSON.stringify(a))
   // return JSON.stringify(a)
-  const a = await QRCode.toDataURL(JSON.stringify({ merchant_id: merchantID, qr_id: qrID, type: type, merchant_name: merchantName, institution_id: institutionID }), { type: 'image/png' })
-  return a
+
+  if (!amount) {
+    const res = await QRCode.toDataURL(JSON.stringify({ merchant_id: merchantID, qr_id: qrID, type: type, merchant_name: merchantName, institution_id: institutionID }), { type: 'image/png' })
+    return res
+  }
+
+  const resWithAmount = await QRCode.toDataURL(JSON.stringify({ merchant_id: merchantID, qr_id: qrID, type, merchant_name: merchantName, institution_id: institutionID, amount }), { type: 'image/png' })
+  return resWithAmount
 }
 
 const showQrService = async (merchantID) => {

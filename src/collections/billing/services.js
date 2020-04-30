@@ -4,7 +4,7 @@ const Merchant = require('../merchant/Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const addBillingService = async ({ amount = null, institution_id = null }) => {
+const addBillingService = async ({ amount = null, institution_id = null, merchant = null }) => {
   try {
     // if institution id provided
     if (institution_id) {
@@ -22,7 +22,6 @@ const addBillingService = async ({ amount = null, institution_id = null }) => {
 
       return bill
     }
-
     // if not
     let bill = await new Billing({
       bill_id: generateID(RANDOM_STRING_FOR_CONCAT),

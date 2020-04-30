@@ -4,9 +4,9 @@ const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const Merchant = require('../merchant/Model')
 const Institution = require('../institution/Model')
 
-const addUserTransaction = async ({ bill, userID, qrID, amount, merchantID, transactionMethod, institutionID = null, billing_id_native = null, user_id_native = null, topup_method }) => {
-  const { error } = Transaction.validation({ user_id: userID, billing_id: bill })
-  if (error) return { status: 400, error: error.details[0].message }
+const addUserTransaction = async ({ bill, userID = null, qrID, amount, merchantID, transactionMethod, institutionID = null, billing_id_native = null, user_id_native = null, topup_method = null }) => {
+  // const { error } = Transaction.validation({ user_id: userID, billing_id: bill })
+  // if (error) throw new Error({ status: 400, error: error.details[0].message })
 
   if (merchantID) {
     var nativeMerchantID = await Merchant.findOne({ merchant_id: merchantID }).select('_id')

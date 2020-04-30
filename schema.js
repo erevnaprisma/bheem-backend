@@ -16,7 +16,7 @@ const { logoutInstitution, signUpInstitution } = require('./src/collections/inst
 const { AllInstitution, loginInstitution, InstitutionInfo } = require('./src/collections/institution/graphql/query')
 
 // Qr
-const { createQrStatic, testing } = require('./src/collections/qr/graphql/mutation')
+const { createQrStatic, testing, createQrDynamic } = require('./src/collections/qr/graphql/mutation')
 const { showQR } = require('./src/collections/qr/graphql/query')
 
 // Otp
@@ -92,7 +92,8 @@ const Mutation = new GraphQLObjectType({
     merchantSubmitForgetPassword,
     institutionForgetPassword,
     institutionSubmitForgetPassword,
-    topupMerchant
+    topupMerchant,
+    createQrDynamic
   }
 })
 

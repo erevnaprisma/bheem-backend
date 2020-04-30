@@ -1,9 +1,3 @@
-/*
-1. Create Bill
-2. Create Transaction
-3. Create Emoney with type Debit
-4. Update Transaction
-*/
 // Model
 const Saldo = require('../../../collections/saldo/Model')
 const Transaction = require('../../../collections/transaction/Model')
