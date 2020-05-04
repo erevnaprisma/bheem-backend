@@ -58,7 +58,7 @@ const topupMerchant = {
   }
 }
 
-const staticPayment = {
+const staticQrPayment = {
   type: ResponseType,
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLID) },
@@ -74,7 +74,7 @@ const staticPayment = {
   }
 }
 
-const dynamicPayment = {
+const dynamicQrPayment = {
   type: ResponseType,
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLID) },
@@ -90,7 +90,7 @@ const dynamicPayment = {
   }
 }
 
-const scanPaymentStatic = {
+const scanQrStatic = {
   type: StaticPaymentScanType,
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLID) },
@@ -103,7 +103,7 @@ const scanPaymentStatic = {
   }
 }
 
-const scanPaymentDynamic = {
+const scanQrDynamic = {
   type: DynamicPaymentScanType,
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLID) },
@@ -150,12 +150,12 @@ const cancelStaticPayment = {
 }
 
 module.exports.topupVa = topupVa
-module.exports.staticPayment = staticPayment
-module.exports.scanPaymentStatic = scanPaymentStatic
+module.exports.staticQrPayment = staticQrPayment
+module.exports.scanQrStatic = scanQrStatic
 module.exports.detailPayment = detailPayment
 module.exports.cancelStaticPayment = cancelStaticPayment
 module.exports.transactionReceipt = transactionReceipt
 module.exports.topupInstitution = topupInstitution
 module.exports.topupMerchant = topupMerchant
-module.exports.dynamicPayment = dynamicPayment
-module.exports.scanPaymentDynamic = scanPaymentDynamic
+module.exports.dynamicQrPayment = dynamicQrPayment
+module.exports.scanQrDynamic = scanQrDynamic
