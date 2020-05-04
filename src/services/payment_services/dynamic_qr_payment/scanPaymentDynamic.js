@@ -29,7 +29,7 @@ const scanPaymentDynamic = async ({ merchantID, qrID, institutionID = '158813347
     await checkerValidQr({ QrID: qrID })
 
     // Check Qr expire date
-    const isExpired = await isQrExpired(qrID)
+    const isExpired = await isQrExpired(qrID, 180000)
     if (!isExpired) {
       await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
       return { status: 400, error: 'Qr already Expired' }

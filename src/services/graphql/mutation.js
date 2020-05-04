@@ -3,7 +3,7 @@ const graphql = require('graphql')
 // type
 const { ResponseType, StaticPaymentScanType } = require('./type')
 const { TransactionDetailType, TransactionHistoryType, DynamicPaymentScanType } = require('./type')
-const { QrResponseType } = require('../../collections/qr/graphql/type')
+const { TopupQrResponseType } = require('../../collections/qr/graphql/type')
 
 // service
 const serviceTopupVaService = require('../payment_services/top_up/topUpVa')
@@ -16,6 +16,7 @@ const cancelStaticPaymentService = require('../payment_services/static_payment/c
 const dynamicPaymentService = require('../payment_services/dynamic_qr_payment/dynamicPayment')
 const scanPaymentDynamicService = require('../payment_services/dynamic_qr_payment/scanPaymentDynamic')
 const createQrTopUpMerchantService = require('../payment_services/top_up/top_up_merchant/topUpMerchant')
+const scanQrTopUpMerchantService = require('../payment_services/top_up/top_up_merchant/scanTopUpMerchant')
 const transactionHistoryService = require('../payment_services/transactionHistory')
 
 const {
@@ -49,13 +50,28 @@ const topupInstitution = {
 }
 
 const createQrTopUpMerchant = {
-  type: QrResponseType,
+  type: TopupQrResponseType,
   args: {
     amount: { type: new GraphQLNonNull(GraphQLInt) },
     merchant_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
     return createQrTopUpMerchantService(args.amount, args.merchant_id)
+  }
+}
+
+const scanQrTopUpMerchant = {
+  type: ResponseType,
+  args: {
+    amount: { type: new GraphQLNonNull(GraphQLInt) },
+    merchant_id: { type: new GraphQLNonNull(GraphQLString) },
+    serial_number: { type: new GraphQLNonNull(GraphQLString) },
+    user_id: { type: new GraphQLNonNull(GraphQLString) },
+    transaction_id: { type: new GraphQLNonNull(GraphQLString) },
+    qr_id: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return scanQrTopUpMerchantService(args.amount, args.merchant_id, args.serial_number, args.user_id, args.transaction_id, args.qr_id)
   }
 }
 
@@ -173,3 +189,4 @@ module.exports.topupInstitution = topupInstitution
 module.exports.dynamicQrPayment = dynamicQrPayment
 module.exports.scanQrDynamic = scanQrDynamic
 module.exports.createQrTopUpMerchant = createQrTopUpMerchant
+module.exports.scanQrTopUpMerchant = scanQrTopUpMerchant

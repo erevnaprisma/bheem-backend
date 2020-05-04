@@ -28,6 +28,7 @@ const createQrTopupMerchant = async (amount, merchantID) => {
     const serial = new Serial({
       serial_id: generateID(RANDOM_STRING_FOR_CONCAT),
       serial_number: generateRandomStringAndNumber(8),
+      status: 'ACTIVE',
       created_at: getUnixTime(),
       updated_at: getUnixTime()
     })
@@ -42,7 +43,7 @@ const createQrTopupMerchant = async (amount, merchantID) => {
     })
 
     // Create QR Value & add to DB
-    const qrValue = { merchant_id: merchantID, amount, serial_number: serial.serial_number, serial_number_id_native: serial._id }
+    const qrValue = { merchant_id: merchantID, amount, serial_number: serial.serial_number, serial_number_id_native: serial._id, qr_id: qr.qr_id }
     qr.qr_value = qrValue
 
     // Generate QR PNG
@@ -55,9 +56,9 @@ const createQrTopupMerchant = async (amount, merchantID) => {
     const bill = await addBillingMerchantService(amount, merchantID)
 
     // create Transaction
-    await addUserTransaction({ amount, bill: bill.bill_id, merchantID, qrID: qr.qr_id, transactionMethod: 'Top-up', billing_id_native: bill._id, topup_method: 'Merchant', qr_id_native: qr._id })
+    const transaction = await addUserTransaction({ amount, bill: bill.bill_id, merchantID, qrID: qr.qr_id, transactionMethod: 'Top-up', billing_id_native: bill._id, topup_method: 'Merchant', qr_id_native: qr._id })
 
-    return { status: 200, success: 'Successfully Create Voucher', qr_code: qrCode }
+    return { status: 200, success: 'Successfully Create Voucher', qr_code: qrCode, transaction_id: transaction.transaction_id }
   } catch (err) {
     return { status: 400, error: err }
   }

@@ -141,15 +141,12 @@ const showQrService = async (merchantID) => {
   }
 }
 
-const isQrExpired = async (qrID) => {
-  // 3 minutes
-  const maximumTime = 180000
-
+const isQrExpired = async (qrID, maximumTime) => {
   const qr = await Qr.findOne({ qr_id: qrID })
   const qrTime = parseInt(qr.created_at)
 
   // Check if qr code above time limit
-  const maxDate = qrTime + maximumTime
+  const maxDate = qrTime + parseInt(maximumTime)
 
   if (getUnixTime() > maxDate) {
     await Qr.updateOne({ qr_id: qr.qr_id }, { status: 'INACTIVE' })

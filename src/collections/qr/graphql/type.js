@@ -15,4 +15,18 @@ const QrResponseType = new GraphQLObjectType({
   })
 })
 
-module.exports.QrResponseType = QrResponseType
+const TopupQrResponseType = new GraphQLObjectType({
+  name: 'TopupQrResponse',
+  fields: () => ({
+    qr_code: { type: GraphQLString },
+    transaction_id: { type: GraphQLString },
+    success: { type: GraphQLString },
+    status: { type: GraphQLID },
+    error: { type: GraphQLString }
+  })
+})
+
+module.exports = {
+  QrResponseType,
+  TopupQrResponseType
+}

@@ -1,14 +1,15 @@
 const mongoose = require('mongoose')
 
-const { generateRandomString } = require('../../utils/services/supportServices')
-const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
-
 const qrSchema = new mongoose.Schema({
   serial_id: {
     type: String
   },
   serial_number: {
     type: String
+  },
+  status: {
+    type: String,
+    enum: ['ACTIVE', 'INACTIVE']
   },
   created_at: {
     type: String

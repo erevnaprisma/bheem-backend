@@ -31,11 +31,11 @@ const dynamicPayment = async (merchantID, amount, userID, transactionID, passwor
     await checkerValidTransaction(transactionID)
     await checkerValidQr({ QrID: qrID })
 
-    // const isExpired = await isQrExpired(qrID)
-    // if (!isExpired) {
-    //   await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
-    //   return { status: 400, error: 'Qr already expired' }
-    // }
+    const isExpired = await isQrExpired(qrID, 180000)
+    if (!isExpired) {
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
+      return { status: 400, error: 'Qr already expired' }
+    }
 
     // check password
     await user.comparedPassword(password)
