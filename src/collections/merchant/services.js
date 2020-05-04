@@ -112,6 +112,8 @@ const checkerValidMerchant = async (MerchantID) => {
 
   const res = await Merchant.findOne({ merchant_id: MerchantID })
   if (!res) throw new Error('Invalid Merchant ID')
+
+  return res
 }
 
 const getAllMerchantService = async () => {

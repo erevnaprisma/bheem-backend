@@ -32,6 +32,21 @@ const StaticPaymentScanType = new GraphQLObjectType({
   })
 })
 
+const DynamicPaymentScanType = new GraphQLObjectType({
+  name: 'DynamicScanResponse',
+  fields: () => ({
+    transaction_id: { type: GraphQLString },
+    merchant_id: { type: GraphQLString },
+    billing_id: { type: GraphQLString },
+    merchant_name: { type: GraphQLString },
+    institution_id: { type: GraphQLString },
+    error: { type: GraphQLString },
+    status: { type: GraphQLInt },
+    success: { type: GraphQLString },
+    amount: { type: GraphQLInt }
+  })
+})
+
 const TransactionDetailType = new GraphQLObjectType({
   name: 'TransactionDetailResponse',
   fields: () => ({
@@ -56,3 +71,4 @@ module.exports.ResponseType = ResponseType
 module.exports.StaticPaymentScanType = StaticPaymentScanType
 module.exports.TransactionDetailType = TransactionDetailType
 module.exports.TransactionHistoryType = TransactionHistoryType
+module.exports.DynamicPaymentScanType = DynamicPaymentScanType
