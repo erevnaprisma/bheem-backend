@@ -3,17 +3,19 @@ const graphql = require('graphql')
 // type
 const { ResponseType, StaticPaymentScanType } = require('./type')
 const { TransactionDetailType, TransactionHistoryType, DynamicPaymentScanType } = require('./type')
+const { QrResponseType } = require('../../collections/qr/graphql/type')
 
 // service
 const serviceTopupVaService = require('../payment_services/top_up/topUpVa')
 const serviceTopUpInstitution = require('../payment_services/top_up/topUpInstitution')
-const serviceTopUpMerchant = require('../payment_services/top_up/topUpMerchant')
+// const serviceTopUpMerchant = require('../payment_services/top_up/top_up_merchant/topUpMerchant')
 const serviceStaticPaymentService = require('../payment_services/static_payment/staticPayment')
 const scanPaymentStaticService = require('../payment_services/static_payment/scanPaymentStatic')
 const detailPaymentService = require('../payment_services/static_payment/detailPayment')
 const cancelStaticPaymentService = require('../payment_services/static_payment/cancelPayment')
 const dynamicPaymentService = require('../payment_services/dynamic_qr_payment/dynamicPayment')
 const scanPaymentDynamicService = require('../payment_services/dynamic_qr_payment/scanPaymentDynamic')
+const createQrTopUpMerchantService = require('../payment_services/top_up/top_up_merchant/topUpMerchant')
 const transactionHistoryService = require('../payment_services/transactionHistory')
 
 const {
@@ -46,17 +48,28 @@ const topupInstitution = {
   }
 }
 
-const topupMerchant = {
-  type: ResponseType,
+const createQrTopUpMerchant = {
+  type: QrResponseType,
   args: {
-    email: { type: new GraphQLNonNull(GraphQLString) },
     amount: { type: new GraphQLNonNull(GraphQLInt) },
     merchant_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return serviceTopUpMerchant(args)
+    return createQrTopUpMerchantService(args.amount, args.merchant_id)
   }
 }
+
+// const topupMerchant = {
+//   type: ResponseType,
+//   args: {
+//     email: { type: new GraphQLNonNull(GraphQLString) },
+//     amount: { type: new GraphQLNonNull(GraphQLInt) },
+//     merchant_id: { type: new GraphQLNonNull(GraphQLString) }
+//   },
+//   resolve (parent, args) {
+//     return serviceTopUpMerchant(args)
+//   }
+// }
 
 const staticQrPayment = {
   type: ResponseType,
@@ -156,6 +169,7 @@ module.exports.detailPayment = detailPayment
 module.exports.cancelStaticPayment = cancelStaticPayment
 module.exports.transactionReceipt = transactionReceipt
 module.exports.topupInstitution = topupInstitution
-module.exports.topupMerchant = topupMerchant
+// module.exports.topupMerchant = topupMerchant
 module.exports.dynamicQrPayment = dynamicQrPayment
 module.exports.scanQrDynamic = scanQrDynamic
+module.exports.createQrTopUpMerchant = createQrTopUpMerchant

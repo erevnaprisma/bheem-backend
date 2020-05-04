@@ -55,7 +55,7 @@ const qrSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['DYNAMIC', 'STATIC'],
+    enum: ['DYNAMIC', 'STATIC', 'VOUCHER'],
     default: 'STATIC'
   },
   status: {
