@@ -1,28 +1,21 @@
 const mongoose = require('mongoose')
 
-const { generateRandomString } = require('../../utils/services/supportServices')
-const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
-
 const qrValue = new mongoose.Schema({
   merchant_id_native: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Merchant',
-    default: null
+    ref: 'Merchant'
   },
   institution_id_native: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Institution',
-    default: null
+    ref: 'Institution'
   },
   merchant_id: {
     type: String,
-    ref: 'Merchant',
-    default: null
+    ref: 'Merchant'
   },
   merchant_name: {
     type: String,
-    ref: 'Merchant',
-    default: null
+    ref: 'Merchant'
   },
   qr_id: {
     type: String
@@ -32,8 +25,19 @@ const qrValue = new mongoose.Schema({
   },
   institution_id: {
     type: String,
-    ref: 'Institution',
-    default: null
+    ref: 'Institution'
+  },
+  serial_number: {
+    type: String
+  },
+  serial_id: {
+    type: String
+  },
+  serial_number_id_native: {
+    type: String
+  },
+  amount: {
+    type: Number
   }
 })
 
@@ -42,16 +46,13 @@ const qrSchema = new mongoose.Schema({
     type: String
   },
   qr_value: {
-    type: { qrValue },
-    default: null
+    type: qrValue
   },
   created_at: {
-    type: String,
-    default: new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
+    type: String
   },
   updated_at: {
-    type: String,
-    default: new Date().getTime() + generateRandomString(RANDOM_STRING_FOR_CONCAT)
+    type: String
   },
   type: {
     type: String,
@@ -64,8 +65,7 @@ const qrSchema = new mongoose.Schema({
   },
   merchant_id: {
     type: String,
-    ref: 'Merchant',
-    default: null
+    ref: 'Merchant'
   }
 })
 

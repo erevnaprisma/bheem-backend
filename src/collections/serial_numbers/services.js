@@ -8,9 +8,9 @@ const checkerValidSerial = async (serialID, serialNumber) => {
     const serial = await Serial.findOne({ serial_id: serialID })
     if (!serial) throw new Error('Invalid Serial Number')
 
-    const compare = await bcrypt.compare(serialNumber, serial.serial_number)
-    if (!compare) throw new Error('Invalid Serial Number')
+    if (serialNumber !== serial.serial_number) throw new Error('Invalid Serial Number')
 
+    console.log('berhasil hash')
     return serial
   } catch (err) {
     throw new Error(err)

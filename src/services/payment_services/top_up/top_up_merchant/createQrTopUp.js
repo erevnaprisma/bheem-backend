@@ -17,7 +17,7 @@ const createQrTopupMerchant = async (amount, merchantID) => {
   if (!amount) return { status: 400, error: 'Invalid amount' }
 
   try {
-    await checkerValidMerchant(merchantID)
+    const merchant = await checkerValidMerchant(merchantID)
 
     // generate password
     const encryptSerialNumber = generateRandomStringAndNumber(8)
@@ -41,15 +41,20 @@ const createQrTopupMerchant = async (amount, merchantID) => {
       qr_id: generateID(RANDOM_STRING_FOR_CONCAT),
       type: 'VOUCHER',
       status: 'ACTIVE',
-      merchant_id: merchantID
+      merchant_id: merchantID,
+      created_at: getUnixTime(),
+      updated_at: getUnixTime()
     })
 
     // Create QR Value & add to DB
-    const qrValue = { merchant_id: merchantID, amount, serial_number: serial.serial_number, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id }
+    const qrValue = { merchant_id_native: merchant._id, merchant_id: merchantID, amount, serial_number: encryptSerialNumber, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id }
     qr.qr_value = qrValue
 
     // Generate QR PNG
     const qrCode = await QRCode.toDataURL(JSON.stringify(qrValue), { type: 'image/png' })
+
+    // save hashed serial number to qr value
+    qr.qr_value.serial_number = hash
 
     // Save QR to DB
     await qr.save()

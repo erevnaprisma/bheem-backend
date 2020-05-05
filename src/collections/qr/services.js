@@ -46,7 +46,7 @@ const createQrStaticService = async (merchantID, institutionID) => {
     const qrCode = await generateQrPng({ merchantID: merchantID, merchantName: businessName, qrID: qr.qr_id, type: qr.type, institutionID })
 
     // save created qrcode to collection
-    qr.qr_value = { merchantIdNative, merchant_id: merchantID, merchant_name: businessName, qr_id: qr.qr_id, type: qr.type, institution_id: institutionID, institution_id_native: institutionIdNative }
+    qr.qr_value = { merchant_id_native: merchantIdNative, merchant_id: merchantID, merchant_name: businessName, qr_id: qr.qr_id, type: qr.type, institution_id: institutionID, institution_id_native: institutionIdNative }
 
     await qr.save()
 
@@ -96,7 +96,7 @@ const createQrDynamic = async (merchantID, institutionID, amount) => {
     const qrCode = await generateQrPng({ merchantID, merchantName: businessName, qrID: qr.qr_id, type: qr.type, institutionID, amount, bill_id: billing.bill_id, transaction_id: transaction.transaction_id })
 
     // save created qrcode to collection
-    qr.qr_value = { merchantIdNative, merchant_id: merchantID, merchant_name: businessName, qr_id: qr.qr_id, type, institution_id: institutionID, institution_id_native: institutionIdNative, amount, bill_id: billing.bill_id, transaction_id: transaction.transaction_id }
+    qr.qr_value = { merchant_id_native: merchantIdNative, merchant_id: merchantID, merchant_name: businessName, qr_id: qr.qr_id, type, institution_id: institutionID, institution_id_native: institutionIdNative, amount, bill_id: billing.bill_id, transaction_id: transaction.transaction_id }
 
     // save qr to db
     await qr.save()
@@ -144,6 +144,9 @@ const showQrService = async (merchantID) => {
 const isQrExpired = async (qrID, maximumTime) => {
   const qr = await Qr.findOne({ qr_id: qrID })
   const qrTime = parseInt(qr.created_at)
+
+  console.log('create at=', qrTime)
+  console.log('maximum time=', maximumTime)
 
   // Check if qr code above time limit
   const maxDate = qrTime + parseInt(maximumTime)
