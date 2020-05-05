@@ -15,7 +15,7 @@ const detailPaymentService = require('../payment_services/static_payment/detailP
 const cancelStaticPaymentService = require('../payment_services/static_payment/cancelPayment')
 const dynamicPaymentService = require('../payment_services/dynamic_qr_payment/dynamicPayment')
 const scanPaymentDynamicService = require('../payment_services/dynamic_qr_payment/scanPaymentDynamic')
-const createQrTopUpMerchantService = require('../payment_services/top_up/top_up_merchant/topUpMerchant')
+const createQrTopUpMerchantService = require('../payment_services/top_up/top_up_merchant/createQrTopUp')
 const scanQrTopUpMerchantService = require('../payment_services/top_up/top_up_merchant/scanTopUpMerchant')
 const transactionHistoryService = require('../payment_services/transactionHistory')
 
@@ -68,10 +68,11 @@ const scanQrTopUpMerchant = {
     serial_number: { type: new GraphQLNonNull(GraphQLString) },
     user_id: { type: new GraphQLNonNull(GraphQLString) },
     transaction_id: { type: new GraphQLNonNull(GraphQLString) },
-    qr_id: { type: new GraphQLNonNull(GraphQLString) }
+    qr_id: { type: new GraphQLNonNull(GraphQLString) },
+    serial_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return scanQrTopUpMerchantService(args.amount, args.merchant_id, args.serial_number, args.user_id, args.transaction_id, args.qr_id)
+    return scanQrTopUpMerchantService(args.amount, args.merchant_id, args.serial_number, args.user_id, args.transaction_id, args.qr_id, args.serial_id)
   }
 }
 

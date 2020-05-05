@@ -1,22 +1,17 @@
-const QRCode = require('qrcode')
+// Services
 const { addBillingMerchantService } = require('../../../../collections/billing/services')
-// const { addUserPayment } = require('../../../../collections/emoney/services')
 const { addUserTransaction } = require('../../../../collections/transaction/services')
-// const { createSaldo, updateSaldo } = require('../../../../collections/saldo/services')
-// const { checkerValidUser, checkValidUserUsingEmail } = require('../../../../collections/user/services')
 const { checkerValidMerchant } = require('../../../../collections/merchant/services')
-// const word = require('../../../../utils/constants/word')
-const {
-  RANDOM_STRING_FOR_CONCAT
-} = require('../../../../utils/constants/number')
+const { RANDOM_STRING_FOR_CONCAT } = require('../../../../utils/constants/number')
 const { generateID, generateRandomStringAndNumber, getUnixTime } = require('../../../../utils/services/supportServices')
 
+// Packages
+const bcrypt = require('bcrypt')
+const QRCode = require('qrcode')
+
+// Model
 const Qr = require('../../../../collections/qr/Model')
 const Serial = require('../../../../collections/serial_numbers/Model')
-// const User = require('../../../../collections/user/Model')
-// const Transaction = require('../../../../collections/transaction/Model')
-// const Saldo = require('../../../../collections/saldo/Model')
-// const Institution = (require('../../../../collections/institution/Model'))
 
 const createQrTopupMerchant = async (amount, merchantID) => {
   if (!amount) return { status: 400, error: 'Invalid amount' }
@@ -24,10 +19,17 @@ const createQrTopupMerchant = async (amount, merchantID) => {
   try {
     await checkerValidMerchant(merchantID)
 
+    // generate password
+    const encryptSerialNumber = generateRandomStringAndNumber(8)
+
+    // encrypt password
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(encryptSerialNumber, salt)
+
     // Create Serial Number for Qr Value
     const serial = new Serial({
       serial_id: generateID(RANDOM_STRING_FOR_CONCAT),
-      serial_number: generateRandomStringAndNumber(8),
+      serial_number: hash,
       status: 'ACTIVE',
       created_at: getUnixTime(),
       updated_at: getUnixTime()
@@ -43,7 +45,7 @@ const createQrTopupMerchant = async (amount, merchantID) => {
     })
 
     // Create QR Value & add to DB
-    const qrValue = { merchant_id: merchantID, amount, serial_number: serial.serial_number, serial_number_id_native: serial._id, qr_id: qr.qr_id }
+    const qrValue = { merchant_id: merchantID, amount, serial_number: serial.serial_number, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id }
     qr.qr_value = qrValue
 
     // Generate QR PNG
