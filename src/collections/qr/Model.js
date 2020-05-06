@@ -38,6 +38,14 @@ const qrValue = new mongoose.Schema({
   },
   amount: {
     type: Number
+  },
+  transaction_id: {
+    type: String,
+    ref: 'Transaction'
+  },
+  transaction_id_native: {
+    type: String,
+    ref: 'Transaction'
   }
 })
 
