@@ -47,7 +47,8 @@ const TransactionType = new GraphQLObjectType({
     updated_at: { type: GraphQLString },
     status: { type: TransactionStatusType },
     transaction_method: { type: TransactionMethodType },
-    merchant_name: { type: GraphQLString }
+    merchant_name: { type: GraphQLString },
+    institution_id: { type: GraphQLString }
   })
 })
 
