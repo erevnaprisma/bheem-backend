@@ -2,6 +2,7 @@
 const { checkerValidMerchant } = require('../../../../collections/merchant/services')
 const { checkerValidSerial } = require('../../../../collections/serial_numbers/services')
 const { checkerValidQr, isQrExpired } = require('../../../../collections/qr/services')
+const { checkerValidUser } = require('../../../../collections/user/services')
 
 // Model
 const Saldo = require('../../../../collections/saldo/Model')
@@ -11,6 +12,9 @@ const Serial = require('../../../../collections/serial_numbers/Model')
 
 const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, transactionID, qrID, serialID) => {
   try {
+    // Check Valid User
+    const user = await checkerValidUser(userID)
+
     // Validate Merchant ID
     await checkerValidMerchant(merchantID)
 
@@ -21,13 +25,13 @@ const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, tra
     await checkerValidQr({ QrID: qrID })
 
     // Check if Qr already expired
-    const isExpired = await isQrExpired(qrID, 180000)
-    if (!isExpired) {
-      // if Qr expired then change transaction and serial status
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
-      await Serial.updateOne({ serial_id: serial.serial_id }, { status: 'INACTIVE' })
-      return { status: 400, error: 'Qr already expired' }
-    }
+    // const isExpired = await isQrExpired(qrID, 180000)
+    // if (!isExpired) {
+    //   // if Qr expired then change transaction and serial status
+    //   await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
+    //   await Serial.updateOne({ serial_id: serial.serial_id }, { status: 'INACTIVE' })
+    //   return { status: 400, error: 'Qr already expired' }
+    // }
 
     // Update User saldo
     let finalSaldo = 0
@@ -36,7 +40,7 @@ const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, tra
     await Saldo.updateOne({ user_id: userID }, { saldo: finalSaldo })
 
     // Update Transaction to Settled
-    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD' })
+    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', user_id: userID, user_id_native: user._id })
 
     // Inactive Qr Code
     await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE' })
