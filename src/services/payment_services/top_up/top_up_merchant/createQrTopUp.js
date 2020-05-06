@@ -8,6 +8,8 @@ const { generateID, generateRandomStringAndNumber, getUnixTime } = require('../.
 // Packages
 const bcrypt = require('bcrypt')
 const QRCode = require('qrcode')
+const CryptoJs = require('crypto-js')
+const config = require('config')
 
 // Model
 const Qr = require('../../../../collections/qr/Model')
@@ -19,17 +21,16 @@ const createQrTopupMerchant = async (amount, merchantID) => {
   try {
     const merchant = await checkerValidMerchant(merchantID)
 
-    // generate password
-    const encryptSerialNumber = generateRandomStringAndNumber(8)
+    // generate serial
+    const unEncryptSerialNumber = generateRandomStringAndNumber(8)
 
-    // encrypt password
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(encryptSerialNumber, salt)
+    // encrypt serial
+    const encryptedSerialNumber = CryptoJs.HmacSHA256(unEncryptSerialNumber, config.get('serialNumber'))
 
     // Create Serial Number for Qr Value
     const serial = new Serial({
       serial_id: generateID(RANDOM_STRING_FOR_CONCAT),
-      serial_number: hash,
+      serial_number: encryptedSerialNumber,
       status: 'ACTIVE',
       created_at: getUnixTime(),
       updated_at: getUnixTime()
@@ -53,14 +54,14 @@ const createQrTopupMerchant = async (amount, merchantID) => {
     const transaction = await addUserTransaction({ amount, bill: bill.bill_id, merchantID, qrID: qr.qr_id, transactionMethod: 'Top-up', billing_id_native: bill._id, topup_method: 'Merchant', qr_id_native: qr._id })
 
     // Create QR Value & add to DB
-    const qrValue = { merchant_id_native: merchant._id, merchant_id: merchantID, amount, serial_number: encryptSerialNumber, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id, transaction_id: transaction.transaction_id }
+    const qrValue = { merchant_id_native: merchant._id, merchant_id: merchantID, amount, serial_number: unEncryptSerialNumber, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id, transaction_id: transaction.transaction_id }
     qr.qr_value = qrValue
 
     // Generate QR PNG
     const qrCode = await QRCode.toDataURL(JSON.stringify(qrValue), { type: 'image/png' })
 
     // save hashed serial number to qr value
-    qr.qr_value.serial_number = hash
+    qr.qr_value.serial_number = encryptedSerialNumber
 
     // Save QR to DB
     await qr.save()

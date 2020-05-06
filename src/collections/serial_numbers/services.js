@@ -10,7 +10,6 @@ const checkerValidSerial = async (serialID, serialNumber) => {
 
     if (serialNumber !== serial.serial_number) throw new Error('Invalid Serial Number')
 
-    console.log('berhasil hash')
     return serial
   } catch (err) {
     throw new Error(err)
