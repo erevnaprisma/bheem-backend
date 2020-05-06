@@ -42,7 +42,7 @@ const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID = '15
     const merchant = await Merchant.findOne({ merchant_id: merchantID })
 
     // add Transaction status pending
-    transaction = await addUserTransaction({ userID, bill: billing.bill_id, qrID, merchantID, transactionMethod: 'E-money', billing_id_native: billing._id, user_id_native: user._id })
+    transaction = await addUserTransaction({ userID, bill: billing.bill_id, qrID, merchantID, transactionMethod: 'E-money', billing_id_native: billing._id, user_id_native: user._id, institutionID })
 
     return { transaction_id: transaction.transaction_id, merchant_id: merchantID, billing_id: billing.bill_id, status: 200, success: 'Scan merchant success', merchant_name: merchant.business_name, institution_id: institutionID }
   } catch (err) {
