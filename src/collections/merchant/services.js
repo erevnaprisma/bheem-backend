@@ -244,6 +244,32 @@ const InstitutionRelatedToMerchantService = async (merchantID) => {
   }
 }
 
+const changePasswordMerchantService = async (merchantID, password, newPassword) => {
+  try {
+    // Validating new Password
+    const { error } = await Merchant.validation({ password: newPassword })
+    if (error) return { status: 400, error: error.details[0].message }
+
+    // Check Validity of merchant ID
+    const merchant = await checkerValidMerchant(merchantID)
+
+    // Check current password if true
+    await merchant.comparedPassword(password)
+
+    if (password === newPassword) {
+      return { status: 400, error: 'Can\'t input same password' }
+    }
+
+    const newMerchantPassword = await Merchant.hashing(newPassword)
+
+    await Merchant.updateOne({ merchant_id: merchantID }, { password: newMerchantPassword })
+
+    return { status: 200, success: 'Successfully Change Password' }
+  } catch (err) {
+    return { status: 400, error: err || 'Failed Change Password' }
+  }
+}
+
 module.exports.addMerchantService = addMerchantService
 module.exports.checkerValidMerchant = checkerValidMerchant
 module.exports.getAllMerchantService = getAllMerchantService
@@ -254,3 +280,4 @@ module.exports.merchantTransactionHistoryService = merchantTransactionHistorySer
 module.exports.merchantInstitutionRelation = merchantInstitutionRelation
 module.exports.merchantDashboardService = merchantDashboardService
 module.exports.InstitutionRelatedToMerchantService = InstitutionRelatedToMerchantService
+module.exports.changePasswordMerchantService = changePasswordMerchantService

@@ -88,10 +88,20 @@ merchantSchema.statics.validation = (args) => {
     deviceID: Joi.string().min(2),
     businessName: Joi.string().min(3).max(20),
     address: Joi.string().min(6).max(50).pattern(new RegExp(addRegex, 'm')),
-    password: Joi.string()
+    password: Joi.string().min(4).max(15)
   })
 
   return schema.validate(args)
+}
+
+merchantSchema.statics.hashing = async (password) => {
+  try {
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(password, salt)
+    return hash
+  } catch (err) {
+    throw new Error(err)
+  }
 }
 
 merchantSchema.methods.comparedPassword = function (candidatePassword) {
