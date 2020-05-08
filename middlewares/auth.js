@@ -21,8 +21,12 @@ const isAuth = async (
   await checkerBlacklist(args.access_token)
 
   if (args.access_token) {
-    await jwt.verify(args.access_token, config.get('privateKey'))
-    args.isLoggedInWithToken = true
+    try {
+      await jwt.verify(args.access_token, config.get('privateKey'))
+      args.isLoggedInWithToken = true
+    } catch (err) {
+      throw new Error('Invalid Access Token')
+    }
   } else {
     args.isLoggedInWithToken = false
   }
@@ -59,7 +63,7 @@ const isAuthMerchant = async (
       await jwt.verify(args.access_token, config.get('privateKeyMerchant'))
       args.isLoggedInWithToken = true
     } catch (err) {
-      args.isLoggedInWithToken = false
+      throw new Error('Invalid Access Token')
     }
   } else {
     args.isLoggedInWithToken = false
