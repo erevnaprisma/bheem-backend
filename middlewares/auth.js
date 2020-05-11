@@ -135,6 +135,7 @@ const authMiddleware = {
     changeUserPassword: token,
     // changeUserEmail: token,
     changeUserProfile: token
+    // changePasswordMerchant: token
     // signUp: isAuth
     // login: isAuth,
     // signUpMerchant: corsMiddleware,

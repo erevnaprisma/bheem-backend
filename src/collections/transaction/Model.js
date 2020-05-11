@@ -89,6 +89,11 @@ const transactionSchema = new mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'Institution',
     default: null
+  },
+  isSettlement: {
+    type: String,
+    enum: ['Y', 'N'],
+    default: 'N'
   }
 })
 

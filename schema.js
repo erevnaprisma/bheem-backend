@@ -8,7 +8,7 @@ const { login, getProfile, allUser } = require('./src/collections/user/graphql/q
 const { allTransaction } = require('./src/collections/emoney/graphql/query')
 
 // Merchant
-const { signUpMerchant, logoutMerchant, relationMerchantInstitution, changePasswordMerchant } = require('./src/collections/merchant/graphql/mutation')
+const { signUpMerchant, logoutMerchant, relationMerchantInstitution, changePasswordMerchant, setSettlement } = require('./src/collections/merchant/graphql/mutation')
 const { AllMerchant, MerchantInfo, loginMerchant, MerchantTransactionHistory, merchantDashboard, showRelatedInstitution } = require('./src/collections/merchant/graphql/query')
 
 // Institution
@@ -97,7 +97,8 @@ const Mutation = new GraphQLObjectType({
     scanQrDynamic,
     createQrTopUpMerchant,
     scanQrTopUpMerchant,
-    changePasswordMerchant
+    changePasswordMerchant,
+    setSettlement
   }
 })
 

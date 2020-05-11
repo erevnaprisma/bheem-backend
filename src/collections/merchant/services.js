@@ -270,6 +270,18 @@ const changePasswordMerchantService = async (merchantID, password, newPassword) 
   }
 }
 
+const setSettlementService = async (transactions) => {
+  try {
+    transactions.forEach(async e => {
+      await Transaction.updateOne({ transaction_id: e }, { isSettlement: 'Y' })
+    })
+
+    return { status: 200, success: 'Successfully Change Settlement' }
+  } catch (err) {
+    return { status: 400, error: 'Failed Change Settlement' }
+  }
+}
+
 module.exports.addMerchantService = addMerchantService
 module.exports.checkerValidMerchant = checkerValidMerchant
 module.exports.getAllMerchantService = getAllMerchantService
@@ -281,3 +293,4 @@ module.exports.merchantInstitutionRelation = merchantInstitutionRelation
 module.exports.merchantDashboardService = merchantDashboardService
 module.exports.InstitutionRelatedToMerchantService = InstitutionRelatedToMerchantService
 module.exports.changePasswordMerchantService = changePasswordMerchantService
+module.exports.setSettlementService = setSettlementService

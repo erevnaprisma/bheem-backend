@@ -145,9 +145,6 @@ const isQrExpired = async (qrID, maximumTime) => {
   const qr = await Qr.findOne({ qr_id: qrID })
   const qrTime = parseInt(qr.created_at)
 
-  console.log('create at=', qrTime)
-  console.log('maximum time=', maximumTime)
-
   // Check if qr code above time limit
   const maxDate = qrTime + parseInt(maximumTime)
 
