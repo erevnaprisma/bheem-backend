@@ -1,6 +1,6 @@
 const graphql = require('graphql')
 
-const { MerchantResponseType } = require('./type')
+const { MerchantResponseType, TransactionSettlement } = require('./type')
 const { addMerchantService, serviceLogout, merchantInstitutionRelation, changePasswordMerchantService, setSettlementService } = require('../services')
 
 const {
@@ -57,7 +57,7 @@ const changePasswordMerchant = {
 }
 
 const setSettlement = {
-  type: MerchantResponseType,
+  type: TransactionSettlement,
   args: {
     transactions: { type: GraphQLList(GraphQLString) }
   },
