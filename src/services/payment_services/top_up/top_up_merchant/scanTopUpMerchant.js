@@ -38,13 +38,12 @@ const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, tra
     // Update User saldo
     let finalSaldo = 0
     const currentSaldo = await Saldo.findOne({ user_id: userID })
-
     // if already top up before
     if (currentSaldo) {
       finalSaldo = currentSaldo.saldo + amount
       await Saldo.updateOne({ user_id: userID }, { saldo: finalSaldo })
     } else {
-      await new Saldo({
+      const saldo = await new Saldo({
         saldo_id: generateID(RANDOM_STRING_FOR_CONCAT),
         saldo: amount,
         user_id: userID,
@@ -52,6 +51,8 @@ const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, tra
         created_at: getUnixTime(),
         updated_at: getUnixTime()
       })
+
+      await saldo.save()
     }
 
     // Update Transaction to Settled
