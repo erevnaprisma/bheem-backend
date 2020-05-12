@@ -51,7 +51,7 @@ const createQrTopupMerchant = async (amount, merchantID) => {
     const bill = await addBillingMerchantService(amount, merchantID)
 
     // create Transaction
-    const transaction = await addUserTransaction({ amount, bill: bill.bill_id, merchantID, qrID: qr.qr_id, transactionMethod: 'Top-up', billing_id_native: bill._id, topup_method: 'Merchant', qr_id_native: qr._id })
+    const transaction = await addUserTransaction({ amount, bill: bill.bill_id, merchantID, qrID: qr.qr_id, transactionMethod: 'Top-up', billing_id_native: bill._id, topup_method: 'Merchant', qr_id_native: qr._id,  })
 
     // Create QR Value & add to DB
     const qrValue = { merchant_id_native: merchant._id, merchant_id: merchantID, amount, serial_number: unEncryptSerialNumber, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id, transaction_id: transaction.transaction_id }
