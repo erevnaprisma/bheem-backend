@@ -30,8 +30,10 @@ const sendOTPService = async ({ userID, password, email }) => {
 
     const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE', type: 'CHANGE EMAIL' })
     if (res) {
+      console.log(res.created_at)
       const res2 = await expireOtpChecker({ getOtpTime: res.created_at, otp: res.otp_number })
-      if (res2) return { status: 400, error: 'We already sent your otp, please do check your email' }
+      console.log('expire=', res2)
+      if (res2) return { status: 400, error: 'We already sent your otp, please wait 2 minutes for another otp' }
     }
 
     await userChangesValidation({ password, userID: userID })
@@ -387,8 +389,12 @@ const institutionChangePasswordViaForgetPasswordService = async (otp, password, 
 const expireOtpChecker = async ({ getOtpTime, otp }) => {
   const maximumTime = 120000
 
+  const created_at = parseInt(getOtpTime)
+  console.log(created_at)
+  console.log(getOtpTime)
+
   // Check if otp above time limit
-  const maxDate = getOtpTime + maximumTime
+  const maxDate = created_at + maximumTime
 
   if (getUnixTime() > maxDate) {
     await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
