@@ -25,8 +25,8 @@ const sendOTPService = async ({ userID, password, email }) => {
     await user.comparedPassword(password)
 
     // Check if email already exist
-    const emailAlreadyUsed = await User.findOne({ email: email })
-    if (emailAlreadyUsed) return { status: 400, error: 'Email already used' }
+    // const emailAlreadyUsed = await User.findOne({ email: email })
+    // if (emailAlreadyUsed) return { status: 400, error: 'Email already used' }
 
     const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE', type: 'CHANGE EMAIL' })
     if (res) {
