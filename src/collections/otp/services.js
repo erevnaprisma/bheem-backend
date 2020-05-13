@@ -25,14 +25,12 @@ const sendOTPService = async ({ userID, password, email }) => {
     await user.comparedPassword(password)
 
     // Check if email already exist
-    // const emailAlreadyUsed = await User.findOne({ email: email })
-    // if (emailAlreadyUsed) return { status: 400, error: 'Email already used' }
+    const emailAlreadyUsed = await User.findOne({ email: email })
+    if (emailAlreadyUsed) return { status: 400, error: 'Email already used' }
 
     const res = await Otp.findOne({ user_id: userID, status: 'ACTIVE', type: 'CHANGE EMAIL' })
     if (res) {
-      console.log(res.created_at)
       const res2 = await expireOtpChecker({ getOtpTime: res.created_at, otp: res.otp_number })
-      console.log('expire=', res2)
       if (res2) return { status: 400, error: 'We already sent your otp, please wait 2 minutes for another otp' }
     }
 
