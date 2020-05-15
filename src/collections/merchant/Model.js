@@ -4,10 +4,16 @@ const bcrypt = require('bcrypt')
 const Joi = require('@hapi/joi')
 
 const FeeMasterCode = new mongoose.Schema({
-  operator_code: {
+  operator_code_emoney: {
     type: String
   },
-  institution_code: {
+  operator_code_topup: {
+    type: String
+  },
+  institution_code_emoney: {
+    type: String
+  },
+  institution_code_topup: {
     type: String
   }
 })

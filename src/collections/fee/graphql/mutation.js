@@ -28,11 +28,12 @@ const setMerchantFee = {
   type: FeeResponseType,
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLString) },
+    fee_method: { type: new GraphQLNonNull(TransactionMethodType) },
     operator_fee_code: { type: new GraphQLNonNull(GraphQLString) },
     institution_fee_code: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return setMerchantSchemaFee(args.merchant_id, args.operator_fee_code, args.institution_fee_code)
+    return setMerchantSchemaFee(args.merchant_id, args.operator_fee_code, args.institution_fee_code, args.fee_method)
   }
 }
 
