@@ -3,7 +3,8 @@ const Joi = require('@hapi/joi')
 
 const settlementSchema = new mongoose.Schema({
   settlement_id: {
-    type: String
+    type: String,
+    unique: true
   },
   merchant_id: {
     type: String,

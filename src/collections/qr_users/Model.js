@@ -13,7 +13,8 @@ const qrValue = new mongoose.Schema({
 
 const qrSchema = new mongoose.Schema({
   qr_id: {
-    type: String
+    type: String,
+    unique: true
   },
   qr_value: {
     type: qrValue

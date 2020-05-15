@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 
 const qrSchema = new mongoose.Schema({
   serial_id: {
-    type: String
+    type: String,
+    unique: true
   },
   serial_number: {
     type: String

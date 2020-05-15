@@ -12,8 +12,7 @@ const blacklistSchema = new mongoose.Schema({
     type: String
   },
   institution_id: {
-    type: String,
-    
+    type: String
   }
 })
 

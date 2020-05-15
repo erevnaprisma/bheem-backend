@@ -27,7 +27,8 @@ const merchantInstitutionSchema = new mongoose.Schema({
 
 const merchantSchema = new mongoose.Schema({
   merchant_id: {
-    type: String
+    type: String,
+    unique: true
   },
   email: {
     type: mongoose.SchemaTypes.Email,

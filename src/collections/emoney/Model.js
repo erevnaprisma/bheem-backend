@@ -5,7 +5,8 @@ const User = require('../user/Model')
 
 const emoneySchema = new mongoose.Schema({
   emoney_id: {
-    type: String
+    type: String,
+    unique: true
   },
   user_id: {
     type: String,

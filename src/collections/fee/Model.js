@@ -3,7 +3,8 @@ const Joi = require('@hapi/joi')
 
 const feeSchema = new mongoose.Schema({
   fee_id: {
-    type: String
+    type: String,
+    unique: true
   },
   fix_fee_amount: {
     type: String

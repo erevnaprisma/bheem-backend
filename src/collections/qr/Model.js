@@ -18,7 +18,8 @@ const qrValue = new mongoose.Schema({
     ref: 'Merchant'
   },
   qr_id: {
-    type: String
+    type: String,
+    unique: true
   },
   type: {
     type: String

@@ -5,7 +5,8 @@ const Joi = require('@hapi/joi')
 
 const userSchema = new mongoose.Schema({
   user_id: {
-    type: String
+    type: String,
+    unique: true
   },
   username: {
     type: String,

@@ -3,7 +3,8 @@ const Joi = require('joi')
 
 const otpSchema = new mongoose.Schema({
   otp_id: {
-    type: String
+    type: String,
+    unique: true
   },
   otp_number: {
     type: String

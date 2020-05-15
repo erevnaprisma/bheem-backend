@@ -3,7 +3,8 @@ const Joi = require('@hapi/joi')
 
 const saldoSchema = new mongoose.Schema({
   saldo_id: {
-    type: String
+    type: String,
+    unique: true
   },
   saldo: {
     type: Number,

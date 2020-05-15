@@ -3,7 +3,8 @@ const Joi = require('@hapi/joi')
 
 const billSchema = new mongoose.Schema({
   bill_id: {
-    type: String
+    type: String,
+    unique: true
   },
   amount: {
     type: Number,
