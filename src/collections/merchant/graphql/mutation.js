@@ -56,18 +56,7 @@ const changePasswordMerchant = {
   }
 }
 
-const setSettlement = {
-  type: TransactionSettlement,
-  args: {
-    transactions: { type: GraphQLList(GraphQLString) }
-  },
-  resolve (parent, args) {
-    return setSettlementService(args.transactions)
-  }
-}
-
 module.exports.signUpMerchant = signUpMerchant
 module.exports.logoutMerchant = logoutMerchant
 module.exports.relationMerchantInstitution = relationMerchantInstitution
 module.exports.changePasswordMerchant = changePasswordMerchant
-module.exports.setSettlement = setSettlement

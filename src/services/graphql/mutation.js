@@ -53,10 +53,11 @@ const createQrTopUpMerchant = {
   type: TopupQrResponseType,
   args: {
     amount: { type: new GraphQLNonNull(GraphQLInt) },
-    merchant_id: { type: new GraphQLNonNull(GraphQLString) }
+    merchant_id: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return createQrTopUpMerchantService(args.amount, args.merchant_id)
+    return createQrTopUpMerchantService(args.amount, args.merchant_id, args.email)
   }
 }
 

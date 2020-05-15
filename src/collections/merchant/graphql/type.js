@@ -55,16 +55,6 @@ const AllMerchantTransactionResponseType = new GraphQLObjectType({
   })
 })
 
-const TransactionSettlement = new GraphQLObjectType({
-  name: 'TransactionSettlement',
-  fields: () => ({
-    status: { type: GraphQLInt },
-    error: { type: GraphQLString },
-    success: { type: GraphQLString },
-    transaction: { type: GraphQLList(GraphQLString) }
-  })
-})
-
 const LoginResponseType = new GraphQLObjectType({
   name: 'MerchantLoginResponse',
   fields: () => ({
@@ -116,4 +106,3 @@ module.exports.MerchantInfoResponseType = MerchantInfoResponseType
 module.exports.AllMerchantTransactionResponseType = AllMerchantTransactionResponseType
 module.exports.MerchantDashboardType = MerchantDashboardType
 module.exports.MerchantInstitutionRelation = MerchantInstitutionRelation
-module.exports.TransactionSettlement = TransactionSettlement

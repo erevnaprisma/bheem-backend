@@ -14,11 +14,16 @@ const config = require('config')
 // Model
 const Qr = require('../../../../collections/qr/Model')
 const Serial = require('../../../../collections/serial_numbers/Model')
+const User = require('../../../../collections/user/Model')
 
-const createQrTopupMerchant = async (amount, merchantID) => {
+const createQrTopupMerchant = async (amount, merchantID, email) => {
   if (!amount) return { status: 400, error: 'Invalid amount' }
 
   try {
+    const emailChecker = await User.findOne({ email })
+    if (!emailChecker) {
+      return { status: 400, error: 'Invalid Email' }
+    }
     const merchant = await checkerValidMerchant(merchantID)
 
     // generate serial
