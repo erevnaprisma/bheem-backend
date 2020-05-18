@@ -66,7 +66,7 @@ const settlementSchema = new mongoose.Schema({
     type: Number
   },
   fix_fee: {
-    type: String
+    type: Number
   }
 })
 

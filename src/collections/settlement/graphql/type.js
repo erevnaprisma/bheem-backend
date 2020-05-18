@@ -15,6 +15,16 @@ const TransactionSettlement = new GraphQLObjectType({
   })
 })
 
+const TransactionResponse = new GraphQLObjectType({
+  name: 'TransactionResponse',
+  fields: () => ({
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+  })
+})
+
 module.exports = {
-  TransactionSettlement
+  TransactionSettlement,
+  TransactionResponse
 }

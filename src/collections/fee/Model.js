@@ -7,14 +7,14 @@ const feeSchema = new mongoose.Schema({
     unique: true
   },
   fix_fee_amount: {
-    type: String
+    type: Number
   },
   action_to: {
     type: String,
     enum: ['operator', 'institution']
   },
   percentage_fee_amount: {
-    type: String
+    type: Number
   },
   transaction_method: {
     type: String,

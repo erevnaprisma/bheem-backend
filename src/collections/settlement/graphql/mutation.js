@@ -1,10 +1,12 @@
 const {
   GraphQLString,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLInt
 } = require('graphql')
 
-const { TransactionSettlement } = require('./type')
-const { setSettlementService } = require('../services')
+const { TransactionSettlement, TransactionResponse } = require('./type')
+const { setSettlementService, createPaymentSettlement } = require('../services')
 
 const setSettlement = {
   type: TransactionSettlement,

@@ -8,14 +8,15 @@ const { ActionTo } = require('./type')
 const {
   GraphQLNonNull,
   GraphQLInt,
-  GraphQLString
+  GraphQLString,
+  GraphQLFloat
 } = graphql
 
 const addFee = {
   type: FeeResponseType,
   args: {
     fix_fee: { type: new GraphQLNonNull(GraphQLInt) },
-    percentage_fee: { type: new GraphQLNonNull(GraphQLString) },
+    percentage_fee: { type: new GraphQLNonNull(GraphQLFloat) },
     action_to: { type: new GraphQLNonNull(ActionTo) },
     transaction_method: { type: new GraphQLNonNull(TransactionMethodType) }
   },

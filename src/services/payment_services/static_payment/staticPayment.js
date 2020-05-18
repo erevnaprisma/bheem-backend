@@ -8,6 +8,7 @@
 const Saldo = require('../../../collections/saldo/Model')
 const Transaction = require('../../../collections/transaction/Model')
 const Billing = require('../../../collections/billing/Model')
+
 // Services
 const { addUserPayment } = require('../../../collections/emoney/services')
 const { checkerValidMerchant } = require('../../../collections/merchant/services')
@@ -15,6 +16,7 @@ const { checkerValidUser } = require('../../../collections/user/services')
 const { checkerValidTransaction } = require('../../../collections/transaction/services')
 const { checkerValidBill } = require('../../../collections/billing/services')
 const { institutionRelationChecker } = require('../../../collections/institution/services')
+const { createPaymentSettlement } = require('../../../collections/settlement/services')
 
 let finalAmount
 let getSaldoInstance
@@ -75,6 +77,8 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
 
     // update transaction
     await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', emoney: emoney.emoney_id, transaction_amount: amount })
+
+    await createPaymentSettlement(merchantID, transactionID, amount, institutionID)
 
     return { status: 200, success: 'Payment Success' }
   } catch (err) {
