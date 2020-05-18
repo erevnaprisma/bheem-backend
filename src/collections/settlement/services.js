@@ -9,10 +9,14 @@ const Institution = require('../institution/Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
-const setSettlementService = async (transactions) => {
+const setSettlementService = async (transactions, settlements) => {
   try {
     transactions.forEach(async e => {
       await Transaction.updateOne({ transaction_id: e }, { isSettlement: 'Y' })
+    })
+
+    settlements.forEach(async e => {
+      await Settlement.updateOne({ settlement_id: e }, { status: 'SETLD' })
     })
 
     return { status: 200, success: 'Successfully Change Settlement', transaction: transactions }
@@ -283,9 +287,19 @@ const createTopUpSettlementViaInstitution = async (transactionID, amount, instit
   }
 }
 
+const getSettlementsService = async () => {
+  try {
+    const settlements = await Settlement.find()
+    return { status: 200, success: 'Successfully get Settlements', settlements }
+  } catch (err) {
+    return { status: 400, error: 'Failed get Settlements' }
+  }
+}
+
 module.exports = {
   setSettlementService,
   createPaymentSettlement,
   createTopUpSettlementViaInstitution,
-  createTopUpSettlementViaMerchant
+  createTopUpSettlementViaMerchant,
+  getSettlementsService
 }

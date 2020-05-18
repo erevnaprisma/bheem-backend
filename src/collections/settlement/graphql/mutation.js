@@ -5,19 +5,28 @@ const {
   GraphQLInt
 } = require('graphql')
 
-const { TransactionSettlement, TransactionResponse } = require('./type')
-const { setSettlementService, createPaymentSettlement } = require('../services')
+const { TransactionSettlement, TransactionResponse, SettlementResponse } = require('./type')
+const { setSettlementService, createPaymentSettlement, getSettlementsService } = require('../services')
 
 const setSettlement = {
   type: TransactionSettlement,
   args: {
-    transactions: { type: GraphQLList(GraphQLString) }
+    transactions: { type: GraphQLList(GraphQLString) },
+    settlements: { type: GraphQLList(GraphQLString) }
   },
   resolve (parent, args) {
-    return setSettlementService(args.transactions)
+    return setSettlementService(args.transactions, args.settlements)
+  }
+}
+
+const getSettlements = {
+  type: SettlementResponse,
+  resolve (parent, args) {
+    return getSettlementsService()
   }
 }
 
 module.exports = {
-  setSettlement
+  setSettlement,
+  getSettlements
 }
