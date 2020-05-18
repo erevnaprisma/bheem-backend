@@ -109,6 +109,8 @@ const checkerValidInstitution = async (institutionID) => {
 
   const res = await Institution.findOne({ institution_id: institutionID })
   if (!res) throw new Error(word.INSTITUTION_ID_NOT_FOUND)
+
+  return res
 }
 
 const getAllInstitutionService = async () => {

@@ -32,11 +32,22 @@ const createPaymentSettlement = async (merchantID, transactionID, amount, instit
     // get institution _id
     const institution = await Institution.findOne({ institution_id: institutionID })
 
+    let institutionFee = {}
+    let operatorFee = {}
+
     const operatorCode = merchant.fee_master_code.operator_code_emoney
-    const operatorFee = await Fee.findOne({ fee_master_code: operatorCode })
+    operatorFee = await Fee.findOne({ fee_master_code: operatorCode })
 
     const institutionCode = merchant.fee_master_code.institution_code_emoney
-    const institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+    institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+
+    // if (transactionMethod === 'topup') {
+    //   const operatorCode = merchant.fee_master_code.operator_code_topup
+    //   operatorFee = await Fee.findOne({ fee_master_code: operatorCode })
+
+    //   const institutionCode = merchant.fee_master_code.institution_code_topup
+    //   institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+    // }
 
     const institutionCalc = calculateFee(amount, institutionFee)
 
@@ -56,8 +67,8 @@ const createPaymentSettlement = async (merchantID, transactionID, amount, instit
       action_from: 'operator',
       percentage_fee: institutionCalc.percentageFee,
       fix_fee: institutionCalc.fixFee,
-      total_fee: institutionCalc.totalFee
-      // settlement_amount: institutionCalc.settlementAmount
+      total_fee: institutionCalc.totalFee,
+      settlement_amount: institutionCalc.totalFee
     })
 
     const operatorCalc = calculateFee(amount, operatorFee)
@@ -76,8 +87,8 @@ const createPaymentSettlement = async (merchantID, transactionID, amount, instit
       action_from: 'operator',
       percentage_fee: operatorCalc.percentageFee,
       fix_fee: operatorCalc.fixFee,
-      total_fee: operatorCalc.totalFee
-      // settlement_amount: operatorCalc.settlementAmount
+      total_fee: operatorCalc.totalFee,
+      settlement_amount: operatorCalc.totalFee
     })
 
     const merchantTotalFee = institutionSettlement.total_fee + operatorSettlement.total_fee
@@ -99,9 +110,9 @@ const createPaymentSettlement = async (merchantID, transactionID, amount, instit
       settlement_amount: amount - merchantTotalFee
     })
 
+    await merchantSettlement.save()
     await institutionSettlement.save()
     await operatorSettlement.save()
-    await merchantSettlement.save()
 
     return true
   } catch (err) {
@@ -113,22 +124,168 @@ const calculateFee = (amount, entity) => {
   const percentageFee = amount * entity.percentage_fee_amount
   const fixFee = entity.fix_fee_amount
   const totalFee = percentageFee + fixFee
-  const settlementAmount = amount - totalFee
 
   return {
     percentageFee,
     fixFee,
-    totalFee,
-    settlementAmount
+    totalFee
   }
 }
 
-const createTopUpSettlement = async () => {
+const createTopUpSettlementViaMerchant = async (merchantID, transactionID, amount, institutionID) => {
+  try {
+    // get merchant _id
+    const merchant = await Merchant.findOne({ merchant_id: merchantID })
 
+    // get transaction _id
+    const transaction = await Transaction.findOne({ transaction_id: transactionID })
+
+    // get institution _id
+    const institution = await Institution.findOne({ institution_id: institutionID })
+
+    let institutionFee = {}
+    let merchantFee = {}
+
+    const merchantCode = merchant.fee_master_code.merchant_code_topup
+    merchantFee = await Fee.findOne({ fee_master_code: merchantCode })
+
+    const institutionCode = merchant.fee_master_code.institution_code_topup
+    institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+
+    const institutionCalc = calculateFee(amount, institutionFee)
+
+    // settlement for institution
+    const institutionSettlement = await new Settlement({
+      settlement_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      institution_id: institutionID,
+      institution_id_native: institution._id,
+      transaction_id: transactionID,
+      transaction_id_native: transaction._id,
+      payment_date: transaction.created_at,
+      status: 'PNDNG',
+      created_at: getUnixTime(),
+      updated_at: getUnixTime(),
+      transaction_amount: transaction.transaction_amount,
+      action_to: 'institution',
+      action_from: 'operator',
+      percentage_fee: institutionCalc.percentageFee,
+      fix_fee: institutionCalc.fixFee,
+      total_fee: institutionCalc.totalFee,
+      settlement_amount: institutionCalc.totalFee
+    })
+
+    const merchantCalc = calculateFee(amount, merchantFee)
+
+    // settlement for operator
+    const merchantSettlement = await new Settlement({
+      settlement_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      transaction_id: transactionID,
+      transaction_id_native: transaction._id,
+      merchant_id: merchantID,
+      merchant_id_native: merchant._id,
+      payment_date: transaction.created_at,
+      status: 'PNDNG',
+      created_at: getUnixTime(),
+      updated_at: getUnixTime(),
+      transaction_amount: transaction.transaction_amount,
+      action_to: 'merchant',
+      action_from: 'operator',
+      percentage_fee: merchantCalc.percentageFee,
+      fix_fee: merchantCalc.fixFee,
+      total_fee: merchantCalc.totalFee,
+      settlement_amount: merchantCalc.totalFee
+    })
+
+    const operatorTotalFee = institutionSettlement.total_fee + merchantSettlement.total_fee
+
+    // settlement for merchant
+    const operatorSettlement = await new Settlement({
+      settlement_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      transaction_id: transactionID,
+      transaction_id_native: transaction._id,
+      payment_date: transaction.created_at,
+      status: 'PNDNG',
+      created_at: getUnixTime(),
+      updated_at: getUnixTime(),
+      transaction_amount: transaction.transaction_amount,
+      action_to: 'operator',
+      action_from: 'merchant',
+      settlement_amount: amount
+    })
+
+    await merchantSettlement.save()
+    await institutionSettlement.save()
+    await operatorSettlement.save()
+
+    return true
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
+const createTopUpSettlementViaInstitution = async (transactionID, amount, institutionID) => {
+  try {
+    // get transaction _id
+    const transaction = await Transaction.findOne({ transaction_id: transactionID })
+
+    // get institution _id
+    const institution = await Institution.findOne({ institution_id: institutionID })
+
+    // let institutionFee = {}
+    let institutionFee = {}
+
+    const institutionCode = institution.fee_master_code.institution_code_topup
+    institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+
+    const institutionCalc = calculateFee(amount, institutionFee)
+
+    // settlement for institution
+    const institutionSettlement = await new Settlement({
+      settlement_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      institution_id: institutionID,
+      institution_id_native: institution._id,
+      transaction_id: transactionID,
+      transaction_id_native: transaction._id,
+      payment_date: transaction.created_at,
+      status: 'PNDNG',
+      created_at: getUnixTime(),
+      updated_at: getUnixTime(),
+      transaction_amount: transaction.transaction_amount,
+      action_to: 'institution',
+      action_from: 'operator',
+      percentage_fee: institutionCalc.percentageFee,
+      fix_fee: institutionCalc.fixFee,
+      total_fee: institutionCalc.totalFee,
+      settlement_amount: institutionCalc.totalFee
+    })
+
+    // settlement for operator
+    const operatorSettlement = await new Settlement({
+      settlement_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      transaction_id: transactionID,
+      transaction_id_native: transaction._id,
+      payment_date: transaction.created_at,
+      status: 'PNDNG',
+      created_at: getUnixTime(),
+      updated_at: getUnixTime(),
+      transaction_amount: transaction.transaction_amount,
+      action_to: 'operator',
+      action_from: 'institution',
+      settlement_amount: amount
+    })
+
+    await institutionSettlement.save()
+    await operatorSettlement.save()
+
+    return true
+  } catch (err) {
+    throw new Error(err)
+  }
 }
 
 module.exports = {
   setSettlementService,
   createPaymentSettlement,
-  createTopUpSettlement
+  createTopUpSettlementViaInstitution,
+  createTopUpSettlementViaMerchant
 }

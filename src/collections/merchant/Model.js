@@ -15,6 +15,12 @@ const FeeMasterCode = new mongoose.Schema({
   },
   institution_code_topup: {
     type: String
+  },
+  merchant_code_emoney: {
+    type: String
+  },
+  merchant_code_topup: {
+    type: String
   }
 })
 

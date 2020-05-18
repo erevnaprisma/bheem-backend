@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 const { FeeResponseType } = require('./type')
-const { createFeeService, setMerchantSchemaFee } = require('../services')
+const { createFeeService, setMerchantSchemaFee, setInstitutionSchemaFee } = require('../services')
 const { TransactionMethodType } = require('../../transaction/graphql/type')
 const { ActionTo } = require('./type')
 
@@ -30,15 +30,28 @@ const setMerchantFee = {
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLString) },
     fee_method: { type: new GraphQLNonNull(TransactionMethodType) },
-    operator_fee_code: { type: new GraphQLNonNull(GraphQLString) },
-    institution_fee_code: { type: new GraphQLNonNull(GraphQLString) }
+    fee_master_code: { type: new GraphQLNonNull(GraphQLString) },
+    entity: { type: new GraphQLNonNull(ActionTo) }
   },
   resolve (parent, args) {
-    return setMerchantSchemaFee(args.merchant_id, args.operator_fee_code, args.institution_fee_code, args.fee_method)
+    return setMerchantSchemaFee(args.merchant_id, args.fee_master_code, args.fee_method, args.entity)
+  }
+}
+
+const setInstitutionFee = {
+  type: FeeResponseType,
+  args: {
+    institution_id: { type: new GraphQLNonNull(GraphQLString) },
+    operator_fee_code: { type: new GraphQLNonNull(GraphQLString) },
+    fee_method: { type: new GraphQLNonNull(TransactionMethodType) }
+  },
+  resolve (parent, args) {
+    return setInstitutionSchemaFee(args.institution_id, args.operator_fee_code, args.fee_method)
   }
 }
 
 module.exports = {
   addFee,
-  setMerchantFee
+  setMerchantFee,
+  setInstitutionFee
 }

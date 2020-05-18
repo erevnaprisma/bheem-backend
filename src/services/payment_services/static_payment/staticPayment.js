@@ -78,7 +78,7 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
     // update transaction
     await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', emoney: emoney.emoney_id, transaction_amount: amount })
 
-    await createPaymentSettlement(merchantID, transactionID, amount, institutionID)
+    await createPaymentSettlement(merchantID, transactionID, amount, institutionID, 'emoney')
 
     return { status: 200, success: 'Payment Success' }
   } catch (err) {

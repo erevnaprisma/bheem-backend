@@ -12,7 +12,8 @@ const ActionTo = new GraphQLEnumType({
   name: 'ActionTo',
   values: {
     operator: { value: 'operator' },
-    institution: { value: 'institution' }
+    institution: { value: 'institution' },
+    merchant: { values: 'merchant' }
   }
 })
 

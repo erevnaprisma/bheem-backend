@@ -4,6 +4,7 @@ const { addUserTransaction } = require('../../../collections/transaction/service
 const { createSaldo, updateSaldo } = require('../../../collections/saldo/services')
 const { checkerValidUser, checkValidUserUsingEmail } = require('../../../collections/user/services')
 const { checkerValidInstitution } = require('../../../collections/institution/services')
+const { createTopUpSettlementViaInstitution } = require('../../../collections/settlement/services')
 const word = require('../../../utils/constants/word')
 
 const User = require('../../../collections/user/Model')
@@ -54,6 +55,8 @@ const serviceTopUpInstitution = async (args) => {
     } else {
       await updateSaldo(getSaldoInstance.saldo_id, finalAmount)
     }
+
+    await createTopUpSettlementViaInstitution(transaction.transaction_id, args.amount, args.institution_id)
 
     return { status: 200, success: 'Successfully topup' }
   } catch (err) {

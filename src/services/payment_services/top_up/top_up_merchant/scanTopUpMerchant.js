@@ -1,5 +1,6 @@
 // Services
 const { checkerValidMerchant } = require('../../../../collections/merchant/services')
+const { checkerValidInstitution } = require('../../../../collections/institution/services')
 const { checkerValidSerial } = require('../../../../collections/serial_numbers/services')
 const { checkerValidQr, isQrExpired } = require('../../../../collections/qr/services')
 const { checkerValidUser } = require('../../../../collections/user/services')
@@ -13,13 +14,16 @@ const Transaction = require('../../../../collections/transaction/Model')
 const Qr = require('../../../../collections/qr/Model')
 const Serial = require('../../../../collections/serial_numbers/Model')
 
-const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, transactionID, qrID, serialID) => {
+const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, transactionID, qrID, serialID, institutionID) => {
   try {
     // Check Valid User
     await checkerValidUser(userID)
 
     // Validate Merchant ID
     await checkerValidMerchant(merchantID)
+
+    // Validate Institution ID
+    await checkerValidInstitution(institutionID)
 
     // Check if Serial Number is Valid
     const serial = await checkerValidSerial(serialID, serialNumber)

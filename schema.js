@@ -20,7 +20,7 @@ const { createQrStatic, testing, createQrDynamic } = require('./src/collections/
 const { showQR } = require('./src/collections/qr/graphql/query')
 
 // Fee
-const { addFee, setMerchantFee } = require('./src/collections/fee/graphql/mutation')
+const { addFee, setMerchantFee, setInstitutionFee } = require('./src/collections/fee/graphql/mutation')
 
 // Settlement
 const { setSettlement } = require('./src/collections/settlement/graphql/mutation')
@@ -107,7 +107,8 @@ const Mutation = new GraphQLObjectType({
     addFee,
     setSettlement,
     setMerchantFee,
-    paymentTopUpMerchant
+    paymentTopUpMerchant,
+    setInstitutionFee
   }
 })
 

@@ -11,7 +11,7 @@ const feeSchema = new mongoose.Schema({
   },
   action_to: {
     type: String,
-    enum: ['operator', 'institution']
+    enum: ['operator', 'institution', 'merchant']
   },
   percentage_fee_amount: {
     type: Number

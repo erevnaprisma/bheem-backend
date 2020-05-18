@@ -8,10 +8,9 @@ const Serial = require('../../../../collections/serial_numbers/Model')
 const { getUnixTime, generateID } = require('../../../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../../../utils/constants/number')
 const { checkerValidUser } = require('../../../../collections/user/services')
+const { createTopUpSettlementViaMerchant } = require('../.../../../../../collections/settlement/services')
 
-const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, serialID) => {
-  console.log(qrID)
-  console.log('transactionId', transactionID)
+const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, serialID, merchantID, institutionID) => {
   try {
     const user = await checkerValidUser(userID)
 
@@ -44,6 +43,8 @@ const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, 
 
     // Inactive Serial Number
     await Serial.updateOne({ serial_id: serial.serial_id }, { status: 'INACTIVE' })
+
+    await createTopUpSettlementViaMerchant(merchantID, transactionID, amount, institutionID)
 
     return { status: 200, success: 'Transaction Success' }
   } catch (err) {
