@@ -55,11 +55,10 @@ const createQrTopUpMerchant = {
   args: {
     amount: { type: new GraphQLNonNull(GraphQLInt) },
     merchant_id: { type: new GraphQLNonNull(GraphQLString) },
-    email: { type: new GraphQLNonNull(GraphQLString) },
-    institution_id: { type: new GraphQLNonNull(GraphQLString) }
+    email: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return createQrTopUpMerchantService(args.amount, args.merchant_id, args.email, args.institution_id)
+    return createQrTopUpMerchantService(args.amount, args.merchant_id, args.email)
   }
 }
 
@@ -72,11 +71,10 @@ const scanQrTopUpMerchant = {
     user_id: { type: new GraphQLNonNull(GraphQLString) },
     transaction_id: { type: new GraphQLNonNull(GraphQLString) },
     qr_id: { type: new GraphQLNonNull(GraphQLString) },
-    serial_id: { type: new GraphQLNonNull(GraphQLString) },
-    institution_id: { type: new GraphQLNonNull(GraphQLString) }
+    serial_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return scanQrTopUpMerchantService(args.amount, args.merchant_id, args.serial_number, args.user_id, args.transaction_id, args.qr_id, args.serial_id, args.institution_id)
+    return scanQrTopUpMerchantService(args.amount, args.merchant_id, args.serial_number, args.user_id, args.transaction_id, args.qr_id, args.serial_id)
   }
 }
 
@@ -88,11 +86,10 @@ const paymentTopUpMerchant = {
     transaction_id: { type: new GraphQLNonNull(GraphQLString) },
     qr_id: { type: new GraphQLNonNull(GraphQLString) },
     serial_id: { type: new GraphQLNonNull(GraphQLString) },
-    merchant_id: { type: new GraphQLNonNull(GraphQLString) },
-    institution_id: { type: new GraphQLNonNull(GraphQLString) }
+    merchant_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return paymentTopUpMerchantService(args.user_id, args.amount, args.qr_id, args.transaction_id, args.serial_id, args.merchant_id, args.institution_id)
+    return paymentTopUpMerchantService(args.user_id, args.amount, args.qr_id, args.transaction_id, args.serial_id, args.merchant_id)
   }
 }
 

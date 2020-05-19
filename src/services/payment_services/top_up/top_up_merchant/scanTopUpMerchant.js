@@ -14,16 +14,13 @@ const Transaction = require('../../../../collections/transaction/Model')
 const Qr = require('../../../../collections/qr/Model')
 const Serial = require('../../../../collections/serial_numbers/Model')
 
-const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, transactionID, qrID, serialID, institutionID) => {
+const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, transactionID, qrID, serialID) => {
   try {
     // Check Valid User
     await checkerValidUser(userID)
 
     // Validate Merchant ID
     await checkerValidMerchant(merchantID)
-
-    // Validate Institution ID
-    await checkerValidInstitution(institutionID)
 
     // Check if Serial Number is Valid
     const serial = await checkerValidSerial(serialID, serialNumber)

@@ -18,7 +18,7 @@ const Serial = require('../../../../collections/serial_numbers/Model')
 const User = require('../../../../collections/user/Model')
 const Institution = require('../../../../collections/institution/Model')
 
-const createQrTopupMerchant = async (amount, merchantID, email, institutionID) => {
+const createQrTopupMerchant = async (amount, merchantID, email) => {
   if (!amount) return { status: 400, error: 'Invalid amount' }
 
   try {
@@ -27,12 +27,6 @@ const createQrTopupMerchant = async (amount, merchantID, email, institutionID) =
       return { status: 400, error: 'Invalid Email' }
     }
     const merchant = await checkerValidMerchant(merchantID)
-
-    const institution = await checkerValidInstitution(institutionID)
-
-    // check relation between merchant and institution
-    const relation = await institutionRelationChecker(merchantID, institutionID)
-    if (!relation) return { status: 400, error: 'Institution and Merchant doesn\'t have relation' }
 
     // generate serial
     const unEncryptSerialNumber = generateRandomStringAndNumber(8)
@@ -64,10 +58,10 @@ const createQrTopupMerchant = async (amount, merchantID, email, institutionID) =
     const bill = await addBillingMerchantService(amount, merchantID)
 
     // create Transaction
-    const transaction = await addUserTransaction({ amount, bill: bill.bill_id, merchantID, qrID: qr.qr_id, transactionMethod: 'Top-up', billing_id_native: bill._id, topup_method: 'Merchant', qr_id_native: qr._id, institutionID })
+    const transaction = await addUserTransaction({ amount, bill: bill.bill_id, merchantID, qrID: qr.qr_id, transactionMethod: 'Top-up', billing_id_native: bill._id, topup_method: 'Merchant', qr_id_native: qr._id })
 
     // Create QR Value & add to DB
-    const qrValue = { merchant_id_native: merchant._id, merchant_id: merchantID, amount, serial_number: unEncryptSerialNumber, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id, transaction_id: transaction.transaction_id, institution_id: institutionID, institution_id_native: institution._id }
+    const qrValue = { merchant_id_native: merchant._id, merchant_id: merchantID, amount, serial_number: unEncryptSerialNumber, serial_id: serial.serial_id, serial_number_id_native: serial._id, qr_id: qr.qr_id, transaction_id: transaction.transaction_id }
     qr.qr_value = qrValue
 
     // Generate QR PNG
