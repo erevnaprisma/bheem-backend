@@ -97,10 +97,10 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
       } else {
         if (otp.status === 'ACTIVE') {
           if (otp.isValidLimit >= 2) {
-            await Otp.updateOne({ user_id: userID, status: 'ACTIVE', otp_reference_number: otpRefNum }, { status: 'INACTIVE', isValidLimit: otp.isValidLimit + 1 })
+            await Otp.updateOne({ user_id: userID, status: 'ACTIVE', otp_reference_number: otpRefNum }, { status: 'INACTIVE', isValidLimit: otp.isValidLimit + 1, updated_at: getUnixTime() })
             return { status: 400, error: 'Otp expired' }
           } else {
-            await Otp.updateOne({ user_id: userID, status: 'ACTIVE', otp_reference_number: otpRefNum }, { isValidLimit: otp.isValidLimit + 1 })
+            await Otp.updateOne({ user_id: userID, status: 'ACTIVE', otp_reference_number: otpRefNum }, { isValidLimit: otp.isValidLimit + 1, updated_at: getUnixTime() })
             return { status: 400, error: 'Invalid otp' }
           }
         } else {
@@ -118,8 +118,8 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
     // const getOtpTime = res.created_at.getTime()
     // const maxDate = getOtpTime + maximumTime
 
-    await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
-    await User.updateOne({ user_id: userID }, { email: email })
+    await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
+    await User.updateOne({ user_id: userID }, { email: email, updated_at: getUnixTime() })
     return { status: 200, success: 'successfully change email' }
   } catch (err) {
     return { status: 400, error: err || 'Submit otp failed' }
@@ -139,7 +139,7 @@ const forgetPasswordSendOtpService = async (email) => {
     // check if already sent forget password otp before
     const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
     if (alreadySentOtp) {
-      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE' })
+      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
     }
 
     const model = {
@@ -184,7 +184,7 @@ const merchantForgetPasswordSendOtpService = async (email) => {
     // check if already send forget password otp before
     const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
     if (alreadySentOtp) {
-      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE' })
+      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
     }
 
     const model = {
@@ -227,7 +227,7 @@ const institutionForgetPasswordSendOtpService = async (email) => {
     // check if already send forget password otp before
     const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
     if (alreadySentOtp) {
-      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE' })
+      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
     }
 
     const model = {
@@ -271,13 +271,13 @@ const changePasswordViaForgetPasswordService = async (otp, password, email, otpR
         }
         if (isEmailValid.isValidLimit <= 2) {
           if (isEmailValid.isValidLimit >= 2) {
-            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1 })
+            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
             return { status: 400, error: 'Otp expired' }
           }
-          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { isValidLimit: isEmailValid.isValidLimit + 1 })
+          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
           return { status: 400, error: 'Invalid otp' }
         } else {
-          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE' })
+          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
           return { status: 400, error: 'Otp expired' }
         }
       } else {
@@ -290,9 +290,9 @@ const changePasswordViaForgetPasswordService = async (otp, password, email, otpR
 
     const hashedPassword = await User.hashing(password)
 
-    await User.findOneAndUpdate({ user_id: otpChecker.user_id }, { password: hashedPassword })
+    await User.findOneAndUpdate({ user_id: otpChecker.user_id }, { password: hashedPassword, updated_at: getUnixTime() })
 
-    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE' })
+    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
 
     return { status: 200, success: 'Successfully change password' }
   } catch (err) {
@@ -314,13 +314,13 @@ const merchantChangePasswordViaForgetPasswordService = async (otp, password, ema
         }
         if (isEmailValid.isValidLimit <= 2) {
           if (isEmailValid.isValidLimit >=2) {
-            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1 })
+            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
             return { status: 400, error: 'Otp expired' }
           }
-          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD'}, { isValidLimit: isEmailValid.isValidLimit + 1 })
+          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
           return { status: 400, error: 'Invalid otp' }
         } else {
-          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE' })
+          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
           return { status: 400, error: 'Otp expired' }
         }
       } else {
@@ -333,9 +333,9 @@ const merchantChangePasswordViaForgetPasswordService = async (otp, password, ema
 
     const hashedPassword = await User.hashing(password)
 
-    await Merchant.findOneAndUpdate({ merchant_id: otpChecker.merchant_id }, { password: hashedPassword })
+    await Merchant.findOneAndUpdate({ merchant_id: otpChecker.merchant_id }, { password: hashedPassword, updated_at: getUnixTime() })
 
-    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE' })
+    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
     return { status: 200, success: 'Successfully change password' }
   } catch (err) {
     return { status: 400, error: 'Failed change password' }
@@ -355,14 +355,14 @@ const institutionChangePasswordViaForgetPasswordService = async (otp, password, 
           return { status: 400, error: 'Otp expired' }
         }
         if (isEmailValid.isValidLimit <= 2) {
-          if (isEmailValid.isValidLimit >=2) {
-            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1 })
+          if (isEmailValid.isValidLimit >= 2) {
+            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
             return { status: 400, error: 'Otp expired' }
           }
-          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD'}, { isValidLimit: isEmailValid.isValidLimit + 1 })
+          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD'}, { isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
           return { status: 400, error: 'Invalid otp' }
         } else {
-          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE' })
+          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
           return { status: 400, error: 'Otp expired' }
         }
       } else {
@@ -375,9 +375,9 @@ const institutionChangePasswordViaForgetPasswordService = async (otp, password, 
 
     const hashedPassword = await User.hashing(password)
 
-    await Institution.findOneAndUpdate({ institution_id: otpChecker.institution_id }, { password: hashedPassword })
+    await Institution.findOneAndUpdate({ institution_id: otpChecker.institution_id }, { password: hashedPassword, updated_at: getUnixTime() })
 
-    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE' })
+    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
     return { status: 200, success: 'Successfully change password' }
   } catch (err) {
     return { status: 400, error: 'Failed change password' }
@@ -395,7 +395,7 @@ const expireOtpChecker = async ({ getOtpTime, otp }) => {
   const maxDate = created_at + maximumTime
 
   if (getUnixTime() > maxDate) {
-    await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE' })
+    await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
     return false
   }
   return true

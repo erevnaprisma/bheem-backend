@@ -4,6 +4,7 @@ const { checkerValidTransaction } = require('../../../collections/transaction/se
 const { checkerValidBill } = require('../../../collections/billing/services')
 const { checkerValidUser } = require('../../../collections/user/services')
 const { institutionRelationChecker } = require('../../../collections/institution/services')
+const { getUnixTime } = require('../../../utils/services/supportServices')
 
 const Merchant = require('../../../collections/merchant/Model')
 const Qr = require('../../../collections/qr/Model')
@@ -31,7 +32,7 @@ const scanPaymentDynamic = async ({ merchantID, qrID, institutionID = '158813347
     // Check Qr expire date
     const isExpired = await isQrExpired(qrID, 180000)
     if (!isExpired) {
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL', updated_at: getUnixTime() })
       return { status: 400, error: 'Qr already Expired' }
     }
 
@@ -44,12 +45,12 @@ const scanPaymentDynamic = async ({ merchantID, qrID, institutionID = '158813347
     // check relation between merchant and institution
     const relation = await institutionRelationChecker(merchantID, institutionID)
     if (!relation) {
-      await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE' })
+      await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE', updated_at: getUnixTime() })
       return { status: 400, error: 'Institution and Merchant doesn\'t have relation' }
     }
 
     // Update transaction adding user id
-    await Transaction.updateOne({ transaction_id: transactionID }, { user_id: userID, user_id_native: user._id })
+    await Transaction.updateOne({ transaction_id: transactionID }, { user_id: userID, user_id_native: user._id, updated_at: getUnixTime() })
 
     return { transaction_id: transactionID, merchant_id: merchantID, billing_id: billID, status: 200, success: 'Scan merchant success', merchant_name: merchant.business_name, institution_id: institutionID, amount, qr_id: qrID }
   } catch (err) {

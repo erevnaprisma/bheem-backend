@@ -1,4 +1,5 @@
 const { getTransaction } = require('../../../collections/transaction/services')
+const { getUnixTime } = require('../../../utils/services/supportServices')
 
 const Merchant = require('../../../collections/merchant/Model')
 
@@ -6,7 +7,7 @@ const transactionReceipt = async (transactionID) => {
   try {
     const res = await getTransaction(transactionID)
 
-    const merchant = await Merchant.findOneAndUpdate({ merchant_id: res.merchant_id })
+    const merchant = await Merchant.findOneAndUpdate({ merchant_id: res.merchant_id, updated_at: getUnixTime() })
 
     res.merchant_name = merchant.business_name
 

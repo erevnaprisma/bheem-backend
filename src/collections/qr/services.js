@@ -149,7 +149,7 @@ const isQrExpired = async (qrID, maximumTime) => {
   const maxDate = qrTime + parseInt(maximumTime)
 
   if (getUnixTime() > maxDate) {
-    await Qr.updateOne({ qr_id: qr.qr_id }, { status: 'INACTIVE' })
+    await Qr.updateOne({ qr_id: qr.qr_id }, { status: 'INACTIVE', updated_at: getUnixTime() })
     return false
   }
   return true

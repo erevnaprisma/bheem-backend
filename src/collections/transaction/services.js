@@ -55,7 +55,7 @@ const getTransaction = async (transactionID) => {
 }
 
 const cancelTransaction = async (transactionID) => {
-  return Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
+  return Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL', updated_at: getUnixTime() })
 }
 
 const transactionStatusPendingChecker = async (transactionID) => {

@@ -38,9 +38,9 @@ const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, tra
     const isExpired = await isQrExpired(qrID, 180000)
     if (!isExpired) {
       // if Qr expired then change transaction, serial, and qr
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
-      await Serial.updateOne({ serial_id: serial.serial_id }, { status: 'INACTIVE' })
-      await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE' })
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL', updated_at: getUnixTime() })
+      await Serial.updateOne({ serial_id: serial.serial_id }, { status: 'INACTIVE', updated_at: getUnixTime() })
+      await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE', updated_at: getUnixTime() })
       return { status: 400, error: 'Qr already expired' }
     }
 

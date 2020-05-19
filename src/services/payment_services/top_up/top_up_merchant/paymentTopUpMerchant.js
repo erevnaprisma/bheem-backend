@@ -22,7 +22,7 @@ const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, 
     // if already top up before
     if (currentSaldo) {
       finalSaldo = currentSaldo.saldo + amount
-      await Saldo.updateOne({ user_id: userID }, { saldo: finalSaldo })
+      await Saldo.updateOne({ user_id: userID }, { saldo: finalSaldo, updated_at: getUnixTime() })
     } else {
       const saldo = await new Saldo({
         saldo_id: generateID(RANDOM_STRING_FOR_CONCAT),
@@ -36,13 +36,13 @@ const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, 
       await saldo.save()
     }
     // Update Transaction to Settled
-    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', user_id: userID, user_id_native: user._id })
+    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', user_id: userID, user_id_native: user._id, updated_at: getUnixTime() })
 
     // Inactive Qr Code
-    await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE' })
+    await Qr.updateOne({ qr_id: qrID }, { status: 'INACTIVE', updated_at: getUnixTime() })
 
     // Inactive Serial Number
-    await Serial.updateOne({ serial_id: serial.serial_id }, { status: 'INACTIVE' })
+    await Serial.updateOne({ serial_id: serial.serial_id }, { status: 'INACTIVE', updated_at: getUnixTime() })
 
     await createTopUpSettlementViaMerchant(merchantID, transactionID, amount, institutionID)
 

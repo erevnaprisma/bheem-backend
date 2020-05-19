@@ -11,6 +11,7 @@ const { checkerValidTransaction } = require('../../../collections/transaction/se
 const { checkerValidBill } = require('../../../collections/billing/services')
 const { institutionRelationChecker } = require('../../../collections/institution/services')
 const { checkerValidQr, isQrExpired } = require('../../../collections/qr/services')
+const { getUnixTime } = require('../../../utils/services/supportServices')
 
 let finalAmount
 let getSaldoInstance
@@ -33,7 +34,7 @@ const dynamicPayment = async (merchantID, amount, userID, transactionID, passwor
 
     const isExpired = await isQrExpired(qrID, 180000)
     if (!isExpired) {
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL' })
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'CANCEL', updated_at: getUnixTime() })
       return { status: 400, error: 'Qr already expired' }
     }
 
@@ -52,7 +53,7 @@ const dynamicPayment = async (merchantID, amount, userID, transactionID, passwor
     // get current saldo
     getSaldoInstance = await Saldo.findOne({ user_id: userID })
     if (!getSaldoInstance) {
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC' })
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC', updated_at: getUnixTime() })
       return { status: 400, error: 'Please top up your wallet first...' }
     }
 
@@ -62,7 +63,7 @@ const dynamicPayment = async (merchantID, amount, userID, transactionID, passwor
 
     // check if saldo is enought for payment
     if (finalAmount < 0) {
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC' })
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC', updated_at: getUnixTime() })
       return { status: 400, error: 'Not enough e-money, please top up first' }
     }
 
@@ -70,12 +71,12 @@ const dynamicPayment = async (merchantID, amount, userID, transactionID, passwor
     const emoney = await addUserPayment({ saldo: finalAmount, transactionAmount: amount, type, userID })
 
     // update saldo
-    await Saldo.updateOne({ saldo_id: getSaldoInstance.saldo_id }, { saldo: finalAmount })
+    await Saldo.updateOne({ saldo_id: getSaldoInstance.saldo_id }, { saldo: finalAmount, updated_at: getUnixTime() })
 
     // update transaction
-    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', emoney: emoney.emoney_id, transaction_amount: amount })
+    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', emoney: emoney.emoney_id, transaction_amount: amount, updated_at: getUnixTime() })
 
-    await Qr.findOneAndUpdate({ qr_id: qrID }, { status: 'INACTIVE' })
+    await Qr.findOneAndUpdate({ qr_id: qrID }, { status: 'INACTIVE', updated_at: getUnixTime() })
 
     return { status: 200, success: 'Payment Success' }
   } catch (err) {

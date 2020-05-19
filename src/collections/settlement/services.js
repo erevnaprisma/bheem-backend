@@ -12,11 +12,11 @@ const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const setSettlementService = async (transactions, settlements) => {
   try {
     transactions.forEach(async e => {
-      await Transaction.updateOne({ transaction_id: e }, { isSettlement: 'Y' })
+      await Transaction.updateOne({ transaction_id: e }, { isSettlement: 'Y', updated_at: getUnixTime() })
     })
 
     settlements.forEach(async e => {
-      await Settlement.updateOne({ settlement_id: e }, { status: 'SETLD' })
+      await Settlement.updateOne({ settlement_id: e }, { status: 'SETLD', updated_at: getUnixTime() })
     })
 
     return { status: 200, success: 'Successfully Change Settlement', transaction: transactions }

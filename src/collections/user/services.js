@@ -130,7 +130,7 @@ const changePassword = async (userID, newPassword, password, token = null) => {
     await user.comparedPassword(password)
 
     const hashedPass = await User.hashing(newPassword)
-    await User.findOneAndUpdate({ user_id: userID }, { password: hashedPass }).catch(() => { errorHandling('Failed updating password') })
+    await User.findOneAndUpdate({ user_id: userID }, { password: hashedPass, updated_at: getUnixTime() }).catch(() => { errorHandling('Failed updating password') })
 
     return { status: 200, success: WORD_CHANGE_PASSWORD, new_token: token }
   } catch (err) {
@@ -156,7 +156,7 @@ const changeName = async (userID, newUsername, password, token = null) => {
 
     await user.comparedPassword(password)
 
-    await User.findOneAndUpdate({ user_id: userID }, { username: newUsername }).catch(() => { errorHandling('Failed updating username') })
+    await User.findOneAndUpdate({ user_id: userID }, { username: newUsername, updated_at: getUnixTime() }).catch(() => { errorHandling('Failed updating username') })
 
     return { status: 200, success: WORD_CHANGE_USERNAME, new_token: token }
   } catch (err) {
@@ -185,7 +185,7 @@ const changeProfile = async args => {
   try {
     await user.comparedPassword(args.password)
 
-    await User.where({ user_id: userID }).update({ $set: { first_name: firstName, last_name: lastName, nickname: nickname, full_name: fullName, address: address } }).catch(() => { errorHandling('Failed updating user profile') })
+    await User.where({ user_id: userID }).update({ $set: { first_name: firstName, last_name: lastName, nickname: nickname, full_name: fullName, address: address }, updated_at: getUnixTime() }).catch(() => { errorHandling('Failed updating user profile') })
 
     return { status: 200, success: 'Update profile success', new_token: args.newToken }
   } catch (err) {

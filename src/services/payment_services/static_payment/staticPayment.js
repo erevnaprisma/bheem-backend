@@ -17,6 +17,7 @@ const { checkerValidTransaction } = require('../../../collections/transaction/se
 const { checkerValidBill } = require('../../../collections/billing/services')
 const { institutionRelationChecker } = require('../../../collections/institution/services')
 const { createPaymentSettlement } = require('../../../collections/settlement/services')
+const { getUnixTime } = require('../../../utils/services/supportServices')
 
 let finalAmount
 let getSaldoInstance
@@ -52,7 +53,7 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
     // get current saldo
     getSaldoInstance = await Saldo.findOne({ user_id: userID })
     if (!getSaldoInstance) {
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC' })
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC', updated_at: getUnixTime() })
       return { status: 400, error: 'Please top up your wallet first...' }
     }
 
@@ -62,7 +63,7 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
 
     // check if saldo is enought for payment
     if (finalAmount < 0) {
-      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC' })
+      await Transaction.updateOne({ transaction_id: transactionID }, { status: 'REJEC', updated_at: getUnixTime() })
       return { status: 400, error: 'Not enough e-money, please top up first' }
     }
 
@@ -70,13 +71,13 @@ const staticPayment = async (merchantID, amount, userID, transactionID, billID, 
     const emoney = await addUserPayment({ saldo: finalAmount, transactionAmount: amount, type, userID })
 
     // update saldo
-    await Saldo.updateOne({ saldo_id: getSaldoInstance.saldo_id }, { saldo: finalAmount })
+    await Saldo.updateOne({ saldo_id: getSaldoInstance.saldo_id }, { saldo: finalAmount, updated_at: getUnixTime() })
 
     // update billing amount
-    await Billing.updateOne({ bill_id: billID }, { amount })
+    await Billing.updateOne({ bill_id: billID }, { amount, updated_at: getUnixTime() })
 
     // update transaction
-    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', emoney: emoney.emoney_id, transaction_amount: amount })
+    await Transaction.updateOne({ transaction_id: transactionID }, { status: 'SETLD', emoney: emoney.emoney_id, transaction_amount: amount, updated_at: getUnixTime() })
 
     await createPaymentSettlement(merchantID, transactionID, amount, institutionID, 'emoney')
 

@@ -102,11 +102,11 @@ const setMerchantSchemaFee = async (merchantID, feeMasterCode, feeMethod, entity
 
     // if current fee master code is null or undefined
     if (!currentFeeMasterCode) {
-      await Merchant.updateOne({ merchant_id: merchantID }, { fee_master_code: feeCode })
+      await Merchant.updateOne({ merchant_id: merchantID }, { fee_master_code: feeCode, updated_at: getUnixTime() })
       return { status: 200, success: 'Successfully Set Merchant Schema Fee' }
     }
 
-    await Merchant.updateOne({ merchant_id: merchantID }, { fee_master_code: Object.assign(currentFeeMasterCode, feeCode) })
+    await Merchant.updateOne({ merchant_id: merchantID }, { fee_master_code: Object.assign(currentFeeMasterCode, feeCode), updated_at: getUnixTime() })
 
     return { status: 200, success: 'Successfully Set Merchant Schema Fee' }
   } catch (err) {
@@ -146,11 +146,11 @@ const setInstitutionSchemaFee = async (institutionID, operatorFeeCode, feeMethod
 
     // if current fee master code is null or undefined
     if (!currentFeeMasterCode) {
-      await Institution.updateOne({ institution_id: institutionID }, { fee_master_code: feeMasterCode })
+      await Institution.updateOne({ institution_id: institutionID }, { fee_master_code: feeMasterCode, updated_at: getUnixTime() })
       return { status: 200, success: 'Successfully Set Merchant Schema Fee' }
     }
 
-    await Institution.updateOne({ institution_id: institutionID }, { fee_master_code: Object.assign(currentFeeMasterCode, feeMasterCode) })
+    await Institution.updateOne({ institution_id: institutionID }, { fee_master_code: Object.assign(currentFeeMasterCode, feeMasterCode), updated_at: getUnixTime() })
 
     return { status: 200, success: 'Successfully Set Institution Schema Fee' }
   } catch (err) {

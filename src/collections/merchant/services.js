@@ -221,8 +221,8 @@ const merchantInstitutionRelation = async (merchantID, institutionID) => {
       merchant_id_native: merchant._id
     }
 
-    await Merchant.findOneAndUpdate({ merchant_id: merchantID }, { $push: { institution: institutionModel } })
-    await Institution.findOneAndUpdate({ institution_id: institutionID }, { $push: { merchant: merchantModel } })
+    await Merchant.findOneAndUpdate({ merchant_id: merchantID }, { $push: { institution: institutionModel }, updated_at: getUnixTime() })
+    await Institution.findOneAndUpdate({ institution_id: institutionID }, { $push: { merchant: merchantModel }, updated_at: getUnixTime() })
 
     return Response({ statusCode: number.STATUS_CODE_SUCCESS, successMessage: 'Successfully add Relation' })
   } catch (err) {
@@ -262,7 +262,7 @@ const changePasswordMerchantService = async (merchantID, password, newPassword) 
 
     const newMerchantPassword = await Merchant.hashing(newPassword)
 
-    await Merchant.updateOne({ merchant_id: merchantID }, { password: newMerchantPassword })
+    await Merchant.updateOne({ merchant_id: merchantID }, { password: newMerchantPassword, updated_at: getUnixTime() })
 
     return { status: 200, success: 'Successfully Change Password' }
   } catch (err) {

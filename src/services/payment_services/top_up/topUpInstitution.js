@@ -5,6 +5,7 @@ const { createSaldo, updateSaldo } = require('../../../collections/saldo/service
 const { checkerValidUser, checkValidUserUsingEmail } = require('../../../collections/user/services')
 const { checkerValidInstitution } = require('../../../collections/institution/services')
 const { createTopUpSettlementViaInstitution } = require('../../../collections/settlement/services')
+const { getUnixTime } = require('../../../utils/services/supportServices')
 const word = require('../../../utils/constants/word')
 
 const User = require('../../../collections/user/Model')
@@ -47,7 +48,7 @@ const serviceTopUpInstitution = async (args) => {
     }
 
     // update transaction status & e-money id
-    await Transaction.updateOne({ _id: transaction._id }, { status: 'SETLD', emoney_id: emoney.emoney_id, emoney_id_native: emoney._id })
+    await Transaction.updateOne({ _id: transaction._id }, { status: 'SETLD', emoney_id: emoney.emoney_id, emoney_id_native: emoney._id, updated_at: getUnixTime() })
 
     // create saldo
     if (!getSaldoInstance) {

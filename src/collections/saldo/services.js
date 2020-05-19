@@ -33,7 +33,7 @@ const updateSaldo = async (saldoID, finalAmount) => {
   if (!saldoID) return { status: 400, error: 'Invalid saldo id' }
   else if (!finalAmount) return { status: 400, error: 'Invalid final amount' }
 
-  await Saldo.updateOne({ saldo_id: saldoID }, { saldo: finalAmount })
+  await Saldo.updateOne({ saldo_id: saldoID }, { saldo: finalAmount, updated_at: getUnixTime() })
 }
 
 module.exports.createSaldo = createSaldo
