@@ -16,7 +16,10 @@ const createFeeService = async (fixFee, percentageFee, actionTo, transactionMeth
   if (!transactionMethod) return { status: 400, error: 'Invalid Transaction Method' }
 
   if (transactionMethod === 'Top-up' && actionTo === 'operator') {
-    return { status: 400, error: 'Operator don\'t have Top Up Fee' }
+    return { status: 400, error: 'Operator don\'t need Top Up Fee' }
+  }
+  if (transactionMethod === 'E-money' && actionTo === 'merchant') {
+    return { status: 400, error: 'Merchant don\'t need Emoney Fee' }
   }
   try {
     const fee = new Fee({

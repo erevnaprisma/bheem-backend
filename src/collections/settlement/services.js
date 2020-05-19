@@ -207,6 +207,8 @@ const createTopUpSettlementViaMerchant = async (merchantID, transactionID, amoun
       settlement_id: generateID(RANDOM_STRING_FOR_CONCAT),
       transaction_id: transactionID,
       transaction_id_native: transaction._id,
+      merchant_id: merchantID,
+      merchant_id_native: merchant._id,
       payment_date: transaction.created_at,
       status: 'PNDNG',
       created_at: getUnixTime(),
@@ -268,6 +270,8 @@ const createTopUpSettlementViaInstitution = async (transactionID, amount, instit
       settlement_id: generateID(RANDOM_STRING_FOR_CONCAT),
       transaction_id: transactionID,
       transaction_id_native: transaction._id,
+      institution_id: institutionID,
+      institution_id_native: institution._id,
       payment_date: transaction.created_at,
       status: 'PNDNG',
       created_at: getUnixTime(),
@@ -287,7 +291,7 @@ const createTopUpSettlementViaInstitution = async (transactionID, amount, instit
   }
 }
 
-const getSettlementsService = async () => {
+const getAllSettlementService = async () => {
   try {
     const settlements = await Settlement.find()
     return { status: 200, success: 'Successfully get Settlements', settlements }
@@ -296,10 +300,36 @@ const getSettlementsService = async () => {
   }
 }
 
+const getSettlementsService = async (id, entity) => {
+  if (!id) return { status: 400, error: 'Invalid ID' }
+  if (!entity) return { status: 400, error: 'Invalid Entity' }
+  try {
+    let settlements
+    if (entity === 'merchant') {
+      const merchantChecker = await Merchant.findOne({ merchant_id: id })
+      if (!merchantChecker) return { status: 400, error: 'Invalid ID' }
+
+      settlements = await Settlement.find({ merchant_id: id })
+    }
+
+    if (entity === 'institution') {
+      const institutionChecker = await Institution.findOne({ institution_id: id })
+      if (!institutionChecker) return { status: 400, error: 'Invalid ID' }
+
+      settlements = await Settlement.find({ institution_id: id })
+    }
+
+    return { status: 200, success: 'Successfully get Settlements', settlements }
+  } catch (err) {
+    return { status: 400, error: 'Failed get Merchant Settlement' }
+  }
+}
+
 module.exports = {
   setSettlementService,
   createPaymentSettlement,
   createTopUpSettlementViaInstitution,
   createTopUpSettlementViaMerchant,
+  getAllSettlementService,
   getSettlementsService
 }

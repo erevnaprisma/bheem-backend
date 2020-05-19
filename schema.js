@@ -23,7 +23,8 @@ const { showQR } = require('./src/collections/qr/graphql/query')
 const { addFee, setMerchantFee, setInstitutionFee } = require('./src/collections/fee/graphql/mutation')
 
 // Settlement
-const { setSettlement, getSettlements } = require('./src/collections/settlement/graphql/mutation')
+const { setSettlement } = require('./src/collections/settlement/graphql/mutation')
+const { getAllSettlement, getSettlements } = require('./src/collections/settlement/graphql/query')
 
 // Otp
 const {
@@ -63,7 +64,9 @@ const RootQuery = new GraphQLObjectType({
     InstitutionInfo,
     MerchantTransactionHistory,
     merchantDashboard,
-    showRelatedInstitution
+    showRelatedInstitution,
+    getAllSettlement,
+    getSettlements
   }
 })
 
@@ -108,8 +111,7 @@ const Mutation = new GraphQLObjectType({
     setSettlement,
     setMerchantFee,
     paymentTopUpMerchant,
-    setInstitutionFee,
-    getSettlements
+    setInstitutionFee
   }
 })
 

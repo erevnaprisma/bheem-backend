@@ -2,7 +2,8 @@ const {
   GraphQLInt,
   GraphQLString,
   GraphQLList,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLEnumType
 } = require('graphql')
 
 const Settlement = new GraphQLObjectType({
@@ -24,6 +25,14 @@ const Settlement = new GraphQLObjectType({
     settlement_amount: { type: GraphQLString },
     fix_fee: { type: GraphQLString }
   })
+})
+
+const Entity = new GraphQLEnumType({
+  name: 'Entity',
+  values: {
+    institution: { value: 'institution' },
+    merchant: { values: 'merchant' }
+  }
 })
 
 const TransactionSettlement = new GraphQLObjectType({
@@ -58,5 +67,6 @@ const SettlementResponse = new GraphQLObjectType({
 module.exports = {
   TransactionSettlement,
   TransactionResponse,
-  SettlementResponse
+  SettlementResponse,
+  Entity
 }
