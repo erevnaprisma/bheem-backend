@@ -86,10 +86,11 @@ const paymentTopUpMerchant = {
     transaction_id: { type: new GraphQLNonNull(GraphQLString) },
     qr_id: { type: new GraphQLNonNull(GraphQLString) },
     serial_id: { type: new GraphQLNonNull(GraphQLString) },
-    merchant_id: { type: new GraphQLNonNull(GraphQLString) }
+    merchant_id: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return paymentTopUpMerchantService(args.user_id, args.amount, args.qr_id, args.transaction_id, args.serial_id, args.merchant_id)
+    return paymentTopUpMerchantService(args.user_id, args.amount, args.qr_id, args.transaction_id, args.serial_id, args.merchant_id, args.password)
   }
 }
 

@@ -118,13 +118,28 @@ userSchema.methods.comparedPassword = function (candidatePassword) {
   return new Promise((resolve, reject) => {
     bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
       if (err) {
-        console.log('error')
         return reject('Invalid password')
       }
 
       if (!isMatch) {
-        console.log('error')
         return reject('Invalid password')
+      }
+
+      resolve(true)
+    })
+  })
+}
+
+userSchema.methods.confirmPassword = function (candidatePassword) {
+  const user = this
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
+      if (err) {
+        return reject({ message: 'Invalid password' })
+      }
+
+      if (!isMatch) {
+        return reject({ message: 'Invalid password' })
       }
 
       resolve(true)

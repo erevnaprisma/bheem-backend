@@ -12,11 +12,13 @@ const { RANDOM_STRING_FOR_CONCAT } = require('../../../../utils/constants/number
 const { checkerValidUser } = require('../../../../collections/user/services')
 const { createTopUpSettlementViaMerchant } = require('../.../../../../../collections/settlement/services')
 
-const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, serialID, merchantID) => {
+const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, serialID, merchantID, password) => {
   try {
     const user = await checkerValidUser(userID)
 
     const serial = await Serial.findOne({ serial_id: serialID })
+
+    await user.confirmPassword(password)
 
     // Update User saldo
     let finalSaldo = 0
@@ -56,7 +58,7 @@ const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, 
 
     return { status: 200, success: 'Transaction Success' }
   } catch (err) {
-    return { status: 400, error: 'Failed Confirm Payment' }
+    return { status: 400, error: err.message || 'Failed Confirm Payment' }
   }
 }
 
