@@ -3,7 +3,7 @@ require('mongoose-type-email')
 const bcrypt = require('bcrypt')
 const Joi = require('@hapi/joi')
 
-const FeeMasterCode = new mongoose.Schema({
+const allFeeCode = new mongoose.Schema({
   operator_code_emoney: {
     type: String
   },
@@ -81,8 +81,8 @@ const merchantSchema = new mongoose.Schema({
     type: [merchantInstitutionSchema],
     default: null
   },
-  fee_master_code: {
-    type: FeeMasterCode,
+  feeRules: {
+    type: allFeeCode,
     default: null
   }
 })

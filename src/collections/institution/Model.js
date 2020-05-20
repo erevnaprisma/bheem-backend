@@ -16,7 +16,7 @@ const institutionMerchantSchema = new mongoose.Schema({
   }
 })
 
-const FeeMasterCode = new mongoose.Schema({
+const allFeeRules = new mongoose.Schema({
   institution_code_emoney: {
     type: String
   },
@@ -69,8 +69,8 @@ const institutionSchema = new mongoose.Schema({
     type: [institutionMerchantSchema],
     default: null
   },
-  fee_master_code: {
-    type: FeeMasterCode,
+  feeRules: {
+    type: allFeeRules,
     default: null
   }
 })

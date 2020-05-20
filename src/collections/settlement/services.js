@@ -39,11 +39,11 @@ const createPaymentSettlement = async (merchantID, transactionID, amount, instit
     let institutionFee = {}
     let operatorFee = {}
 
-    const operatorCode = merchant.fee_master_code.operator_code_emoney
-    operatorFee = await Fee.findOne({ fee_master_code: operatorCode })
+    const operatorCode = merchant.feeRules.operator_code_emoney
+    operatorFee = await Fee.findOne({ fee_id: operatorCode })
 
-    const institutionCode = merchant.fee_master_code.institution_code_emoney
-    institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+    const institutionCode = merchant.feeRules.institution_code_emoney
+    institutionFee = await Fee.findOne({ fee_id: institutionCode })
 
     // if (transactionMethod === 'topup') {
     //   const operatorCode = merchant.fee_master_code.operator_code_topup
@@ -150,11 +150,11 @@ const createTopUpSettlementViaMerchant = async (merchantID, transactionID, amoun
     let institutionFee = {}
     let merchantFee = {}
 
-    const merchantCode = merchant.fee_master_code.merchant_code_topup
-    merchantFee = await Fee.findOne({ fee_master_code: merchantCode })
+    const merchantCode = merchant.feeRules.merchant_code_topup
+    merchantFee = await Fee.findOne({ fee_id: merchantCode })
 
-    const institutionCode = merchant.fee_master_code.institution_code_topup
-    institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+    const institutionCode = merchant.feeRules.institution_code_topup
+    institutionFee = await Fee.findOne({ fee_id: institutionCode })
 
     const institutionCalc = calculateFee(amount, institutionFee)
 
@@ -240,8 +240,8 @@ const createTopUpSettlementViaInstitution = async (transactionID, amount, instit
     // let institutionFee = {}
     let institutionFee = {}
 
-    const institutionCode = institution.fee_master_code.institution_code_topup
-    institutionFee = await Fee.findOne({ fee_master_code: institutionCode })
+    const institutionCode = institution.feeRules.institution_code_topup
+    institutionFee = await Fee.findOne({ fee_id: institutionCode })
 
     const institutionCalc = calculateFee(amount, institutionFee)
 

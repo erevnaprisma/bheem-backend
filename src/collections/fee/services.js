@@ -41,13 +41,17 @@ const createFeeService = async (fixFee, percentageFee, actionTo, transactionMeth
   }
 }
 
-const setMerchantSchemaFee = async (merchantID, feeMasterCode, feeMethod, entity) => {
-  if (!feeMasterCode) return { status: 400, error: 'Invalid Fee Master Code' }
+const setMerchantSchemaFee = async (merchantID, feeID, feeMethod, entity) => {
+  if (!feeID) return { status: 400, error: 'Invalid Fee ID' }
   if (!feeMethod) return { status: 400, error: 'Invalid Fee Method' }
   if (!entity) return { status: 400, error: 'Invalid Entity' }
 
   if (feeMethod === 'Top-up' && entity === 'operator') {
-    return { status: 400, error: 'Operator don\'t have Top Up Fee' }
+    return { status: 400, error: 'Operator don\'t need Top Up Fee' }
+  }
+
+  if (feeMethod === 'E-money' && entity === 'merchant') {
+    return { status: 400, error: 'Merchant don\'t need E-Money Fee' }
   }
 
   try {
@@ -55,9 +59,9 @@ const setMerchantSchemaFee = async (merchantID, feeMasterCode, feeMethod, entity
     await checkerValidMerchant(merchantID)
 
     // check valid fee code
-    const validFeeCode = await Fee.findOne({ action_to: entity, fee_master_code: feeMasterCode, transaction_method: feeMethod })
+    const validFeeCode = await Fee.findOne({ action_to: entity, fee_id: feeID, transaction_method: feeMethod })
     if (!validFeeCode) {
-      return { status: 400, error: 'Invalid Fee Code' }
+      return { status: 400, error: 'Invalid Fee ID' }
     }
     // assign feeMasterCode for merchant based on fee method
     var feeCode
@@ -65,13 +69,13 @@ const setMerchantSchemaFee = async (merchantID, feeMasterCode, feeMethod, entity
     if (entity === 'institution') {
       if (feeMethod === 'Top-up') {
         feeCode = {
-          institution_code_topup: feeMasterCode
+          institution_code_topup: feeID
         }
       }
 
       if (feeMethod === 'E-money') {
         feeCode = {
-          institution_code_emoney: feeMasterCode
+          institution_code_emoney: feeID
         }
       }
     }
@@ -79,7 +83,7 @@ const setMerchantSchemaFee = async (merchantID, feeMasterCode, feeMethod, entity
     if (entity === 'operator') {
       if (feeMethod === 'E-money') {
         feeCode = {
-          operator_code_emoney: feeMasterCode
+          operator_code_emoney: feeID
         }
       }
     }
@@ -87,26 +91,26 @@ const setMerchantSchemaFee = async (merchantID, feeMasterCode, feeMethod, entity
     if (entity === 'merchant') {
       if (feeMethod === 'Top-up') {
         feeCode = {
-          merchant_code_topup: feeMasterCode
+          merchant_code_topup: feeID
         }
       }
 
       if (feeMethod === 'E-money') {
         feeCode = {
-          merchant_code_emoney: feeMasterCode
+          merchant_code_emoney: feeID
         }
       }
     }
 
-    const { fee_master_code: currentFeeMasterCode } = await Merchant.findOne({ merchant_id: merchantID })
+    const { feeRules: currentFeeRules } = await Merchant.findOne({ merchant_id: merchantID })
 
     // if current fee master code is null or undefined
-    if (!currentFeeMasterCode) {
-      await Merchant.updateOne({ merchant_id: merchantID }, { fee_master_code: feeCode, updated_at: getUnixTime() })
+    if (!currentFeeRules) {
+      await Merchant.updateOne({ merchant_id: merchantID }, { feeRules: feeCode, updated_at: getUnixTime() })
       return { status: 200, success: 'Successfully Set Merchant Schema Fee' }
     }
 
-    await Merchant.updateOne({ merchant_id: merchantID }, { fee_master_code: Object.assign(currentFeeMasterCode, feeCode), updated_at: getUnixTime() })
+    await Merchant.updateOne({ merchant_id: merchantID }, { feeRules: Object.assign(currentFeeRules, feeCode), updated_at: getUnixTime() })
 
     return { status: 200, success: 'Successfully Set Merchant Schema Fee' }
   } catch (err) {
@@ -122,7 +126,7 @@ const setInstitutionSchemaFee = async (institutionID, operatorFeeCode, feeMethod
     await checkerValidInstitution(institutionID)
 
     // check operator fee code
-    const validOperatorFee = await Fee.findOne({ action_to: 'institution', fee_master_code: operatorFeeCode, transaction_method: feeMethod })
+    const validOperatorFee = await Fee.findOne({ action_to: 'institution', fee_id: operatorFeeCode, transaction_method: feeMethod })
     if (!validOperatorFee) {
       return { status: 400, error: 'Invalid Operator Fee Code' }
     }
@@ -142,15 +146,15 @@ const setInstitutionSchemaFee = async (institutionID, operatorFeeCode, feeMethod
       }
     }
 
-    const { fee_master_code: currentFeeMasterCode } = await Institution.findOne({ institution_id: institutionID })
+    const { feeRules: currentFeeRules } = await Institution.findOne({ institution_id: institutionID })
 
     // if current fee master code is null or undefined
-    if (!currentFeeMasterCode) {
-      await Institution.updateOne({ institution_id: institutionID }, { fee_master_code: feeMasterCode, updated_at: getUnixTime() })
+    if (!currentFeeRules) {
+      await Institution.updateOne({ institution_id: institutionID }, { feeRules: feeMasterCode, updated_at: getUnixTime() })
       return { status: 200, success: 'Successfully Set Merchant Schema Fee' }
     }
 
-    await Institution.updateOne({ institution_id: institutionID }, { fee_master_code: Object.assign(currentFeeMasterCode, feeMasterCode), updated_at: getUnixTime() })
+    await Institution.updateOne({ institution_id: institutionID }, { feeRules: Object.assign(currentFeeRules, feeMasterCode), updated_at: getUnixTime() })
 
     return { status: 200, success: 'Successfully Set Institution Schema Fee' }
   } catch (err) {
@@ -160,7 +164,7 @@ const setInstitutionSchemaFee = async (institutionID, operatorFeeCode, feeMethod
 
 const checkerValidFeeMasterCode = async (feeMasterCode) => {
   try {
-    const fee = await Fee.findOne({ fee_master_code: feeMasterCode })
+    const fee = await Fee.findOne({ fee_id: feeMasterCode })
     if (!fee) {
       throw new Error('Invalid Fee Code')
     }

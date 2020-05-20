@@ -30,11 +30,11 @@ const setMerchantFee = {
   args: {
     merchant_id: { type: new GraphQLNonNull(GraphQLString) },
     fee_method: { type: new GraphQLNonNull(TransactionMethodType) },
-    fee_master_code: { type: new GraphQLNonNull(GraphQLString) },
+    fee_id: { type: new GraphQLNonNull(GraphQLString) },
     entity: { type: new GraphQLNonNull(ActionTo) }
   },
   resolve (parent, args) {
-    return setMerchantSchemaFee(args.merchant_id, args.fee_master_code, args.fee_method, args.entity)
+    return setMerchantSchemaFee(args.merchant_id, args.fee_id, args.fee_method, args.entity)
   }
 }
 
@@ -42,11 +42,11 @@ const setInstitutionFee = {
   type: FeeResponseType,
   args: {
     institution_id: { type: new GraphQLNonNull(GraphQLString) },
-    operator_fee_code: { type: new GraphQLNonNull(GraphQLString) },
+    fee_id: { type: new GraphQLNonNull(GraphQLString) },
     fee_method: { type: new GraphQLNonNull(TransactionMethodType) }
   },
   resolve (parent, args) {
-    return setInstitutionSchemaFee(args.institution_id, args.operator_fee_code, args.fee_method)
+    return setInstitutionSchemaFee(args.institution_id, args.fee_id, args.fee_method)
   }
 }
 
