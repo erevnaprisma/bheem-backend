@@ -131,9 +131,16 @@ const showQrService = async (merchantID) => {
   await checkerValidMerchant(merchantID)
 
   try {
-    const { qr_value } = await Qr.findOne({ merchant_id: merchantID, status: 'ACTIVE' })
+    const qr = await Qr.findOne({ merchant_id: merchantID, status: 'ACTIVE', type: 'STATIC' })
 
-    const qrCode = await generateQrPng({ merchantID: qr_value.merchant_id, qrID: qr_value.qr_id, type: qr_value.type, merchantName: qr_value.merchant_name })
+    let qrValue = {}
+    if (qr) {
+      qrValue = qr.qr_value
+    } else {
+      return { status: 400, error: 'Merchant doesn\'t have qr code yet' }
+    }
+
+    const qrCode = await generateQrPng({ merchantID: qrValue.merchant_id, qrID: qrValue.qr_id, type: qrValue.type, merchantName: qrValue.merchant_name })
 
     return { status: 200, success: 'Successfully get QrCode', qr_code: qrCode }
   } catch (err) {
