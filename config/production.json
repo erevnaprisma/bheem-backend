@@ -1,0 +1,5 @@
+{
+  "mongoUrl": "mongodb+srv://12345:12345@cluster0-7tyk7.mongodb.net/test",
+  "devEmail": "erevnabheem@gmail.com",
+  "devPassword": "!erevna@2020"
+}
