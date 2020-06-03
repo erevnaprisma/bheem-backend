@@ -62,17 +62,17 @@ userSchema.pre('save', function (next) {
   })
 })
 
-userSchema.methods.comparePassword = async (password, userPassword) => {
+userSchema.statics.comparePassword = async (password, userPassword) => {
   try {
     const isTrue = await bcrypt.compare(password, userPassword)
     if (!isTrue) throw new Error('Invalid password')
-    return;
+    return
   } catch (err) {
     throw new Error(err.message || 'Invalid Password')
   }
 }
 
-userSchema.statics.validation = (args) => {
+userSchema.statics.validate = (args) => {
   var regex = /^[a-z][a-z.\s-]{1,255}$/i
   var addRegex = /^[a-zA-Z0-9,.:/ ]*$/
 

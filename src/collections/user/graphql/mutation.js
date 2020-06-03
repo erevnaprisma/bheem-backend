@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 const { loginService, signUpService, logoutService } = require('../services')
-const { LoginType, LogoutType, SignInType } = require('../graphql/type')
+const { LoginType, LogoutType, SignUpType } = require('../graphql/type')
 
 const {
   GraphQLString,
@@ -10,7 +10,7 @@ const {
 } = graphql
 
 const signUp = {
-  type: SignInType,
+  type: SignUpType,
   args: {
     email: { type: new GraphQLNonNull(GraphQLString) },
     deviceId: { type: new GraphQLNonNull(GraphQLString) }

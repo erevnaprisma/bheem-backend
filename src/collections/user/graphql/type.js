@@ -29,17 +29,16 @@ const UserType = new GraphQLObjectType({
 const LoginType = new GraphQLObjectType({
   name: 'Login',
   fields: () => ({
-    token: { type: GraphQLString },
+    user: { type: UserType },
     status: { type: GraphQLInt },
     error: { type: GraphQLString },
-    success: { type: GraphQLString },
+    success: { type: GraphQLString }
   })
 })
 
-const SignInType = new GraphQLObjectType({
-  name: 'SignIn',
+const SignUpType = new GraphQLObjectType({
+  name: 'SignUp',
   fields: () => ({
-    token: { type: GraphQLString },
     status: { type: GraphQLInt },
     error: { type: GraphQLString },
     success: { type: GraphQLString }
@@ -47,16 +46,16 @@ const SignInType = new GraphQLObjectType({
 })
 
 const LogoutType = new GraphQLObjectType({
-    name: 'Logout',
-    fields: () => ({
-      status: { type: GraphQLInt },
-      error: { type: GraphQLString },
-      success: { type: GraphQLString }
-    })
+  name: 'Logout',
+  fields: () => ({
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
   })
+})
 
 module.exports = {
-  SignInType,
+  SignUpType,
   LoginType,
   LogoutType,
   UserType

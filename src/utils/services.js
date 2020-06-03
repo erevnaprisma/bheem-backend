@@ -16,8 +16,10 @@ const generateRandomNumber = async (length) => {
   })
 }
 
-const generateId = () => {
-  return new Date().getTime() + generateRandomString(5)
+const generateId = async () => {
+  const randomStr = await generateRandomString(5)
+  const id = new Date().getTime() + randomStr
+  return id
 }
 
 const sendMail = async model => {
@@ -29,7 +31,7 @@ const sendMail = async model => {
     secure: true, // use SSL
     auth: {
       user: config.get('devEmail'),
-      pass: config.get('devPassword')
+      pass: config.get('devAuth')
     }
   }
 

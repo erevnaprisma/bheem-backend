@@ -35,7 +35,7 @@ const loginService = async (email, password, { req, res }) => {
     // set authorization in header
     await res.header({ Authorization: token })
 
-    return { status: 200, success: 'Welcome to Bheem' }
+    return { status: 200, success: 'Welcome to Bheem', user }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed login' }
   }
@@ -68,13 +68,15 @@ const signUpService = async (email, deviceId) => {
     if (error) throw new Error(error.details[0].message)
 
     const model = {
-      username: generateRandomString(4),
-      password: generateRandomNumber(4),
-      email
+      username: await generateRandomString(4),
+      password: await generateRandomNumber(4),
+      email,
+      type: 'signup'
     }
 
     const user = await new User({
-      userId: generateId(),
+      userId: await generateId(),
+      username: model.username,
       email,
       password: model.password,
       deviceId,
