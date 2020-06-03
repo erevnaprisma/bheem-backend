@@ -23,10 +23,10 @@ const userSchema = new mongoose.Schema({
     type: String
   },
   firstName: {
-    type: String,
+    type: String
   },
   lastName: {
-    type: String,
+    type: String
   },
   nickname: {
     type: String,

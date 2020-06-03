@@ -5,18 +5,20 @@ const { LoginType, LogoutType, SignUpType } = require('../graphql/type')
 
 const {
   GraphQLString,
-  GraphQLNonNull,
-  GraphQLID
+  GraphQLNonNull
 } = graphql
 
 const signUp = {
   type: SignUpType,
   args: {
     email: { type: new GraphQLNonNull(GraphQLString) },
+    fullName: { type: new GraphQLNonNull(GraphQLString) },
+    firstName: { type: new GraphQLNonNull(GraphQLString) },
+    lastName: { type: new GraphQLNonNull(GraphQLString) },
     deviceId: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return signUpService(args.email, args.deviceId)
+    return signUpService(args.email, args.deviceId, args.fullName, args.lastName, args.firstName)
   }
 }
 

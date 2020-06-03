@@ -59,12 +59,12 @@ const logoutService = async (token) => {
   }
 }
 
-const signUpService = async (email, deviceId) => {
+const signUpService = async (email, deviceId, fullName, lastName, firstName) => {
   try {
     if (!email) throw new Error('Invalid email')
     if (!deviceId) throw new Error('Invalid deviceId')
 
-    const { error } = await User.validate({ email, deviceId })
+    const { error } = await User.validate({ email, deviceId, fullName, lastName })
     if (error) throw new Error(error.details[0].message)
 
     const model = {
@@ -77,6 +77,9 @@ const signUpService = async (email, deviceId) => {
     const user = await new User({
       userId: await generateId(),
       username: model.username,
+      fullName,
+      firstName,
+      lastName,
       email,
       password: model.password,
       deviceId,
