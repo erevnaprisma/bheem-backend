@@ -75,6 +75,9 @@ const finishMeetingService = async (meetingId) => {
     const { error } = await Meeting.validate({ meetingId })
     if (error) throw new Error(error.details[0].message)
 
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
     await Meeting.findOneAndUpdate({ _id: meetingId }, { status: 'INACTIVE', updatedAt: new Date().getTime() })
 
     return { status: 200, success: 'Successfully finish meeting' }
