@@ -66,6 +66,9 @@ const signUpService = async (email, deviceId, fullName, lastName, firstName) => 
     const { error } = await User.validate({ email, deviceId, fullName, lastName })
     if (error) throw new Error(error.details[0].message)
 
+    const isEmailUsed = await User.findOne({ email })
+    if (isEmailUsed) throw new Error('Email already in used')
+
     const model = {
       username: await generateRandomString(4),
       password: await generateRandomNumber(4),
