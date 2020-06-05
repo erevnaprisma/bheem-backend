@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const Joi = require('@hapi/joi')
+Joi.objectId = require('joi-objectid')(Joi)
 
 const participantsSchema = new mongoose.Schema({
   userId: {
@@ -17,12 +19,17 @@ const hostsSchema = new mongoose.Schema({
 const meetingSchema = new mongoose.Schema({
   meetingId: String,
   title: String,
-  invitationMessage: String,
   host: {
     type: [hostsSchema]
   },
   participants: {
-    type: [participantsSchema]
+    type: [participantsSchema],
+    default: []
+  },
+  status: {
+    type: String,
+    enum: ['ACTIVE', 'INACTIVE'],
+    default: 'ACTIVE'
   },
   createdBy: {
     type: String,
@@ -37,5 +44,17 @@ const meetingSchema = new mongoose.Schema({
     type: String
   }
 })
+
+meetingSchema.statics.validate = (args) => {
+  const schema = Joi.object({
+    title: Joi.string().min(3).max(50),
+    host: Joi.objectId(),
+    createdBy: Joi.objectId(),
+    startDate: Joi.string(),
+    endDate: Joi.string()
+  })
+
+  return schema.validate(args)
+}
 
 module.exports = mongoose.model('Meeting', meetingSchema)
