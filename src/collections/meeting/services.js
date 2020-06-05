@@ -1,5 +1,4 @@
 const Meeting = require('./Model')
-const { generateId } = require('../../utils/services')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate) => {
   try {
@@ -10,16 +9,18 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
     if (!endDate) throw new Error('Invalid endDate')
 
     const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate })
-    if (error) throw new Error(error.details[0].message)
-
-    const invitationMessage = 'halo'
+    if (error) {
+      if (error.details[0].message.includes('fails to match the valid mongo id pattern')) {
+        throw new Error('Invalid id')
+      }
+      throw new Error(error.details[0].message)
+    }
 
     const currentHost = {
       userId: host
     }
 
     const meeting = await Meeting({
-      meetingId: await generateId(),
       title,
       host: currentHost,
       createdBy,
@@ -37,6 +38,22 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
   }
 }
 
+const finishMeetingService = async (meetingId) => {
+  try {
+    if (!meetingId) throw new Error('Invalid meeting id')
+
+    const { error } = await Meeting.validate({ meetingId })
+    if (error) throw new Error(error.details[0].message)
+
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { status: 'INACTIVE', updatedAt: new Date().getTime() })
+
+    return { status: 200, success: 'Successfully finish meeting' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed finish meeting' }
+  }
+}
+
 module.exports = {
-  createMeetingService
+  createMeetingService,
+  finishMeetingService
 }

@@ -17,10 +17,20 @@ const CreateMeetingType = new GraphQLObjectType({
     startDate: { type: GraphQLString },
     endDate: { type: GraphQLString },
     createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    meetingId: { type: GraphQLString }
+  })
+})
+
+const FinishMeetingType = new GraphQLObjectType({
+  name: 'FinishMeeting',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
   })
 })
 
 module.exports = {
-  CreateMeetingType
+  CreateMeetingType,
+  FinishMeetingType
 }

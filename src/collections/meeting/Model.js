@@ -17,7 +17,6 @@ const hostsSchema = new mongoose.Schema({
 })
 
 const meetingSchema = new mongoose.Schema({
-  meetingId: String,
   title: String,
   host: {
     type: [hostsSchema]
@@ -47,6 +46,7 @@ const meetingSchema = new mongoose.Schema({
 
 meetingSchema.statics.validate = (args) => {
   const schema = Joi.object({
+    meetingId: Joi.objectId(),
     title: Joi.string().min(3).max(50),
     host: Joi.objectId(),
     createdBy: Joi.objectId(),

@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken')
 
 // Utils
 const {
-  generateId,
   generateRandomString,
   generateRandomNumber,
   sendMail
@@ -30,7 +29,7 @@ const loginService = async (email, password, { req, res }) => {
     await User.comparePassword(password, user.password)
 
     // generate token with expiry date 3 hours
-    const token = await jwt.sign({ userId: user.user_id, user: true, exp: 10800 }, config.get('privateKey'))
+    const token = await jwt.sign({ userId: user._id, user: true, exp: 10800 }, config.get('privateKey'))
 
     // set authorization in header
     await res.header({ Authorization: token })
@@ -75,7 +74,6 @@ const signUpService = async (email, deviceId, fullName, lastName, firstName) => 
     }
 
     const user = await new User({
-      userId: await generateId(),
       username: model.username,
       fullName,
       firstName,
