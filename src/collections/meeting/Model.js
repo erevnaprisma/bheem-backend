@@ -17,7 +17,7 @@ const hostsSchema = new mongoose.Schema({
 const meetingSchema = new mongoose.Schema({
   meetingId: String,
   title: String,
-  meetingInvitation: String,
+  invitationMessage: String,
   host: {
     type: [hostsSchema]
   },
