@@ -1,4 +1,5 @@
 const Meeting = require('./Model')
+const User = require('../user/Model')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate) => {
   try {
@@ -38,6 +39,35 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
   }
 }
 
+const addParticipantService = async (meetingId, userId) => {
+  try {
+    if (!meetingId) throw new Error('Invalid meeting id')
+    if (!userId) throw new Error('Invalid user id')
+
+    const user = await User.findOne({ _id: userId })
+    if (!user) throw new Error('Invalid user id')
+
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    meeting.participants.forEach(e => {
+      if (e.userId === userId) {
+        throw new Error('User already a participant')
+      }
+    })
+
+    const newParticipant = {
+      userId
+    }
+
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: newParticipant } })
+
+    return { status: 200, success: 'Successfully add participants' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed add Participant' }
+  }
+}
+
 const finishMeetingService = async (meetingId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
@@ -55,5 +85,6 @@ const finishMeetingService = async (meetingId) => {
 
 module.exports = {
   createMeetingService,
-  finishMeetingService
+  finishMeetingService,
+  addParticipantService
 }

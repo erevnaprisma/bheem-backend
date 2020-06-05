@@ -30,7 +30,17 @@ const FinishMeetingType = new GraphQLObjectType({
   })
 })
 
+const AddParticipantType = new GraphQLObjectType({
+  name: 'AddParticipant',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
 module.exports = {
   CreateMeetingType,
-  FinishMeetingType
+  FinishMeetingType,
+  AddParticipantType
 }
