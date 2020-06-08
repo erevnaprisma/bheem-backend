@@ -44,7 +44,7 @@ const addParticipantService = async (meetingId, userId) => {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
 
-    const { error } = await Meeting.validate({ meetingId, participants: userId })
+    const { error } = await Meeting.validate({ meetingId, participant: userId })
     if (error) throw new Error(error.details[0].message)
 
     // check if user id valid
@@ -79,7 +79,7 @@ const addHostService = async (meetingId, userId) => {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
 
-    const { error } = await Meeting.validate({ meetingId, hosts: userId })
+    const { error } = await Meeting.validate({ meetingId, host: userId })
     if (error) throw new Error(error.details[0].message)
 
     const user = await User.findOne({ _id: userId })
@@ -124,9 +124,49 @@ const finishMeetingService = async (meetingId) => {
   }
 }
 
+const hostRemoveParticipantService = async (meetingId, hostId, participantId) => {
+  try {
+    let updatedParticipants
+
+    if (!meetingId) throw new Error('Invalid meeting id')
+    if (!hostId) throw new Error('Invalid host id')
+    if (!participantId) throw new Error('Invalid participant id')
+
+    const { error } = await Meeting.validate({ meetingId, host: hostId, participant: participantId })
+    if (error) throw new Error(error.details[0].message)
+
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    const host = await User.findOne({ _id: hostId })
+    if (!host) throw new Error('Invalid host id')
+
+    const participant = await User.findOne({ _id: participantId })
+    if (!participant) throw new Error('Invalid participant id')
+
+    // check if participant is currently in meeting
+    const isParticipantInMeeting = meeting.participants.findIndex(e => e.userId === participantId)
+    if (isParticipantInMeeting === -1) throw new Error('Invalid participant id')
+
+    updatedParticipants = [...meeting.participants]
+
+    // remove participant
+    updatedParticipants.filter(e => e.userId !== participantId)
+
+    meeting.participants = updatedParticipants
+
+    await meeting.save()
+
+    return { status: 200, success: 'Successfully remove participant' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed remove participant' }
+  }
+}
+
 module.exports = {
   createMeetingService,
   finishMeetingService,
   addParticipantService,
-  addHostService
+  addHostService,
+  hostRemoveParticipantService
 }

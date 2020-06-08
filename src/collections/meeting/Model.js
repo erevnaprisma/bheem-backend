@@ -16,6 +16,13 @@ const hostsSchema = new mongoose.Schema({
   }
 })
 
+const removedParticipants = new mongoose.Schema({
+  userId: {
+    type: String,
+    ref: 'User'
+  }
+})
+
 const meetingSchema = new mongoose.Schema({
   title: String,
   hosts: {
@@ -23,6 +30,10 @@ const meetingSchema = new mongoose.Schema({
   },
   participants: {
     type: [participantsSchema],
+    default: []
+  },
+  removedParticipants: {
+    type: [removedParticipants],
     default: []
   },
   status: {
@@ -48,8 +59,8 @@ meetingSchema.statics.validate = (args) => {
   const schema = Joi.object({
     meetingId: Joi.objectId(),
     title: Joi.string().min(3).max(50),
-    hosts: Joi.objectId(),
-    participants: Joi.objectId(),
+    host: Joi.objectId(),
+    participant: Joi.objectId(),
     createdBy: Joi.objectId(),
     startDate: Joi.string(),
     endDate: Joi.string()

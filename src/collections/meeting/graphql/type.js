@@ -48,9 +48,19 @@ const AddHostType = new GraphQLObjectType({
   })
 })
 
+const HostRemoveParticipantType = new GraphQLObjectType({
+  name: 'HostRemoveParticipant',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
 module.exports = {
   CreateMeetingType,
   FinishMeetingType,
   AddParticipantType,
-  AddHostType
+  AddHostType,
+  HostRemoveParticipantType
 }
