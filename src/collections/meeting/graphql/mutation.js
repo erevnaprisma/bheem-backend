@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
-const { CreateMeetingType, FinishMeetingType, AddParticipantType } = require('../graphql/type')
-const { createMeetingService, finishMeetingService, addParticipantService } = require('../services')
+const { CreateMeetingType, FinishMeetingType, AddParticipantType, AddHostType } = require('../graphql/type')
+const { createMeetingService, finishMeetingService, addParticipantService, addHostService } = require('../services')
 
 const {
   GraphQLString,
@@ -43,8 +43,20 @@ const addParticipant = {
   }
 }
 
+const addHost = {
+  type: AddHostType,
+  args: {
+    meetingId: { type: new GraphQLNonNull(GraphQLString) },
+    userId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return addHostService(args.meetingId, args.userId)
+  }
+}
+
 module.exports = {
   createMeeting,
   finishMeeting,
-  addParticipant
+  addParticipant,
+  addHost
 }

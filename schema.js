@@ -5,7 +5,7 @@ const { login, logout, signUp } = require('./src/collections/user/graphql/mutati
 const { getAllUser } = require('./src/collections/user/graphql/query')
 
 // Meeting
-const { createMeeting, finishMeeting, addParticipant } = require('./src/collections/meeting/graphql/mutation')
+const { createMeeting, finishMeeting, addParticipant, addHost } = require('./src/collections/meeting/graphql/mutation')
 
 const {
   GraphQLObjectType,
@@ -27,7 +27,8 @@ const Mutation = new GraphQLObjectType({
     logout,
     createMeeting,
     finishMeeting,
-    addParticipant
+    addParticipant,
+    addHost
   }
 })
 
