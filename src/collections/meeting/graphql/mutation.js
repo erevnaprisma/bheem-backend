@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
-const { CreateMeetingType, FinishMeetingType, AddHostType, HostRemoveParticipantType, RequestToJoinType, ShowParticipantThatRequestType, AllowParticipantToJoinType } = require('../graphql/type')
-const { createMeetingService, finishMeetingService, showParticipantsThatRequestService, requestToJoinMeetingService, addHostService, hostRemoveParticipantService, allowParticipantToJoinService } = require('../services')
+const { CreateMeetingType, FinishMeetingType, AddHostType, HostRemoveParticipantType, RequestToJoinType, ShowParticipantThatRequestType, AllowParticipantToJoinType } = require('./type')
+const { createMeetingService, finishMeetingService, showParticipantsThatRequestService, requestToJoinMeetingService, addHostService, hostRemoveParticipantService, allowParticipantToJoinService } = require('../services/Meeting')
 
 const {
   GraphQLString,

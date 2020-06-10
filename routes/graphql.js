@@ -1,12 +1,12 @@
 const express = require('express')
 const graphqlHTTP = require('express-graphql')
 const schema = require('../schema')
-// const { applyMiddleware } = require('graphql-middleware')
-// const authorizationMiddlewares = require('../middlewares/authorization')
+const { applyMiddleware } = require('graphql-middleware')
+const authorizationMiddlewares = require('../middlewares/authorization')
 
 const Router = express.Router()
 
-// applyMiddleware(schema, authorizationMiddlewares)
+applyMiddleware(schema, authorizationMiddlewares)
 
 Router.all('/', (req, res) => {
   return graphqlHTTP({

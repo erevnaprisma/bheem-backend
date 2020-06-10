@@ -1,5 +1,5 @@
-const Meeting = require('./Model')
-const User = require('../user/Model')
+const Meeting = require('../Model')
+const User = require('../../user/Model')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate) => {
   try {
@@ -161,7 +161,6 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
 
     const user = await User.findOne({ _id: userId })
     if (!userId) throw new Error('Invalid user id')
-    console.log('smpe sini')
 
     await meeting.requestToJoin.push({ userId: user._id, name: user.fullName })
     await meeting.save()

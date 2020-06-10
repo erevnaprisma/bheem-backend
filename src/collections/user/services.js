@@ -29,7 +29,7 @@ const loginService = async (email, password, { req, res }) => {
     await User.comparePassword(password, user.password)
 
     // generate token with expiry date 3 hours
-    const token = await jwt.sign({ userId: user._id, user: true, exp: 10800 }, config.get('privateKey'))
+    const token = await jwt.sign({ userId: user._id, user: true, expireTime: 10800000 }, config.get('privateKey'), { expiresIn: '3h' })
 
     // set authorization in header
     await res.header({ Authorization: token })
