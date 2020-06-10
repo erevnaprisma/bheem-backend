@@ -2,8 +2,17 @@ const graphql = require('graphql')
 
 const {
   GraphQLString,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLList
 } = graphql
+
+const ParticipantThatRequestType = new GraphQLObjectType({
+  name: 'ParticipantThatRequest',
+  fields: () => ({
+    userId: { type: GraphQLString },
+    name: { type: GraphQLString }
+  })
+})
 
 const CreateMeetingType = new GraphQLObjectType({
   name: 'CreateMeeting',
@@ -57,10 +66,31 @@ const HostRemoveParticipantType = new GraphQLObjectType({
   })
 })
 
+const ShowParticipantThatRequestType = new GraphQLObjectType({
+  name: 'ShowParticipantThatRequest',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    participants: { type: GraphQLList(ParticipantThatRequestType) }
+  })
+})
+
+const RequestToJoinType = new GraphQLObjectType({
+  name: 'RequestToJoin',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
 module.exports = {
   CreateMeetingType,
   FinishMeetingType,
   AddParticipantType,
   AddHostType,
-  HostRemoveParticipantType
+  HostRemoveParticipantType,
+  ShowParticipantThatRequestType,
+  RequestToJoinType
 }

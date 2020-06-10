@@ -40,40 +40,40 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
   }
 }
 
-const addParticipantService = async (meetingId, userId) => {
-  try {
-    if (!meetingId) throw new Error('Invalid meeting id')
-    if (!userId) throw new Error('Invalid user id')
+// const allowParticipantToJoin = async (meetingId, userId) => {
+//   try {
+//     if (!meetingId) throw new Error('Invalid meeting id')
+//     if (!userId) throw new Error('Invalid user id')
 
-    const { error } = await Meeting.validate({ meetingId, participant: userId })
-    if (error) throw new Error(error.details[0].message)
+//     const { error } = await Meeting.validate({ meetingId, participant: userId })
+//     if (error) throw new Error(error.details[0].message)
 
-    // check if user id valid
-    const user = await User.findOne({ _id: userId })
-    if (!user) throw new Error('Invalid user id')
+//     // check if user id valid
+//     const user = await User.findOne({ _id: userId })
+//     if (!user) throw new Error('Invalid user id')
 
-    // check if meeting id valid
-    const meeting = await Meeting.findOne({ _id: meetingId })
-    if (!meeting) throw new Error('Invalid meeting id')
+//     // check if meeting id valid
+//     const meeting = await Meeting.findOne({ _id: meetingId })
+//     if (!meeting) throw new Error('Invalid meeting id')
 
-    // check if user already participant
-    meeting.participants.forEach(e => {
-      if (e.userId === userId) {
-        throw new Error('User already a participant')
-      }
-    })
+//     // // check if user already participant
+//     // meeting.participants.forEach(e => {
+//     //   if (e.userId === userId) {
+//     //     throw new Error('User already a participant')
+//     //   }
+//     // })
 
-    const newParticipant = {
-      userId
-    }
+//     const newParticipant = {
+//       userId
+//     }
 
-    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: newParticipant } })
+//     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: newParticipant } })
 
-    return { status: 200, success: 'Successfully add participants' }
-  } catch (err) {
-    return { status: 400, error: err.message || 'Failed add Participant' }
-  }
-}
+//     return { status: 200, success: 'Successfully add participants' }
+//   } catch (err) {
+//     return { status: 400, error: err.message || 'Failed add Participant' }
+//   }
+// }
 
 const addHostService = async (meetingId, userId) => {
   try {
@@ -159,10 +159,46 @@ const hostRemoveParticipantService = async (meetingId, hostId, participantId) =>
   }
 }
 
+const requestToJoinMeetingService = async (meetingId, userId) => {
+  try {
+    if (!meetingId) throw new Error('Invalid meeting id')
+    if (!userId) throw new Error('Invalid user id')
+
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    const user = await User.findOne({ _id: userId })
+    if (!userId) throw new Error('Invalid user id')
+    console.log('smpe sini')
+
+    await meeting.requestToJoin.push({ userId: user._id, name: user.fullName })
+    await meeting.save()
+
+    return { status: 200, success: 'Successfully request to join meeting' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed request to join' }
+  }
+}
+
+const showParticipantThatRequestService = async (meetingId) => {
+  try {
+    if (!meetingId) throw new Error('Invalid meeting id')
+
+    const { error } = await Meeting.validate({ meetingId })
+    if (error) throw new Error(error.details[0].message)
+
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    return { status: 200, success: 'Successfully get participants', participants: meeting.requestToJoin }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed get participants who request' }
+  }
+}
+
 module.exports = {
   createMeetingService,
   finishMeetingService,
-  addParticipantService,
   addHostService,
-  hostRemoveParticipantService
+  hostRemoveParticipantService,
+  requestToJoinMeetingService,
+  showParticipantThatRequestService
 }

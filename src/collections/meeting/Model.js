@@ -16,10 +16,20 @@ const hostsSchema = new mongoose.Schema({
   }
 })
 
-const removedParticipants = new mongoose.Schema({
+const removedParticipantsSchema = new mongoose.Schema({
   userId: {
     type: String,
     ref: 'User'
+  }
+})
+
+const requestToJoinSchema = new mongoose.Schema({
+  userId: {
+    type: String,
+    ref: 'User'
+  },
+  name: {
+    type: String
   }
 })
 
@@ -33,8 +43,17 @@ const meetingSchema = new mongoose.Schema({
     type: [participantsSchema],
     default: []
   },
+  needPermisionToJoin: {
+    type: String,
+    enum: ['Yes', 'No'],
+    default: 'Yes'
+  },
+  requestToJoin: {
+    type: [requestToJoinSchema],
+    default: []
+  },
   removedParticipants: {
-    type: [removedParticipants],
+    type: [removedParticipantsSchema],
     default: []
   },
   status: {

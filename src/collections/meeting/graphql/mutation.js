@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
-const { CreateMeetingType, FinishMeetingType, AddParticipantType, AddHostType, HostRemoveParticipantType } = require('../graphql/type')
-const { createMeetingService, finishMeetingService, addParticipantService, addHostService, hostRemoveParticipantService } = require('../services')
+const { CreateMeetingType, FinishMeetingType, AddHostType, HostRemoveParticipantType, RequestToJoinType, ShowParticipantThatRequestType } = require('../graphql/type')
+const { createMeetingService, finishMeetingService, showParticipantThatRequestService, requestToJoinMeetingService, addHostService, hostRemoveParticipantService } = require('../services')
 
 const {
   GraphQLString,
@@ -32,16 +32,16 @@ const finishMeeting = {
   }
 }
 
-const addParticipant = {
-  type: AddParticipantType,
-  args: {
-    meetingId: { type: new GraphQLNonNull(GraphQLString) },
-    userId: { type: new GraphQLNonNull(GraphQLString) }
-  },
-  resolve (parent, args) {
-    return addParticipantService(args.meetingId, args.userId)
-  }
-}
+// const addParticipant = {
+//   type: AddParticipantType,
+//   args: {
+//     meetingId: { type: new GraphQLNonNull(GraphQLString) },
+//     userId: { type: new GraphQLNonNull(GraphQLString) }
+//   },
+//   resolve (parent, args) {
+//     return addParticipantService(args.meetingId, args.userId)
+//   }
+// }
 
 const addHost = {
   type: AddHostType,
@@ -66,10 +66,32 @@ const hostRemoveParticipants = {
   }
 }
 
+const requestTojoinMeeting = {
+  type: RequestToJoinType,
+  args: {
+    meetingId: { type: new GraphQLNonNull(GraphQLString) },
+    userId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return requestToJoinMeetingService(args.meetingId, args.userId)
+  }
+}
+
+const showParticipantThatRequest = {
+  type: ShowParticipantThatRequestType,
+  args: {
+    meetingId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return showParticipantThatRequestService(args.meetingId)
+  }
+}
+
 module.exports = {
   createMeeting,
   finishMeeting,
-  addParticipant,
   addHost,
-  hostRemoveParticipants
+  hostRemoveParticipants,
+  requestTojoinMeeting,
+  showParticipantThatRequest
 }
