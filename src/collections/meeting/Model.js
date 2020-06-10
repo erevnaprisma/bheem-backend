@@ -46,7 +46,10 @@ const meetingSchema = new mongoose.Schema({
     ref: 'User'
   },
   startDate: String,
-  endDate: String,
+  endDate: {
+    type: String,
+    default: null
+  },
   createdAt: {
     type: String
   },
@@ -63,7 +66,7 @@ meetingSchema.statics.validate = (args) => {
     participant: Joi.objectId(),
     createdBy: Joi.objectId(),
     startDate: Joi.string(),
-    endDate: Joi.string()
+    endDate: Joi.string().allow('', null)
   })
 
   return schema.validate(args)

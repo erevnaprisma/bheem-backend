@@ -7,7 +7,6 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
     if (!host) throw new Error('Invalid host')
     if (!createdBy) throw new Error('Invalid createdBy')
     if (!startDate) throw new Error('Invalid startDate')
-    if (!endDate) throw new Error('Invalid endDate')
 
     const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate })
     if (error) {
@@ -30,6 +29,8 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
       createdAt: new Date().getTime(),
       updatedAt: new Date().getTime()
     })
+
+    if (meeting.endDate === '') meeting.endDate = null
 
     await meeting.save()
 
