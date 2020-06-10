@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
-const { CreateMeetingType, FinishMeetingType, AddHostType, HostRemoveParticipantType, RequestToJoinType, ShowParticipantThatRequestType } = require('../graphql/type')
-const { createMeetingService, finishMeetingService, showParticipantThatRequestService, requestToJoinMeetingService, addHostService, hostRemoveParticipantService } = require('../services')
+const { CreateMeetingType, FinishMeetingType, AddHostType, HostRemoveParticipantType, RequestToJoinType, ShowParticipantThatRequestType, AllowParticipantToJoinType } = require('../graphql/type')
+const { createMeetingService, finishMeetingService, showParticipantsThatRequestService, requestToJoinMeetingService, addHostService, hostRemoveParticipantService, allowParticipantToJoinService } = require('../services')
 
 const {
   GraphQLString,
@@ -32,16 +32,16 @@ const finishMeeting = {
   }
 }
 
-// const addParticipant = {
-//   type: AddParticipantType,
-//   args: {
-//     meetingId: { type: new GraphQLNonNull(GraphQLString) },
-//     userId: { type: new GraphQLNonNull(GraphQLString) }
-//   },
-//   resolve (parent, args) {
-//     return addParticipantService(args.meetingId, args.userId)
-//   }
-// }
+const allowParticipantToJoin = {
+  type: AllowParticipantToJoinType,
+  args: {
+    meetingId: { type: new GraphQLNonNull(GraphQLString) },
+    userId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return allowParticipantToJoinService(args.meetingId, args.userId)
+  }
+}
 
 const addHost = {
   type: AddHostType,
@@ -83,7 +83,7 @@ const showParticipantThatRequest = {
     meetingId: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return showParticipantThatRequestService(args.meetingId)
+    return showParticipantsThatRequestService(args.meetingId)
   }
 }
 
@@ -93,5 +93,6 @@ module.exports = {
   addHost,
   hostRemoveParticipants,
   requestTojoinMeeting,
-  showParticipantThatRequest
+  showParticipantThatRequest,
+  allowParticipantToJoin
 }

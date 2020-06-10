@@ -40,40 +40,32 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
   }
 }
 
-// const allowParticipantToJoin = async (meetingId, userId) => {
-//   try {
-//     if (!meetingId) throw new Error('Invalid meeting id')
-//     if (!userId) throw new Error('Invalid user id')
+const allowParticipantToJoinService = async (meetingId, userId) => {
+  try {
+    if (!meetingId) throw new Error('Invalid meeting id')
+    if (!userId) throw new Error('Invalid user id')
 
-//     const { error } = await Meeting.validate({ meetingId, participant: userId })
-//     if (error) throw new Error(error.details[0].message)
+    const { error } = await Meeting.validate({ meetingId, participant: userId })
+    if (error) throw new Error(error.details[0].message)
 
-//     // check if user id valid
-//     const user = await User.findOne({ _id: userId })
-//     if (!user) throw new Error('Invalid user id')
+    // check if user id valid
+    const user = await User.findOne({ _id: userId })
+    if (!user) throw new Error('Invalid user id')
 
-//     // check if meeting id valid
-//     const meeting = await Meeting.findOne({ _id: meetingId })
-//     if (!meeting) throw new Error('Invalid meeting id')
+    // check if meeting id valid
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
+    if (!meeting) throw new Error('Invalid meeting id')
 
-//     // // check if user already participant
-//     // meeting.participants.forEach(e => {
-//     //   if (e.userId === userId) {
-//     //     throw new Error('User already a participant')
-//     //   }
-//     // })
+    // add requestedParticipant to participants
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
 
-//     const newParticipant = {
-//       userId
-//     }
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
 
-//     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: newParticipant } })
-
-//     return { status: 200, success: 'Successfully add participants' }
-//   } catch (err) {
-//     return { status: 400, error: err.message || 'Failed add Participant' }
-//   }
-// }
+    return { status: 200, success: 'Successfully add participants' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed add Participant' }
+  }
+}
 
 const addHostService = async (meetingId, userId) => {
   try {
@@ -180,7 +172,7 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
   }
 }
 
-const showParticipantThatRequestService = async (meetingId) => {
+const showParticipantsThatRequestService = async (meetingId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
 
@@ -200,5 +192,6 @@ module.exports = {
   addHostService,
   hostRemoveParticipantService,
   requestToJoinMeetingService,
-  showParticipantThatRequestService
+  showParticipantsThatRequestService,
+  allowParticipantToJoinService
 }

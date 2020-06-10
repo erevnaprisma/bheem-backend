@@ -39,8 +39,8 @@ const FinishMeetingType = new GraphQLObjectType({
   })
 })
 
-const AddParticipantType = new GraphQLObjectType({
-  name: 'AddParticipant',
+const AllowParticipantToJoinType = new GraphQLObjectType({
+  name: 'AllowParticipantToJoin',
   fields: () => ({
     status: { type: GraphQLString },
     error: { type: GraphQLString },
@@ -88,7 +88,7 @@ const RequestToJoinType = new GraphQLObjectType({
 module.exports = {
   CreateMeetingType,
   FinishMeetingType,
-  AddParticipantType,
+  AllowParticipantToJoinType,
   AddHostType,
   HostRemoveParticipantType,
   ShowParticipantThatRequestType,
