@@ -22,7 +22,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
 
     const meeting = await Meeting({
       title,
-      host: currentHost,
+      hosts: currentHost,
       createdBy,
       startDate,
       endDate,
@@ -127,7 +127,6 @@ const finishMeetingService = async (meetingId) => {
 
 const hostRemoveParticipantService = async (meetingId, hostId, participantId) => {
   try {
-    let updatedParticipants
 
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!hostId) throw new Error('Invalid host id')
@@ -146,16 +145,12 @@ const hostRemoveParticipantService = async (meetingId, hostId, participantId) =>
     if (!participant) throw new Error('Invalid participant id')
 
     // check if participant is currently in meeting
-    const isParticipantInMeeting = meeting.participants.findIndex(e => e.userId === participantId)
+    const isParticipantInMeeting = await meeting.participants.findIndex(e => e.userId === participantId)
     if (isParticipantInMeeting === -1) throw new Error('Invalid participant id')
 
-    updatedParticipants = [...meeting.participants]
-
-    // remove participant
-    updatedParticipants.filter(e => e.userId !== participantId)
-
-    meeting.participants = updatedParticipants
-
+    // remove participant from participants and add the removed participant to removedParticipants
+    await meeting.participants.pop({ userId: participantId })
+    await meeting.removedParticipants.push({ userId: participantId })
     await meeting.save()
 
     return { status: 200, success: 'Successfully remove participant' }

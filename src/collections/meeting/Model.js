@@ -26,7 +26,8 @@ const removedParticipants = new mongoose.Schema({
 const meetingSchema = new mongoose.Schema({
   title: String,
   hosts: {
-    type: [hostsSchema]
+    type: [hostsSchema],
+    default: []
   },
   participants: {
     type: [participantsSchema],
