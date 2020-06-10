@@ -1,7 +1,21 @@
 const graphql = require('graphql')
 
-const { CreateMeetingType, FinishMeetingType, AddHostType, HostRemoveParticipantType, RequestToJoinType, ShowParticipantThatRequestType, AllowParticipantToJoinType } = require('./type')
+const {
+  CreateMeetingType,
+  FinishMeetingType,
+  AddHostType,
+  HostRemoveParticipantType,
+  RequestToJoinType,
+  ShowParticipantThatRequestType,
+  AllowParticipantToJoinType,
+  CreateScheduleMeetingType
+} = require('./type')
+
+// Meeting
 const { createMeetingService, finishMeetingService, showParticipantsThatRequestService, requestToJoinMeetingService, addHostService, hostRemoveParticipantService, allowParticipantToJoinService } = require('../services/Meeting')
+
+// Schedlue Meeting
+const { createScheduleMeetingService } = require('../services/ScheduleMeeting')
 
 const {
   GraphQLString,
@@ -87,6 +101,20 @@ const showParticipantThatRequest = {
   }
 }
 
+const createScheduleMeeting = {
+  type: CreateScheduleMeetingType,
+  args: {
+    title: { type: new GraphQLNonNull(GraphQLString) },
+    host: { type: new GraphQLNonNull(GraphQLString) },
+    createdBy: { type: new GraphQLNonNull(GraphQLString) },
+    startDate: { type: new GraphQLNonNull(GraphQLString) },
+    endDate: { type: GraphQLString }
+  },
+  resolve (parent, args) {
+    return createScheduleMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate)
+  }
+}
+
 module.exports = {
   createMeeting,
   finishMeeting,
@@ -94,5 +122,6 @@ module.exports = {
   hostRemoveParticipants,
   requestTojoinMeeting,
   showParticipantThatRequest,
-  allowParticipantToJoin
+  allowParticipantToJoin,
+  createScheduleMeeting
 }

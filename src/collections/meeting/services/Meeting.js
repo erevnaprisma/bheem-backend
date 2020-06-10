@@ -8,21 +8,17 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
     if (!createdBy) throw new Error('Invalid createdBy')
     if (!startDate) throw new Error('Invalid startDate')
 
+    const hostChecker = await User.findOne({ _id: host })
+    if (!hostChecker) throw new Error('Invalid host')
+
     const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate })
     if (error) {
-      if (error.details[0].message.includes('fails to match the valid mongo id pattern')) {
-        throw new Error('Invalid id')
-      }
       throw new Error(error.details[0].message)
-    }
-
-    const currentHost = {
-      userId: host
     }
 
     const meeting = await Meeting({
       title,
-      hosts: currentHost,
+      hosts: { userId: host },
       createdBy,
       startDate,
       endDate,
@@ -34,7 +30,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
 
     await meeting.save()
 
-    return { status: 200, success: 'Successfully create meeting', title: meeting.title, host: currentHost.userId, createdBy: meeting.createdBy, startDate: meeting.startDate, endDate: meeting.endDate, createdAt: meeting.createdAt, meetingId: meeting._id }
+    return { status: 200, success: 'Successfully create meeting', title: meeting.title, host: meeting.host, createdBy: meeting.createdBy, startDate: meeting.startDate, endDate: meeting.endDate, createdAt: meeting.createdAt, meetingId: meeting._id }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed create meeting' }
   }
