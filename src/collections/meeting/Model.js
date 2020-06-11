@@ -58,7 +58,7 @@ const meetingSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['ACTIVE', 'INACTIVE'],
+    enum: ['ACTIVE', 'INACTIVE', 'SCHEDULE'],
     default: 'ACTIVE'
   },
   createdBy: {
@@ -90,6 +90,17 @@ meetingSchema.statics.validate = (args) => {
     permission: Joi.string().valid('Yes', 'No').allow('', null)
   })
 
+  return schema.validate(args)
+}
+
+meetingSchema.static.validateEditedScheduleMeeting = (args) => {
+  const schema = Joi.object({
+    meetingId: Joi.objectId(),
+    title: Joi.string().min(3).max(50).allow('', null),
+    startDate: Joi.string().allow('', null),
+    endDate: Joi.string().allow('', null),
+    permission: Joi.string().allow('', null)
+  })
   return schema.validate(args)
 }
 
