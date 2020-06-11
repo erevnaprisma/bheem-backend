@@ -153,6 +153,9 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
 
+    const { error } = await Meeting.validate({ meetingId, participant: userId })
+    if (error) throw new Error(error.details[0].message)
+
     // Meeting don't need permission (automatically join)
     const noPermissionNeeded = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'No' })
     if (noPermissionNeeded) {
