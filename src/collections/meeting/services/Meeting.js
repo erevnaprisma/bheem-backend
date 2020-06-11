@@ -1,7 +1,7 @@
 const Meeting = require('../Model')
 const User = require('../../user/Model')
 
-const createMeetingService = async (title, host, createdBy, startDate, endDate) => {
+const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
   try {
     if (!title) throw new Error('Invalid title')
     if (!host) throw new Error('Invalid host')
@@ -11,7 +11,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
     const hostChecker = await User.findOne({ _id: host })
     if (!hostChecker) throw new Error('Invalid host')
 
-    const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate })
+    const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate, permission })
     if (error) {
       throw new Error(error.details[0].message)
     }
@@ -22,6 +22,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
       createdBy,
       startDate,
       endDate,
+      needPermisionToJoin: permission,
       createdAt: new Date().getTime(),
       updatedAt: new Date().getTime()
     })
@@ -30,7 +31,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate) 
 
     await meeting.save()
 
-    return { status: 200, success: 'Successfully create meeting', title: meeting.title, host: meeting.host, createdBy: meeting.createdBy, startDate: meeting.startDate, endDate: meeting.endDate, createdAt: meeting.createdAt, meetingId: meeting._id }
+    return { status: 200, success: 'Successfully create meeting', title: meeting.title, host: host, createdBy: meeting.createdBy, startDate: meeting.startDate, endDate: meeting.endDate, createdAt: meeting.createdAt, meetingId: meeting._id, permissionToJoin: permission === 'No' ? 'No' : 'Yes' }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed create meeting' }
   }
@@ -151,6 +152,13 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
+
+    // Meeting don't need permission (automatically join)
+    const noPermissionNeeded = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'No' })
+    if (noPermissionNeeded) {
+      await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
+      return { status: 200, success: 'Successfully join meeting' }
+    }
 
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
     if (!meeting) throw new Error('Invalid meeting id')

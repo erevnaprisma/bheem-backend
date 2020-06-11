@@ -26,7 +26,8 @@ const CreateMeetingType = new GraphQLObjectType({
     startDate: { type: GraphQLString },
     endDate: { type: GraphQLString },
     createdAt: { type: GraphQLString },
-    meetingId: { type: GraphQLString }
+    meetingId: { type: GraphQLString },
+    permissionToJoin: { type: GraphQLString }
   })
 })
 

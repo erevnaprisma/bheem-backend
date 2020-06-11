@@ -86,7 +86,8 @@ meetingSchema.statics.validate = (args) => {
     participant: Joi.objectId(),
     createdBy: Joi.objectId(),
     startDate: Joi.string(),
-    endDate: Joi.string().allow('', null)
+    endDate: Joi.string().allow('', null),
+    permission: Joi.string().valid('Yes', 'No').allow('', null)
   })
 
   return schema.validate(args)
