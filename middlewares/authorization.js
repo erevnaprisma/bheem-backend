@@ -18,7 +18,7 @@ const isAuthorized = async (resolve, parent, args, context, info) => {
 
 const authorizationMiddlewares = {
   Mutation: {
-    createMeeting: isAuthorized,
+    // createMeeting: isAuthorized,
     finishMeeting: isAuthorized
   },
   RootQueryType: {

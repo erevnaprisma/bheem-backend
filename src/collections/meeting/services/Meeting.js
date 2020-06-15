@@ -31,7 +31,9 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
 
     await meeting.save()
 
-    return { status: 200, success: 'Successfully create meeting', title: meeting.title, host: host, createdBy: meeting.createdBy, startDate: meeting.startDate, endDate: meeting.endDate, createdAt: meeting.createdAt, meetingId: meeting._id, permissionToJoin: permission === 'No' ? 'No' : 'Yes' }
+    console.log('meeting=', meeting)
+
+    return { status: 200, success: 'Successfully create meeting', meeting }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed create meeting' }
   }

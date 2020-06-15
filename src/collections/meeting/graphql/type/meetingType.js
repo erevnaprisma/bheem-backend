@@ -14,20 +14,34 @@ const ParticipantThatRequestType = new GraphQLObjectType({
   })
 })
 
+const HostType = new GraphQLObjectType({
+  name: 'Host',
+  fields: () => ({
+    userId: { type: GraphQLString }
+  })
+})
+
+const MeetingType = new GraphQLObjectType({
+  name: 'Meeting',
+  fields: () => ({
+    title: { type: GraphQLString },
+    hosts: { type: GraphQLList(HostType) },
+    createdBy: { type: GraphQLString },
+    startDate: { type: GraphQLString },
+    endDate: { type: GraphQLString },
+    createdAt: { type: GraphQLString },
+    id: { type: GraphQLString },
+    needPermisionToJoin: { type: GraphQLString }
+  })
+})
+
 const CreateMeetingType = new GraphQLObjectType({
   name: 'CreateMeeting',
   fields: () => ({
     status: { type: GraphQLString },
     error: { type: GraphQLString },
     success: { type: GraphQLString },
-    title: { type: GraphQLString },
-    host: { type: GraphQLString },
-    createdBy: { type: GraphQLString },
-    startDate: { type: GraphQLString },
-    endDate: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    meetingId: { type: GraphQLString },
-    permissionToJoin: { type: GraphQLString }
+    meeting: { type: MeetingType }
   })
 })
 
