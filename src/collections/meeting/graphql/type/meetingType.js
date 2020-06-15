@@ -101,6 +101,7 @@ const RequestToJoinType = new GraphQLObjectType({
 })
 
 module.exports = {
+  MeetingType,
   CreateMeetingType,
   FinishMeetingType,
   AllowParticipantToJoinType,

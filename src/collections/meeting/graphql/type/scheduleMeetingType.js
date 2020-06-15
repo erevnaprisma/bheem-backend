@@ -1,4 +1,5 @@
 const graphql = require('graphql')
+const { MeetingType } = require('./meetingType')
 
 const {
   GraphQLString,
@@ -12,13 +13,7 @@ const CreateScheduleMeetingType = new GraphQLObjectType({
     status: { type: GraphQLString },
     error: { type: GraphQLString },
     success: { type: GraphQLString },
-    title: { type: GraphQLString },
-    host: { type: GraphQLString },
-    createdBy: { type: GraphQLString },
-    startDate: { type: GraphQLString },
-    endDate: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    meetingId: { type: GraphQLString }
+    meeting: { type: MeetingType }
   })
 })
 

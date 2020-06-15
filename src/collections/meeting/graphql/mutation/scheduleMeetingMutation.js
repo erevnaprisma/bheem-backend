@@ -34,8 +34,6 @@ const cancelScheduleMeeting = {
   }
 }
 
-
-
 module.exports = {
   createScheduleMeeting,
   cancelScheduleMeeting
