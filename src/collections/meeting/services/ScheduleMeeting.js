@@ -65,11 +65,11 @@ const showScheduleMeetingsService = async (userId) => {
   }
 }
 
-const startScheduleMeeting = async (meetingId) => {
+const startScheduleMeetingService = async (meetingId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
 
-    const meeting = await Meeting.findOneAndUpdate({ _id: meetingId, status: 'SCHEDULE' }, { status: 'ACTIVE' })
+    const meeting = await Meeting.findOneAndUpdate({ _id: meetingId, status: 'SCHEDULE' }, { status: 'ACTIVE', updatedAt: new Date().getTime() })
     if (!meeting) throw new Error('Invalid meeting id')
 
     return { status: 200, success: 'Successfully start schedule meeting' }
@@ -105,6 +105,6 @@ module.exports = {
   createScheduleMeetingService,
   cancelScheduleMeetingService,
   showScheduleMeetingsService,
-  startScheduleMeeting,
+  startScheduleMeetingService,
   editScheduleMeeting
 }
