@@ -5,10 +5,10 @@ const { login, logout, signUp } = require('./src/collections/user/graphql/mutati
 const { getAllUser } = require('./src/collections/user/graphql/query')
 
 // Meeting
-const { createMeeting, finishMeeting, addHost, hostRemoveParticipants, requestTojoinMeeting, showParticipantThatRequest, allowParticipantToJoin } = require('./src/collections/meeting/graphql/mutation')
+const { createMeeting, finishMeeting, addHost, hostRemoveParticipants, requestTojoinMeeting, showParticipantThatRequest, allowParticipantToJoin } = require('./src/collections/meeting/graphql/mutation/meetingMutation')
 
 // Schedule Meeting
-const { createScheduleMeeting } = require('./src/collections/meeting/graphql/mutation')
+const { createScheduleMeeting, cancelScheduleMeeting } = require('./src/collections/meeting/graphql/mutation/scheduleMeetingMutation')
 
 const {
   GraphQLObjectType,
@@ -35,7 +35,8 @@ const Mutation = new GraphQLObjectType({
     requestTojoinMeeting,
     showParticipantThatRequest,
     allowParticipantToJoin,
-    createScheduleMeeting
+    createScheduleMeeting,
+    cancelScheduleMeeting
   }
 })
 
