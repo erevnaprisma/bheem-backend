@@ -50,7 +50,7 @@ const cancelScheduleMeetingService = async (meetingId) => {
   }
 }
 
-const showScheduleMeetings = async (userId) => {
+const showScheduleMeetingsService = async (userId) => {
   try {
     if (!userId) throw new Error('Invalid user id')
 
@@ -104,7 +104,7 @@ const editScheduleMeeting = async (meetingId, title, permission, startDate, endD
 module.exports = {
   createScheduleMeetingService,
   cancelScheduleMeetingService,
-  showScheduleMeetings,
+  showScheduleMeetingsService,
   startScheduleMeeting,
   editScheduleMeeting
 }

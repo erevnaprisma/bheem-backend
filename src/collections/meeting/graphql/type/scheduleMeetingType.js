@@ -26,7 +26,18 @@ const CancelScheduleMeetingType = new GraphQLObjectType({
   })
 })
 
+const ShowScheduleMeetingType = new GraphQLObjectType({
+  name: 'ShowScheduleMeeting',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    meetings: { type: GraphQLList(MeetingType) }
+  })
+})
+
 module.exports = {
   CreateScheduleMeetingType,
-  CancelScheduleMeetingType
+  CancelScheduleMeetingType,
+  ShowScheduleMeetingType
 }

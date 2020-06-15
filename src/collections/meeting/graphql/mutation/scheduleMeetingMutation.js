@@ -4,10 +4,10 @@ const {
 } = require('graphql')
 
 // Type
-const { CreateScheduleMeetingType, CancelScheduleMeetingType } = require('../type/scheduleMeetingType')
+const { CreateScheduleMeetingType, CancelScheduleMeetingType, ShowScheduleMeetingType } = require('../type/scheduleMeetingType')
 
 // services
-const { createScheduleMeetingService, cancelScheduleMeetingService } = require('../../services/ScheduleMeeting')
+const { createScheduleMeetingService, cancelScheduleMeetingService, showScheduleMeetingsService } = require('../../services/ScheduleMeeting')
 
 const createScheduleMeeting = {
   type: CreateScheduleMeetingType,
@@ -34,7 +34,18 @@ const cancelScheduleMeeting = {
   }
 }
 
+const showScheduleMeeting = {
+  type: ShowScheduleMeetingType,
+  args: {
+    userId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return showScheduleMeetingsService(args.userId)
+  }
+}
+
 module.exports = {
   createScheduleMeeting,
-  cancelScheduleMeeting
+  cancelScheduleMeeting,
+  showScheduleMeeting
 }
