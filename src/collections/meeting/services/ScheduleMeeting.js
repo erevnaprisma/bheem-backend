@@ -29,7 +29,7 @@ const createScheduleMeetingService = async (title, host, createdBy, startDate, e
 
     await meeting.save()
 
-    return { status: 200, success: 'Successfully schedule a meeting', title: meeting.title, host: meeting.host, createdBy: meeting.createdBy, startDate: meeting.startDate, endDate: meeting.endDate, createdAt: meeting.createdAt, meetingId: meeting._id }
+    return { status: 200, success: 'Successfully schedule a meeting', title: meeting.title, host: host, createdBy: meeting.createdBy, startDate: meeting.startDate, endDate: meeting.endDate, createdAt: meeting.createdAt, meetingId: meeting._id }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed create meeting' }
   }
