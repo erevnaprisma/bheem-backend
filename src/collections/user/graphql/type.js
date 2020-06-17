@@ -54,9 +54,19 @@ const LogoutType = new GraphQLObjectType({
   })
 })
 
+const ChangePasswordType = new GraphQLObjectType({
+  name: 'ChangePassword',
+  fields: () => ({
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
 module.exports = {
   SignUpType,
   LoginType,
   LogoutType,
-  UserType
+  UserType,
+  ChangePasswordType
 }

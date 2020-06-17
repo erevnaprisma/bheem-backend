@@ -108,9 +108,33 @@ const getAllUserService = async () => {
   }
 }
 
+const changePasswordService = async (userId, newPassword, password) => {
+  try {
+    if (!userId) throw new Error('Invalid user id')
+    if (!password) throw new Error('Invalid password')
+
+    const { error } = await User.validate({ password: newPassword })
+    if (error) throw new Error(error.details[0].message)
+
+    const user = await User.findOne({ _id: userId })
+    if (!user) throw new Error('Invalid user id')
+
+    await User.comparePassword(password, user.password)
+
+    user.password = newPassword
+
+    await user.save()
+
+    return { status: 200, success: 'Successfully change password' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed change password' }
+  }
+}
+
 module.exports = {
   loginService,
   signUpService,
   logoutService,
-  getAllUserService
+  getAllUserService,
+  changePasswordService
 }

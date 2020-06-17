@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
-const { loginService, signUpService, logoutService } = require('../services')
-const { LoginType, LogoutType, SignUpType } = require('../graphql/type')
+const { loginService, signUpService, logoutService, changePasswordService } = require('../services')
+const { LoginType, LogoutType, SignUpType, ChangePasswordType } = require('../graphql/type')
 
 const {
   GraphQLString,
@@ -43,6 +43,21 @@ const logout = {
   }
 }
 
+const changePassword = {
+  type: ChangePasswordType,
+  args: {
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+    newPassword: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return changePasswordService(args.userId, args.newPassword, args.password)
+  }
+}
+
 module.exports = {
-  signUp, login, logout
+  signUp,
+  login,
+  logout,
+  changePassword
 }

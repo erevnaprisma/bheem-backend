@@ -72,12 +72,13 @@ userSchema.statics.comparePassword = async (password, userPassword) => {
 userSchema.statics.validate = (args) => {
   var regex = /^[a-z][a-z.\s-]{1,255}$/i
   var addRegex = /^[a-zA-Z0-9,.:/ ]*$/
+  var passwordRegex = /^[a-zA-Z0-9]*$/i
 
   const schema = Joi.object({
     username: Joi.string().min(4).max(25),
     fullName: Joi.string().min(6).max(40).pattern(new RegExp(regex)),
     email: Joi.string().email(),
-    password: Joi.string().min(4).max(15),
+    password: Joi.string().min(4).max(15).pattern(new RegExp(passwordRegex)),
     deviceId: Joi.string().min(2),
     firstName: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
     lastName: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
