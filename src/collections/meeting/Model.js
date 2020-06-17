@@ -93,13 +93,15 @@ meetingSchema.statics.validate = (args) => {
   return schema.validate(args)
 }
 
-meetingSchema.static.validateEditedScheduleMeeting = (args) => {
+meetingSchema.statics.validateEditedScheduleMeeting = (args) => {
+  const titleRegex = /^[a-zA-Z0-9,.?/'";;=+-_()&# ]*$/i
+
   const schema = Joi.object({
     meetingId: Joi.objectId(),
-    title: Joi.string().min(3).max(50).allow('', null),
+    title: Joi.string().min(3).max(50).allow('', null).pattern(new RegExp(titleRegex, 'm')),
     startDate: Joi.string().allow('', null),
     endDate: Joi.string().allow('', null),
-    permission: Joi.string().allow('', null)
+    permission: Joi.string().allow('', null).valid('Yes', 'No')
   })
   return schema.validate(args)
 }

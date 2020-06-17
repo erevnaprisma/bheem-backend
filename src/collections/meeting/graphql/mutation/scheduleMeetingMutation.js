@@ -4,10 +4,10 @@ const {
 } = require('graphql')
 
 // Type
-const { CreateScheduleMeetingType, CancelScheduleMeetingType, ShowScheduleMeetingType, StartScheduleMeetingType } = require('../type/scheduleMeetingType')
+const { CreateScheduleMeetingType, CancelScheduleMeetingType, ShowScheduleMeetingType, StartScheduleMeetingType, EditScheduleMeetingType } = require('../type/scheduleMeetingType')
 
 // services
-const { createScheduleMeetingService, cancelScheduleMeetingService, showScheduleMeetingsService, startScheduleMeetingService } = require('../../services/ScheduleMeeting')
+const { createScheduleMeetingService, cancelScheduleMeetingService, showScheduleMeetingsService, startScheduleMeetingService, editScheduleMeetingService } = require('../../services/ScheduleMeeting')
 
 const createScheduleMeeting = {
   type: CreateScheduleMeetingType,
@@ -54,9 +54,24 @@ const startScheduleMeeting = {
   }
 }
 
+const editScheduleMeeting = {
+  type: EditScheduleMeetingType,
+  args: {
+    meetingId: { type: new GraphQLNonNull(GraphQLString) },
+    title: { type: new GraphQLNonNull(GraphQLString) },
+    permission: { type: new GraphQLNonNull(GraphQLString) },
+    startDate: { type: new GraphQLNonNull(GraphQLString) },
+    endDate: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return editScheduleMeetingService(args.meetingId, args.title, args.permission, args.startDate, args.endDate)
+  }
+}
+
 module.exports = {
   createScheduleMeeting,
   cancelScheduleMeeting,
   showScheduleMeeting,
-  startScheduleMeeting
+  startScheduleMeeting,
+  editScheduleMeeting
 }

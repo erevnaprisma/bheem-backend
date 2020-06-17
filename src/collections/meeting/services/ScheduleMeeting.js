@@ -78,7 +78,7 @@ const startScheduleMeetingService = async (meetingId) => {
   }
 }
 
-const editScheduleMeeting = async (meetingId, title, permission, startDate, endDate) => {
+const editScheduleMeetingService = async (meetingId, title, permission, startDate, endDate) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
 
@@ -88,10 +88,23 @@ const editScheduleMeeting = async (meetingId, title, permission, startDate, endD
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'SCHEDULE' })
     if (!meeting) throw new Error('Invalid meeting id')
 
-    if (!title) meeting.title = title
-    if (!permission) meeting.permission = permission
-    if (!startDate) meeting.startDate = startDate
-    if (!endDate) meeting.endDate = endDate
+    if (title) {
+      meeting.title = title
+    }
+
+    if (permission) {
+      meeting.needPermisionToJoin = permission
+    }
+
+    if (startDate) {
+      meeting.startDate = startDate
+    }
+
+    if (endDate) {
+      meeting.endDate = endDate
+    }
+
+    console.log(meeting.title)
 
     await meeting.save()
 
@@ -106,5 +119,5 @@ module.exports = {
   cancelScheduleMeetingService,
   showScheduleMeetingsService,
   startScheduleMeetingService,
-  editScheduleMeeting
+  editScheduleMeetingService
 }
