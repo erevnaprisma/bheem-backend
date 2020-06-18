@@ -73,9 +73,10 @@ userSchema.statics.validate = (args) => {
   var regex = /^[a-z][a-z.\s-]{1,255}$/i
   var addRegex = /^[a-zA-Z0-9,.:/ ]*$/
   var passwordRegex = /^[a-zA-Z0-9]*$/i
+  var usernameRegex = /^[a-zA-Z0-9]*$/i
 
   const schema = Joi.object({
-    username: Joi.string().min(4).max(25),
+    username: Joi.string().min(4).max(25).pattern(new RegExp(usernameRegex)),
     fullName: Joi.string().min(6).max(40).pattern(new RegExp(regex)),
     email: Joi.string().email(),
     password: Joi.string().min(4).max(15).pattern(new RegExp(passwordRegex)),

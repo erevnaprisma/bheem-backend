@@ -100,6 +100,16 @@ const RequestToJoinType = new GraphQLObjectType({
   })
 })
 
+const IsMeetingExistType = new GraphQLObjectType({
+  name: 'isMeetingExist',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    meeting: { type: MeetingType }
+  })
+})
+
 module.exports = {
   MeetingType,
   CreateMeetingType,
@@ -108,5 +118,6 @@ module.exports = {
   AddHostType,
   HostRemoveParticipantType,
   ShowParticipantThatRequestType,
-  RequestToJoinType
+  RequestToJoinType,
+  IsMeetingExistType
 }

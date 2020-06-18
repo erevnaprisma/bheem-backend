@@ -8,10 +8,19 @@ const {
   RequestToJoinType,
   ShowParticipantThatRequestType,
   AllowParticipantToJoinType,
+  IsMeetingExistType
 } = require('../type/meetingType')
 
 // Meeting
-const { createMeetingService, finishMeetingService, showParticipantsThatRequestService, requestToJoinMeetingService, addHostService, hostRemoveParticipantService, allowParticipantToJoinService } = require('../../services/Meeting')
+const { createMeetingService,
+  finishMeetingService,
+  showParticipantsThatRequestService,
+  requestToJoinMeetingService,
+  addHostService,
+  hostRemoveParticipantService,
+  allowParticipantToJoinService,
+  isMeetingExistService
+} = require('../../services/Meeting')
 
 const {
   GraphQLString,
@@ -98,6 +107,16 @@ const showParticipantThatRequest = {
   }
 }
 
+const isMeetingExist = {
+  type: IsMeetingExistType,
+  args: {
+    meetingId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return isMeetingExistService(args.meetingId)
+  }
+}
+
 module.exports = {
   createMeeting,
   finishMeeting,
@@ -105,5 +124,6 @@ module.exports = {
   hostRemoveParticipants,
   requestTojoinMeeting,
   showParticipantThatRequest,
-  allowParticipantToJoin
+  allowParticipantToJoin,
+  isMeetingExist
 }

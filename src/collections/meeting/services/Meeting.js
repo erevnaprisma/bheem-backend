@@ -194,6 +194,22 @@ const showParticipantsThatRequestService = async (meetingId) => {
   }
 }
 
+const isMeetingExistService = async (meetingId) => {
+  try {
+    if (!meetingId) throw new Error('Invalid meeting id')
+
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Meeting not found')
+
+    return { status: 200, success: 'Successfully find meeting', meeting }
+  } catch (err) {
+    if (err.message.includes('Cast to ObjectId failed')) {
+      err.message = 'Meeting not found'
+    }
+    return { status: 400, error: err.message || 'Meeting not found' }
+  }
+}
+
 module.exports = {
   createMeetingService,
   finishMeetingService,
@@ -201,5 +217,6 @@ module.exports = {
   hostRemoveParticipantService,
   requestToJoinMeetingService,
   showParticipantsThatRequestService,
-  allowParticipantToJoinService
+  allowParticipantToJoinService,
+  isMeetingExistService
 }
