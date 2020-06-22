@@ -56,7 +56,7 @@ const allowParticipantToJoinService = async (meetingId, userId) => {
     if (!meeting) throw new Error('Invalid meeting id')
 
     // add requestedParticipant to participants
-    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
 
@@ -118,7 +118,6 @@ const finishMeetingService = async (meetingId) => {
 
 const hostRemoveParticipantService = async (meetingId, hostId, participantId) => {
   try {
-
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!hostId) throw new Error('Invalid host id')
     if (!participantId) throw new Error('Invalid participant id')
@@ -137,11 +136,12 @@ const hostRemoveParticipantService = async (meetingId, hostId, participantId) =>
 
     // check if participant is currently in meeting
     const isParticipantInMeeting = await meeting.participants.findIndex(e => e.userId === participantId)
-    if (isParticipantInMeeting === -1) throw new Error('Invalid participant id')
+    console.log(isParticipantInMeeting)
+    if (isParticipantInMeeting !== -1) throw new Error('Invalid participant id')
 
     // remove participant from participants and add the removed participant to removedParticipants
     await meeting.participants.pop({ userId: participantId })
-    await meeting.removedParticipants.push({ userId: participantId })
+    await meeting.removedParticipants.push({ userId: participantId, name: participant.fullName })
     await meeting.save()
 
     return { status: 200, success: 'Successfully remove participant' }
@@ -158,18 +158,18 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
     const { error } = await Meeting.validate({ meetingId, participant: userId })
     if (error) throw new Error(error.details[0].message)
 
+    const user = await User.findOne({ _id: userId })
+    if (!userId) throw new Error('Invalid user id')
+
     // Meeting don't need permission (automatically join)
     const noPermissionNeeded = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'No' })
     if (noPermissionNeeded) {
-      await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
+      await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
       return { status: 200, success: 'Successfully join meeting' }
     }
 
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
     if (!meeting) throw new Error('Invalid meeting id')
-
-    const user = await User.findOne({ _id: userId })
-    if (!userId) throw new Error('Invalid user id')
 
     await meeting.requestToJoin.push({ userId: user._id, name: user.fullName })
     await meeting.save()

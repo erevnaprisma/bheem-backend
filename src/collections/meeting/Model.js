@@ -6,6 +6,14 @@ const participantsSchema = new mongoose.Schema({
   userId: {
     type: String,
     ref: 'User'
+  },
+  status: {
+    type: String,
+    enum: ['Auth', 'Anonymous'],
+    default: 'Auth'
+  },
+  name: {
+    type: String
   }
 })
 
@@ -13,6 +21,9 @@ const hostsSchema = new mongoose.Schema({
   userId: {
     type: String,
     ref: 'User'
+  },
+  name: {
+    type: String
   }
 })
 
@@ -20,6 +31,14 @@ const removedParticipantsSchema = new mongoose.Schema({
   userId: {
     type: String,
     ref: 'User'
+  },
+  name: {
+    type: String
+  },
+  default: {
+    type: String,
+    enum: ['Auth', 'Anonymous'],
+    default: 'Auth'
   }
 })
 
@@ -30,6 +49,11 @@ const requestToJoinSchema = new mongoose.Schema({
   },
   name: {
     type: String
+  },
+  status: {
+    type: String,
+    enum: ['Auth', 'Anonymous'],
+    default: 'Auth'
   }
 })
 

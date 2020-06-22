@@ -19,6 +19,9 @@ const {
 // Schedule Meeting
 const { createScheduleMeeting, cancelScheduleMeeting, showScheduleMeeting, startScheduleMeeting, editScheduleMeeting } = require('./src/collections/meeting/graphql/mutation/scheduleMeetingMutation')
 
+// Anonymous Meeting
+const { anonymousRequestTojoinMeeting } = require('./src/collections/meeting/graphql/mutation/anonymousMeetingMutation')
+
 const {
   GraphQLObjectType,
   GraphQLSchema
@@ -55,7 +58,10 @@ const Mutation = new GraphQLObjectType({
     cancelScheduleMeeting,
     showScheduleMeeting,
     startScheduleMeeting,
-    editScheduleMeeting
+    editScheduleMeeting,
+
+    // anonymous meeting
+    anonymousRequestTojoinMeeting
   }
 })
 
