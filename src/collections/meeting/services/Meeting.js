@@ -39,7 +39,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
   }
 }
 
-const allowParticipantToJoinService = async (meetingId, userId) => {
+const allowParticipantToJoinService = async (meetingId, userId, hostId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
@@ -51,9 +51,17 @@ const allowParticipantToJoinService = async (meetingId, userId) => {
     const user = await User.findOne({ _id: userId })
     if (!user) throw new Error('Invalid user id')
 
+    // check if host id valid
+    const host = await User.findOne({ _id: hostId })
+    if (!host) throw new Error('Invalid host id')
+
     // check if meeting id valid
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
     if (!meeting) throw new Error('Invalid meeting id')
+
+    // check if host id is a real meeting host
+    const isValidHost = await meeting.hosts.find(e => e.userId === hostId)
+    if (!isValidHost) throw new Error('host id is not this meeting host')
 
     // add requestedParticipant to participants
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
@@ -66,7 +74,7 @@ const allowParticipantToJoinService = async (meetingId, userId) => {
   }
 }
 
-const addHostService = async (meetingId, userId) => {
+const addHostService = async (meetingId, userId, hostId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
@@ -74,17 +82,24 @@ const addHostService = async (meetingId, userId) => {
     const { error } = await Meeting.validate({ meetingId, host: userId })
     if (error) throw new Error(error.details[0].message)
 
+    // check if user id valid
     const user = await User.findOne({ _id: userId })
     if (!user) throw new Error('Invalid user id')
 
+    // check if host id valid
+    const host = await User.findOne({ _id: hostId })
+    if (!host) throw new Error('Invalid host id')
+
+    // check if meeting exist
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
     if (!meeting) throw new Error('Invalid meeting id')
 
-    meeting.hosts.forEach(e => {
-      if (e.userId === userId) {
-        throw new Error('User already a host')
-      }
-    })
+    const isValidHost = await meeting.hosts.find(e => e.userId === hostId)
+    if (!isValidHost) throw new Error('Host id is not this meeting host')
+
+    // check if user is already a host
+    const userAlreadyHost = await meeting.hosts.find(e => e.userId === userId)
+    if (userAlreadyHost) throw new Error('user already host in this meeting')
 
     const newHost = {
       userId
@@ -125,19 +140,29 @@ const hostRemoveParticipantService = async (meetingId, hostId, participantId) =>
     const { error } = await Meeting.validate({ meetingId, host: hostId, participant: participantId })
     if (error) throw new Error(error.details[0].message)
 
-    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
-    if (!meeting) throw new Error('Invalid meeting id')
-
+    // check if host id valid
     const host = await User.findOne({ _id: hostId })
     if (!host) throw new Error('Invalid host id')
 
+    // check if participant id valid
     const participant = await User.findOne({ _id: participantId })
     if (!participant) throw new Error('Invalid participant id')
 
+    // check if meeting id exist
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    // check if host id is a real meeting host
+    const isHostValid = await meeting.hosts.find(e => e.userId === hostId)
+    if (!isHostValid) throw new Error('Host id is not this meeting host')
+
+    // check if participant was already removed
+    const isParticipantAlreadyRemoved = await meeting.removedParticipants.find(e => e.userId === participantId)
+    if (isParticipantAlreadyRemoved) throw new Error('Participant already removed')
+
     // check if participant is currently in meeting
-    const isParticipantInMeeting = await meeting.participants.findIndex(e => e.userId === participantId)
-    console.log(isParticipantInMeeting)
-    if (isParticipantInMeeting !== -1) throw new Error('Invalid participant id')
+    const isParticipantValid = await meeting.participants.find(e => e.userId === participantId)
+    if (!isParticipantValid) throw new Error('Participant id is not in meeting')
 
     // remove participant from participants and add the removed participant to removedParticipants
     await meeting.participants.pop({ userId: participantId })
@@ -158,8 +183,25 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
     const { error } = await Meeting.validate({ meetingId, participant: userId })
     if (error) throw new Error(error.details[0].message)
 
+    // check if user exist
     const user = await User.findOne({ _id: userId })
     if (!userId) throw new Error('Invalid user id')
+
+    // check if meeting exist
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    // check if user is host
+    const isUserHost = await meeting.hosts.find(e => e.userId === userId)
+    if (isUserHost) throw new Error('User is host')
+
+    // check if user already a participant
+    const alreadyParticipant = await meeting.participants.find(e => e.userId === userId)
+    if (alreadyParticipant) throw new Error('User already a participant')
+
+    // check if user already request to join
+    const alreadyRequestToJoin = await meeting.requestToJoin.find(e => e.userId === userId)
+    if (alreadyRequestToJoin) throw new Error('User already request to join')
 
     // Meeting don't need permission (automatically join)
     const noPermissionNeeded = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'No' })
@@ -167,9 +209,6 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
       await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
       return { status: 200, success: 'Successfully join meeting' }
     }
-
-    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
-    if (!meeting) throw new Error('Invalid meeting id')
 
     await meeting.requestToJoin.push({ userId: user._id, name: user.fullName })
     await meeting.save()

@@ -56,10 +56,11 @@ const allowParticipantToJoin = {
   type: AllowParticipantToJoinType,
   args: {
     meetingId: { type: new GraphQLNonNull(GraphQLString) },
-    userId: { type: new GraphQLNonNull(GraphQLString) }
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+    hostId: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return allowParticipantToJoinService(args.meetingId, args.userId)
+    return allowParticipantToJoinService(args.meetingId, args.userId, args.hostId)
   }
 }
 
@@ -67,10 +68,11 @@ const addHost = {
   type: AddHostType,
   args: {
     meetingId: { type: new GraphQLNonNull(GraphQLString) },
-    userId: { type: new GraphQLNonNull(GraphQLString) }
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+    hostId: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return addHostService(args.meetingId, args.userId)
+    return addHostService(args.meetingId, args.userId, args.hostId)
   }
 }
 
