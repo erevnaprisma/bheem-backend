@@ -12,12 +12,8 @@ const createScheduleMeetingService = async (title, host, createdBy, startDate, e
     const hostChecker = await User.findOne({ _id: host })
     if (!hostChecker) throw new Error('Invalid host')
 
-    console.log('permision=', permission)
-
     const { error } = await Meeting.validate({ title, host: host, createdBy, startDate, endDate, permission })
     if (error) throw new Error(error.details[0].message)
-
-    console.log('permision 2=', permission)
 
     const meeting = await Meeting({
       title,

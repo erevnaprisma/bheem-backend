@@ -26,7 +26,8 @@
     "mongoose-type-email": "^1.0.12",
     "morgan": "~1.9.1",
     "nodemailer": "^6.4.8",
-    "randomstring": "^1.1.5"
+    "randomstring": "^1.1.5",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",

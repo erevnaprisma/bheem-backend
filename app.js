@@ -7,6 +7,10 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const corsAccess = require('./middlewares/corsAccess')
 const config = require('config')
+const socketio = require('socket.io')
+
+// testing
+const Meeting = require('./src/collections/meeting/Model')
 
 mongoose.connect(config.get('mongoUrl'), { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
   .then((res) => console.log('Connected to MongoDB...'))
@@ -56,8 +60,14 @@ app.use(function(err, req, res, next) {
 
 const port = process.env.PORT || 3000
 
-app.listen(port, () => {
+const expressServer = app.listen(port, () => {
   console.log(`Running on localhost ${port}`)
 })
 
-module.exports = app;
+const io = socketio(expressServer)
+
+io.of('/participant').on('connection', (socket) => {
+  console.log('Participant connected to socket...')
+})
+
+module.exports = app

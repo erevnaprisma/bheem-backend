@@ -8,7 +8,8 @@ const {
   RequestToJoinType,
   ShowParticipantThatRequestType,
   AllowParticipantToJoinType,
-  IsMeetingExistType
+  IsMeetingExistType,
+  TestingAllowToJoinType
 } = require('../type/meetingType')
 
 // Meeting
