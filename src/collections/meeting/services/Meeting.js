@@ -40,7 +40,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
   }
 }
 
-const allowParticipantToJoinService = async (meetingId, userId, hostId, socket) => {
+const allowParticipantToJoinService = async (meetingId, userId, hostId, io) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
@@ -68,10 +68,10 @@ const allowParticipantToJoinService = async (meetingId, userId, hostId, socket) 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
-    // console.log(socket.sockets.emit)
-    // console.log(socket.on)
-    console.log('from meeting=', socket)
-    // socket.emit('allowParticipantToJoinService', 'success')
+
+    io.of('/participant').on('connection', (socket) => {
+      socket.emit('allowParticipantToJoinService', 'success')
+    })
 
     return { status: 200, success: 'Successfully add participants' }
   } catch (err) {

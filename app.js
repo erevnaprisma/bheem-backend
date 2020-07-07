@@ -32,11 +32,13 @@ const io = socketio(expressServer)
 
 io.of('/participant').on('connection', (socket) => {
   console.log('Connected to Socket')
-  console.log('from app=', socket)
-  app.use((req, res, next) => {
-    req.socket = socket
-    next()
-  })
+  // console.log('from app=', socket)
+  // a = socket
+})
+
+app.use((req, res, next) => {
+  req.io = io
+  next()
 })
 
 const corsOptions = {
