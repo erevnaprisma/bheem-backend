@@ -1,6 +1,6 @@
 const Meeting = require('../Model')
 const User = require('../../user/Model')
-var mongoDB = require('mongodb')
+const { compareSync } = require('bcrypt')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
   try {
@@ -57,7 +57,7 @@ const allowParticipantToJoinService = async (meetingId, userId, hostId, socket) 
     if (!host) throw new Error('Invalid host id')
 
     // check if meeting id valid
-    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
     if (!meeting) throw new Error('Invalid meeting id')
 
     // check if host id is a real meeting host
@@ -68,8 +68,8 @@ const allowParticipantToJoinService = async (meetingId, userId, hostId, socket) 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
-
-    socket.emit('allowParticipantToJoinService', 'success')
+    // console.log(socket.sockets.emit)
+    socket.sockets.emit('allowParticipantToJoinService', 'success')
 
     return { status: 200, success: 'Successfully add participants' }
   } catch (err) {
