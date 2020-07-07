@@ -70,7 +70,8 @@ const allowParticipantToJoinService = async (meetingId, userId, hostId, socket) 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
     // console.log(socket.sockets.emit)
     // console.log(socket.on)
-    socket.emit('allowParticipantToJoinService', 'success')
+    console.log('from meeting=', socket)
+    // socket.emit('allowParticipantToJoinService', 'success')
 
     return { status: 200, success: 'Successfully add participants' }
   } catch (err) {
