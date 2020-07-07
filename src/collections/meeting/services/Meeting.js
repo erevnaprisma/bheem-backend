@@ -1,5 +1,6 @@
 const Meeting = require('../Model')
 const User = require('../../user/Model')
+var mongoDB = require('mongodb')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
   try {
@@ -190,7 +191,7 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
     if (!userId) throw new Error('Invalid user id')
 
     // check if meeting exist
-    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
     if (!meeting) throw new Error('Invalid meeting id')
 
     // check if user is host
