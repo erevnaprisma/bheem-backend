@@ -31,6 +31,7 @@ const expressServer = app.listen(port, () => {
 const io = socketio(expressServer)
 
 io.on('connection', (socket) => {
+  console.log('Connected to Socket')
   app.use((req, res, next) => {
     req.socket = socket
     next()
