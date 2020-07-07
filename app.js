@@ -21,6 +21,22 @@ var usersRouter = require('./routes/users');
 const graphqlRouter = require('./routes/graphql')
 
 var app = express();
+
+const port = process.env.PORT || 3000
+
+const expressServer = app.listen(port, () => {
+  console.log(`Running on localhost ${port}`)
+})
+
+const io = socketio(expressServer)
+
+io.on('connection', (socket) => {
+  app.use((req, res, next) => {
+    req.socket = socket
+    next()
+  })
+})
+
 const corsOptions = {
   exposedHeaders: 'Authorization'
 }
@@ -57,17 +73,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-const port = process.env.PORT || 3000
-
-const expressServer = app.listen(port, () => {
-  console.log(`Running on localhost ${port}`)
-})
-
-const io = socketio(expressServer)
-
-io.of('/participant').on('connection', (socket) => {
-  console.log('Participant connected to socket...')
-})
 
 module.exports = app

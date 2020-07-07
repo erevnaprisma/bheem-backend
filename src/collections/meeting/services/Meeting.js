@@ -1,7 +1,8 @@
 const Meeting = require('../Model')
 const User = require('../../user/Model')
 
-const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
+const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, socket) => {
+  console.log('SOCKET=', socket)
   try {
     if (!title) throw new Error('Invalid title')
     if (!host) throw new Error('Invalid host')

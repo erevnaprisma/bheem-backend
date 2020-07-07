@@ -8,8 +8,7 @@ const {
   RequestToJoinType,
   ShowParticipantThatRequestType,
   AllowParticipantToJoinType,
-  IsMeetingExistType,
-  TestingAllowToJoinType
+  IsMeetingExistType
 } = require('../type/meetingType')
 
 // Meeting
@@ -38,8 +37,8 @@ const createMeeting = {
     endDate: { type: GraphQLString },
     permissionToJoin: { type: GraphQLString }
   },
-  resolve (parent, args) {
-    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin)
+  resolve (parent, args, { req }) {
+    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin, req.socket)
   }
 }
 
