@@ -37,8 +37,8 @@ const createMeeting = {
     endDate: { type: GraphQLString },
     permissionToJoin: { type: GraphQLString }
   },
-  resolve (parent, args, { req }) {
-    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin, req.socket)
+  resolve (parent, args) {
+    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin)
   }
 }
 
@@ -59,8 +59,8 @@ const allowParticipantToJoin = {
     userId: { type: new GraphQLNonNull(GraphQLString) },
     hostId: { type: new GraphQLNonNull(GraphQLString) }
   },
-  resolve (parent, args) {
-    return allowParticipantToJoinService(args.meetingId, args.userId, args.hostId)
+  resolve (parent, args, { req }) {
+    return allowParticipantToJoinService(args.meetingId, args.userId, args.hostId, req.socket)
   }
 }
 

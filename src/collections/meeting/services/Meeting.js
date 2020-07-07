@@ -1,8 +1,7 @@
 const Meeting = require('../Model')
 const User = require('../../user/Model')
 
-const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, socket) => {
-  console.log('SOCKET=', socket)
+const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
   try {
     if (!title) throw new Error('Invalid title')
     if (!host) throw new Error('Invalid host')
@@ -40,7 +39,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
   }
 }
 
-const allowParticipantToJoinService = async (meetingId, userId, hostId) => {
+const allowParticipantToJoinService = async (meetingId, userId, hostId, socket) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
@@ -68,6 +67,8 @@ const allowParticipantToJoinService = async (meetingId, userId, hostId) => {
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
+
+    socket.emit('allowParticipantToJoinService', 'success')
 
     return { status: 200, success: 'Successfully add participants' }
   } catch (err) {
