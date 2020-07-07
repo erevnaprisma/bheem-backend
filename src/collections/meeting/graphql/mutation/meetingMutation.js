@@ -60,7 +60,7 @@ const allowParticipantToJoin = {
     hostId: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args, { req }) {
-    return allowParticipantToJoinService(args.meetingId, args.userId, args.hostId, req.io)
+    return allowParticipantToJoinService(args.meetingId, args.userId, args.hostId, req.socket)
   }
 }
 
