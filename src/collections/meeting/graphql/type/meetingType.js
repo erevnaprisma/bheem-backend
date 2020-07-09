@@ -110,6 +110,15 @@ const IsMeetingExistType = new GraphQLObjectType({
   })
 })
 
+const TestingPurposeOnlyType = new GraphQLObjectType({
+  name: 'TestingPurposeOnly',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
 module.exports = {
   MeetingType,
   CreateMeetingType,
@@ -119,5 +128,6 @@ module.exports = {
   HostRemoveParticipantType,
   ShowParticipantThatRequestType,
   RequestToJoinType,
-  IsMeetingExistType
+  IsMeetingExistType,
+  TestingPurposeOnlyType
 }

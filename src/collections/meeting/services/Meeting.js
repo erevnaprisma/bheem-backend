@@ -1,6 +1,5 @@
 const Meeting = require('../Model')
 const User = require('../../user/Model')
-const { compareSync } = require('bcrypt')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
   try {
@@ -32,15 +31,13 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
 
     await meeting.save()
 
-    console.log('meeting=', meeting)
-
     return { status: 200, success: 'Successfully create meeting', meeting }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed create meeting' }
   }
 }
 
-const allowParticipantToJoinService = async (meetingId, userId, hostId, io) => {
+const allowParticipantToJoinService = async (meetingId, userId, hostId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
@@ -68,10 +65,6 @@ const allowParticipantToJoinService = async (meetingId, userId, hostId, io) => {
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
-
-    io.of('/participant').on('connection', (socket) => {
-      socket.emit('allowParticipantToJoinService', 'success')
-    })
 
     return { status: 200, success: 'Successfully add participants' }
   } catch (err) {
@@ -180,7 +173,7 @@ const hostRemoveParticipantService = async (meetingId, hostId, participantId) =>
   }
 }
 
-const requestToJoinMeetingService = async (meetingId, userId) => {
+const requestToJoinMeetingService = async (meetingId, userId, io) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!userId) throw new Error('Invalid user id')
@@ -254,6 +247,15 @@ const isMeetingExistService = async (meetingId) => {
   }
 }
 
+const testingPurposeOnlyService = async (id) => {
+  try {
+    if (!id) throw new Error('Invalid id')
+    return { status: 200, success: id }
+  } catch (err) {
+    return { status: 400, error: err.message }
+  }
+}
+
 module.exports = {
   createMeetingService,
   finishMeetingService,
@@ -262,5 +264,6 @@ module.exports = {
   requestToJoinMeetingService,
   showParticipantsThatRequestService,
   allowParticipantToJoinService,
-  isMeetingExistService
+  isMeetingExistService,
+  testingPurposeOnlyService
 }

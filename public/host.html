@@ -1,0 +1,18 @@
+<h1>BHEEM IS THE BEST</h1>
+<button onclick="allowHandler()">Allow</button>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  const socket = io('ws://localhost:3000/participant');
+
+  var data
+
+  socket.on('requestToJoinHost', (socket) => {
+    data = socket
+  })
+
+  function allowHandler() {
+    socket.emit('allowUserToJoinHost', data)
+  }
+</script>

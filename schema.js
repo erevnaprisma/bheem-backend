@@ -13,7 +13,8 @@ const {
   requestTojoinMeeting,
   showParticipantThatRequest,
   allowParticipantToJoin,
-  isMeetingExist
+  isMeetingExist,
+  testingPurposeOnly
 } = require('./src/collections/meeting/graphql/mutation/meetingMutation')
 
 // Schedule Meeting
@@ -52,6 +53,7 @@ const Mutation = new GraphQLObjectType({
     showParticipantThatRequest,
     allowParticipantToJoin,
     isMeetingExist,
+    testingPurposeOnly,
 
     // schedule meeting
     createScheduleMeeting,
