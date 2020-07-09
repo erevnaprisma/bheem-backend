@@ -18,7 +18,7 @@ module.exports = function (io) {
       socket.emit('requestToJoinHost', message)
 
       socket.on('allowUserToJoinHost', (msg) => {
-        socket.emit('userAllow', 'Success')
+        io.to(msg.socketId).emit('userAllow', 'Success')
       })
     })
   })
