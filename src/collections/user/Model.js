@@ -26,13 +26,19 @@ const userSchema = new mongoose.Schema({
     type: String
   },
   nickname: {
-    type: String,
+    type: String
   },
   address: {
-    type: String,
+    type: String
   },
   profilePicture: {
     type: String
+  },
+  plan: {
+    type: String,
+    ref: 'Plan',
+    enum: ['free', 'pro', 'business'],
+    default: 'free'
   },
   createdAt: {
     type: String
