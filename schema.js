@@ -18,10 +18,20 @@ const {
 } = require('./src/collections/meeting/graphql/mutation/meetingMutation')
 
 // Schedule Meeting
-const { createScheduleMeeting, cancelScheduleMeeting, showScheduleMeeting, startScheduleMeeting, editScheduleMeeting } = require('./src/collections/meeting/graphql/mutation/scheduleMeetingMutation')
+const {
+  createScheduleMeeting,
+  cancelScheduleMeeting,
+  showScheduleMeeting,
+  startScheduleMeeting,
+  editScheduleMeeting
+} = require('./src/collections/meeting/graphql/mutation/scheduleMeetingMutation')
 
 // Anonymous Meeting
 const { anonymousRequestTojoinMeeting } = require('./src/collections/meeting/graphql/mutation/anonymousMeetingMutation')
+
+// Plan
+const { createPlan, getSelectedPlan, deletePlan } = require('./src/collections/plan/graphql/mutation')
+const { getAllPlan } = require('./src/collections/plan/graphql/query')
 
 const {
   GraphQLObjectType,
@@ -31,7 +41,11 @@ const {
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
-    getAllUser
+    // user
+    getAllUser,
+
+    // plan
+    getAllPlan
   }
 })
 
@@ -63,7 +77,12 @@ const Mutation = new GraphQLObjectType({
     editScheduleMeeting,
 
     // anonymous meeting
-    anonymousRequestTojoinMeeting
+    anonymousRequestTojoinMeeting,
+
+    // plan
+    createPlan,
+    getSelectedPlan,
+    deletePlan
   }
 })
 

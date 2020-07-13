@@ -1,0 +1,22 @@
+<h1>Mike</h1>
+<button onclick="clickToTry()">Press Me</button>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io('ws://localhost:3000/participant');
+
+  socket.on('userAllow', (msg) => {
+    console.log('Success')
+  })
+
+  function clickToTry() {
+    const message = {
+    socketId: socket.id,
+    username: 'haha',
+    userId: '12345'
+  }
+  console.log(message)
+    socket.emit('requestToJoinUser', message)
+  }
+  
+</script>

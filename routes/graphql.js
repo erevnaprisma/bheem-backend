@@ -15,11 +15,13 @@ module.exports = function (io) {
         userId: msg.userId,
         username: msg.username
       }
-      socket.emit('requestToJoinHost', message)
+      console.log(message)
+      io.of('/participant').emit('requestToJoinHost', message)
+    })
 
-      socket.on('allowUserToJoinHost', (msg) => {
-        io.to(msg.socketId).emit('userAllow', 'Success')
-      })
+    socket.on('allowUserToJoinHost', (msg) => {
+      console.log(msg.socketId)
+      io.of('/participant').to(msg.socketId).emit('userAllow', 'Success')
     })
   })
 
