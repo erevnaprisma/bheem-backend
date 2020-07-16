@@ -7,7 +7,7 @@ const {
   HostRemoveParticipantType,
   RequestToJoinType,
   ShowParticipantThatRequestType,
-  AllowParticipantToJoinType,
+  AdmitParticipantToJoinType,
   IsMeetingExistType,
   TestingPurposeOnlyType
 } = require('../type/meetingType')
@@ -19,7 +19,7 @@ const { createMeetingService,
   requestToJoinMeetingService,
   addHostService,
   hostRemoveParticipantService,
-  allowParticipantToJoinService,
+  admitParticipantToJoinService,
   isMeetingExistService,
   testingPurposeOnlyService
 } = require('../../services/Meeting')
@@ -54,15 +54,15 @@ const finishMeeting = {
   }
 }
 
-const allowParticipantToJoin = {
-  type: AllowParticipantToJoinType,
+const admitParticipantToJoin = {
+  type: AdmitParticipantToJoinType,
   args: {
     meetingId: { type: new GraphQLNonNull(GraphQLString) },
     userId: { type: new GraphQLNonNull(GraphQLString) },
     hostId: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return allowParticipantToJoinService(args.meetingId, args.userId, args.hostId)
+    return admitParticipantToJoinService(args.meetingId, args.userId, args.hostId)
   }
 }
 
@@ -138,7 +138,7 @@ module.exports = {
   hostRemoveParticipants,
   requestTojoinMeeting,
   showParticipantThatRequest,
-  allowParticipantToJoin,
+  admitParticipantToJoin,
   isMeetingExist,
   testingPurposeOnly
 }

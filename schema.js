@@ -12,7 +12,7 @@ const {
   hostRemoveParticipants,
   requestTojoinMeeting,
   showParticipantThatRequest,
-  allowParticipantToJoin,
+  admitParticipantToJoin,
   isMeetingExist,
   testingPurposeOnly
 } = require('./src/collections/meeting/graphql/mutation/meetingMutation')
@@ -65,7 +65,7 @@ const Mutation = new GraphQLObjectType({
     hostRemoveParticipants,
     requestTojoinMeeting,
     showParticipantThatRequest,
-    allowParticipantToJoin,
+    admitParticipantToJoin,
     isMeetingExist,
     testingPurposeOnly,
 

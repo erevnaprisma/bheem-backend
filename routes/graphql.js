@@ -4,26 +4,10 @@ const schema = require('../schema')
 const { applyMiddleware } = require('graphql-middleware')
 const authorizationMiddlewares = require('../middlewares/authorization')
 
+const meeting = require('../src/socket/meeting')
+
 module.exports = function (io) {
-  io.of('/participant').on('connection', (socket) => {
-    console.log('Connected to Socket.io...')
-
-    // Waiting Room
-    socket.on('requestToJoinUser', (msg) => {
-      const message = {
-        socketId: msg.socketId,
-        userId: msg.userId,
-        username: msg.username
-      }
-      console.log(message)
-      io.of('/participant').emit('requestToJoinHost', message)
-    })
-
-    socket.on('allowUserToJoinHost', (msg) => {
-      console.log(msg.socketId)
-      io.of('/participant').to(msg.socketId).emit('userAllow', 'Success')
-    })
-  })
+  meeting(io)
 
   const Router = express.Router()
 

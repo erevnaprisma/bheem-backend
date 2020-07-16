@@ -1,19 +1,45 @@
-<h1>BHEEM IS THE BEST</h1>
-<button onclick="allowHandler()">Allow</button>
+<h1>Host</h1>
+
+<label>Create Meeting</label>
+<input type="text" id="createMeetingId">
+<button onclick="createMeeting()">Create Meeting</button>
+
+<hr>
+
+<h3>List of Request</h3>
+
+<ul id="listRequestUser">
+  <!-- dynamic -->
+</ul>
 
 <script src="/socket.io/socket.io.js"></script>
-
 <script>
   const socket = io('ws://localhost:3000/participant');
+  
+  let userInfo
+  const hostId = '5ede2a835bdfd50340ac84b8'
 
-  var data
-
-  socket.on('requestToJoinHost', (socket) => {
-    console.log('socket=', socket)
-    data = socket
+  // listening request from user
+  socket.on('sendRequestToHost', (msg) => {
+    userInfo = msg
+    console.log('someone request to join')
+    document.getElementById('listRequestUser').innerHTML += `<li>${msg.username}  <button onclick="admit()">admit</button> <button onclick="reject()">reject</button></li>`
+  })
+  
+  // listening to meeting error
+  socket.on('meetingError', (msg) => {
+    console.log(msg)
   })
 
-  function allowHandler() {
-    socket.emit('allowUserToJoinHost', data)
+  function createMeeting() {
+    socket.emit('createMeeting', { meetingId: document.getElementById('createMeetingId').value })
+  }
+
+  function reject() {
+    socket.emit('rejectUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId })
+  }
+
+  function admit() {
+    socket.emit('admitUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId })
   }
 </script>
