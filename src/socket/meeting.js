@@ -1,5 +1,10 @@
 // Services
-const { requestToJoin, admitOrReject, createMeeting } = require('./services')
+const {
+  requestToJoin,
+  admitOrReject,
+  createMeeting,
+  ifUserSuddenlyOff
+} = require('./services')
 
 const meeting = (io) => {
   io.of('/participant').on('connection', (socket) => {
@@ -10,6 +15,8 @@ const meeting = (io) => {
     admitOrReject(socket, io)
 
     requestToJoin(socket, io)
+
+    ifUserSuddenlyOff(socket, io)
   })
 }
 

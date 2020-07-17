@@ -5,7 +5,8 @@ const Meeting = require('../collections/meeting/Model')
 const {
   requestToJoinMeetingService,
   admitParticipantToJoinService,
-  rejectParticipantToJoinService
+  rejectParticipantToJoinService,
+  removeUserFromParticipantsService
 } = require('../collections/meeting/services/Meeting')
 
 const requestToJoin = async (socket, io) => {
@@ -79,14 +80,24 @@ const createMeeting = (socket) => {
   })
 }
 
-const ifUserSuddenlyOff = async (socket, io) => {
-  socket.on('userSuddenlyOff', (msg) => {
-    
+const ifUserSuddenlyOff = (socket, io) => {
+  socket.on('userSuddenlyOff', async (msg) => {
+    if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+    if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
+
+    try {
+      await removeUserFromParticipantsService(msg.userId, msg.meetingId)
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Something went wrong')
+    }
+
+    socket.emit('successfullyRemovedUser', 'successfullyRemovedUser')
   })
 }
 
 module.exports = {
   requestToJoin,
   admitOrReject,
-  createMeeting
+  createMeeting,
+  ifUserSuddenlyOff
 }

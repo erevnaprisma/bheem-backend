@@ -321,9 +321,12 @@ const removeUserFromParticipantsService = async (userId, meetingId) => {
     const meeting = await Meeting.findOne({ _id: meetingId })
     if (!meeting) throw new Error('Invalid meeting id')
 
-    const newMeeting = await meeting.participants.filter(e => e.userId !== userId)
+    const newParticipants = await meeting.participants.filter(e => e.userId !== userId)
 
-    meeting.participants = newMeeting
+    const newRequestToJoin = await meeting.requestToJoin.filter(e => e.userId !== userId)
+
+    meeting.participants = newParticipants
+    meeting.requestToJoin = newRequestToJoin
     await meeting.save()
     return { status: 200, success: 'Successfully remove user' }
   } catch (err) {
