@@ -79,6 +79,12 @@ const createMeeting = (socket) => {
   })
 }
 
+const ifUserSuddenlyOff = async (socket, io) => {
+  socket.on('userSuddenlyOff', (msg) => {
+    
+  })
+}
+
 module.exports = {
   requestToJoin,
   admitOrReject,

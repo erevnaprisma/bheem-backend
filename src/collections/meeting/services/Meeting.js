@@ -316,6 +316,21 @@ const isUserHostService = async (userId, meetingId) => {
   }
 }
 
+const removeUserFromParticipantsService = async (userId, meetingId) => {
+  try {
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    const newMeeting = await meeting.participants.filter(e => e.userId !== userId)
+
+    meeting.participants = newMeeting
+    await meeting.save()
+    return { status: 200, success: 'Successfully remove user' }
+  } catch (err) {
+    return { status: 400, error: 'Failed to remove user from participants '}
+  }
+}
+
 module.exports = {
   createMeetingService,
   finishMeetingService,
@@ -327,5 +342,6 @@ module.exports = {
   isMeetingExistService,
   testingPurposeOnlyService,
   rejectParticipantToJoinService,
-  isUserHostService
+  isUserHostService,
+  removeUserFromParticipantsService
 }

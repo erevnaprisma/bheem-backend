@@ -129,6 +129,15 @@ const IsUserHostType = new GraphQLObjectType({
   })
 })
 
+const RemoveUserFromParticipantsType = new GraphQLObjectType({
+  name: 'RemoveUserFromParticipants',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
 module.exports = {
   MeetingType,
   CreateMeetingType,
@@ -140,5 +149,6 @@ module.exports = {
   RequestToJoinType,
   IsMeetingExistType,
   TestingPurposeOnlyType,
-  IsUserHostType
+  IsUserHostType,
+  RemoveUserFromParticipantsType
 }

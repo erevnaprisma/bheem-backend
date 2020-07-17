@@ -15,7 +15,8 @@ const {
   admitParticipantToJoin,
   isMeetingExist,
   testingPurposeOnly,
-  isUserHost
+  isUserHost,
+  removeUserFromParticipants
 } = require('./src/collections/meeting/graphql/mutation/meetingMutation')
 
 // Schedule Meeting
@@ -70,6 +71,7 @@ const Mutation = new GraphQLObjectType({
     isMeetingExist,
     testingPurposeOnly,
     isUserHost,
+    removeUserFromParticipants,
 
     // schedule meeting
     createScheduleMeeting,

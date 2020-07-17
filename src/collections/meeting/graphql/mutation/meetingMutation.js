@@ -10,7 +10,8 @@ const {
   AdmitParticipantToJoinType,
   IsMeetingExistType,
   TestingPurposeOnlyType,
-  IsUserHostType
+  IsUserHostType,
+  RemoveUserFromParticipantsType
 } = require('../type/meetingType')
 
 // Meeting
@@ -23,7 +24,8 @@ const { createMeetingService,
   admitParticipantToJoinService,
   isMeetingExistService,
   testingPurposeOnlyService,
-  isUserHostService
+  isUserHostService,
+  removeUserFromParticipantsService
 } = require('../../services/Meeting')
 
 const {
@@ -144,6 +146,17 @@ const testingPurposeOnly = {
   }
 }
 
+const removeUserFromParticipants = {
+  type: RemoveUserFromParticipantsType,
+  args: {
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+    meetingId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return removeUserFromParticipantsService(args.userId, args.meetingId)
+  }
+}
+
 module.exports = {
   createMeeting,
   finishMeeting,
@@ -154,5 +167,6 @@ module.exports = {
   admitParticipantToJoin,
   isMeetingExist,
   testingPurposeOnly,
-  isUserHost
+  isUserHost,
+  removeUserFromParticipants
 }
