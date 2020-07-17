@@ -291,6 +291,31 @@ const rejectParticipantToJoinService = async (meetingId, userId, hostId) => {
   }
 }
 
+const isUserHostService = async (userId, meetingId) => {
+  try {
+    if (!userId) throw new Error('Invalid user id')
+    if (!meetingId) throw new Error('Invalid meeting id')
+
+    const user = await User.findOne({ _id: userId })
+    if (!user) throw new Error('Invalid user id')
+
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    let isUserHost = false
+
+    await meeting.hosts.forEach(e => {
+      if (e.userId === userId) {
+        isUserHost = true
+      }
+    })
+
+    return { status: 200, success: 'Successfully get user information', isUserHost }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Faild to get information about user' }
+  }
+}
+
 module.exports = {
   createMeetingService,
   finishMeetingService,
@@ -301,5 +326,6 @@ module.exports = {
   admitParticipantToJoinService,
   isMeetingExistService,
   testingPurposeOnlyService,
-  rejectParticipantToJoinService
+  rejectParticipantToJoinService,
+  isUserHostService
 }

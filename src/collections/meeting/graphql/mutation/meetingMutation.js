@@ -9,7 +9,8 @@ const {
   ShowParticipantThatRequestType,
   AdmitParticipantToJoinType,
   IsMeetingExistType,
-  TestingPurposeOnlyType
+  TestingPurposeOnlyType,
+  IsUserHostType
 } = require('../type/meetingType')
 
 // Meeting
@@ -21,7 +22,8 @@ const { createMeetingService,
   hostRemoveParticipantService,
   admitParticipantToJoinService,
   isMeetingExistService,
-  testingPurposeOnlyService
+  testingPurposeOnlyService,
+  isUserHostService
 } = require('../../services/Meeting')
 
 const {
@@ -121,6 +123,17 @@ const isMeetingExist = {
   }
 }
 
+const isUserHost = {
+  type: IsUserHostType,
+  args: {
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+    meetingId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return isUserHostService(args.userId, args.meetingId)
+  }
+}
+
 const testingPurposeOnly = {
   type: TestingPurposeOnlyType,
   args: {
@@ -140,5 +153,6 @@ module.exports = {
   showParticipantThatRequest,
   admitParticipantToJoin,
   isMeetingExist,
-  testingPurposeOnly
+  testingPurposeOnly,
+  isUserHost
 }
