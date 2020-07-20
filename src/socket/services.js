@@ -12,6 +12,11 @@ const {
 const requestToJoin = async (socket, io) => {
   // Request to Join
   socket.on('requestToJoin', async (msg) => {
+    if (!msg.socketId) return socket.emit('meetingError', 'Invalid socket id')
+    if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+    if (!msg.username) return socket.emit('meetingError', 'Invalid username')
+    if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
+
     const message = {
       socketId: msg.socketId,
       userId: msg.userId,
@@ -41,7 +46,6 @@ const requestToJoin = async (socket, io) => {
     }
 
     if (response.success === 'Successfully join meeting') {
-      console.log('masuk sini')
       socket.join(msg.meetingId, () => {
         console.log(`${msg.username} has joined the room`)
         socket.emit('userPermission', 'Admit')
@@ -53,10 +57,8 @@ const requestToJoin = async (socket, io) => {
 const admitOrReject = async (socket, io) => {
   // Admit User to Join
   socket.on('admitUserToJoinHost', async (msg) => {
-    console.log(msg)
     const response = await admitParticipantToJoinService(msg.meetingId, msg.userId, msg.hostId)
 
-    console.log(response)
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
     io.of('/participant').to(msg.socketId).emit('userPermission', 'Admit')
