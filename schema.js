@@ -19,7 +19,7 @@ const {
   testingPurposeOnly,
   isUserHost,
   removeUserFromParticipants
-} = require('./src/collections/meeting/graphql/mutation/meetingMutation')
+} = require('./src/collections/bheem-meeting/graphql/mutation/meetingMutation')
 
 // Schedule Meeting
 const {
@@ -28,14 +28,14 @@ const {
   showScheduleMeeting,
   startScheduleMeeting,
   editScheduleMeeting
-} = require('./src/collections/meeting/graphql/mutation/scheduleMeetingMutation')
+} = require('./src/collections/bheem-meeting/graphql/mutation/scheduleMeetingMutation')
 
 // Anonymous Meeting
-const { anonymousRequestTojoinMeeting } = require('./src/collections/meeting/graphql/mutation/anonymousMeetingMutation')
+const { anonymousRequestTojoinMeeting } = require('./src/collections/bheem-meeting/graphql/mutation/anonymousMeetingMutation')
 
 // Plan
-const { createPlan, getSelectedPlan, deletePlan } = require('./src/collections/plan/graphql/mutation')
-const { getAllPlan } = require('./src/collections/plan/graphql/query')
+const { createPlan, getSelectedPlan, deletePlan } = require('./src/collections/bheem-plan/graphql/mutation')
+const { getAllPlan } = require('./src/collections/bheem-plan/graphql/query')
 
 // LMS
 
@@ -57,6 +57,45 @@ const { getAllLmsSubjectUnits, getDetailLmsSubjectUnit } = require('./src/collec
 // const { getAllSettlement, getSettlements } = require('./src/collections/settlement/graphql/query')
 
 // const { tablepaginationFetchData } = require('./src/services/graphql/query')
+
+// RAYAPAY
+// Emoney
+const { allTransaction } = require('./src/collections/rp-emoney/graphql/query')
+
+// Merchant
+const { signUpMerchant, logoutMerchant, relationMerchantInstitution, changePasswordMerchant } = require('./src/collections/rp-merchant/graphql/mutation')
+const { AllMerchant, MerchantInfo, loginMerchant, MerchantTransactionHistory, merchantDashboard, showRelatedInstitution } = require('./src/collections/rp-merchant/graphql/query')
+
+// Institution
+const { logoutInstitution, signUpInstitution } = require('./src/collections/rp-institution/graphql/mutation')
+const { AllInstitution, loginInstitution, InstitutionInfo } = require('./src/collections/rp-institution/graphql/query')
+
+// Qr
+const { createQrStatic, testing, createQrDynamic } = require('./src/collections/rp-qr/graphql/mutation')
+const { showQR } = require('./src/collections/rp-qr/graphql/query')
+
+// Fee
+const { addFee, setMerchantFee, setInstitutionFee } = require('./src/collections/rp-fee/graphql/mutation')
+
+// Settlement
+const { setSettlement } = require('./src/collections/rp-settlement/graphql/mutation')
+const { getAllSettlement, getSettlements } = require('./src/collections/rp-settlement/graphql/query')
+
+// Otp
+const {
+  sendOtp,
+  submitOtp,
+  changePasswordViaForgetPassword,
+  forgetPasswordSendOtp,
+  merchantForgetPassword,
+  merchantSubmitForgetPassword,
+  institutionForgetPassword,
+  institutionSubmitForgetPassword
+} = require('./src/collections/rp-otp/graphql/mutation')
+
+// Services
+const { topupVa, staticQrPayment, scanQrStatic, detailPayment, cancelStaticPayment, transactionReceipt, topupInstitution, dynamicQrPayment, scanQrDynamic, createQrTopUpMerchant, scanQrTopUpMerchant, paymentTopUpMerchant } = require('./src/services/graphql/mutation')
+const { transactionHistory } = require('./src/services/graphql/query')
 
 const {
   GraphQLObjectType,
@@ -89,7 +128,34 @@ const RootQuery = new GraphQLObjectType({
 
     // subject unit
     getAllLmsSubjectUnits,
-    getDetailLmsSubjectUnit
+    getDetailLmsSubjectUnit,
+
+    // RAYAPAY
+    // emoney
+    allTransaction,
+
+    // merchant
+    AllMerchant,
+    MerchantInfo,
+    loginMerchant,
+    MerchantTransactionHistory,
+    merchantDashboard,
+    showRelatedInstitution,
+
+    // institution
+    AllInstitution,
+    loginInstitution,
+    InstitutionInfo,
+
+    // qr
+    showQR,
+
+    // settlement
+    getAllSettlement,
+    getSettlements,
+
+    // services
+    transactionHistory
   }
 })
 
@@ -148,7 +214,56 @@ const Mutation = new GraphQLObjectType({
     // subject unit
     createLmsSubjectUnit,
     updateLmsSubjectUnit,
-    deleteLmsSubjectUnit
+    deleteLmsSubjectUnit,
+
+    // RAYAPAY
+
+    // merchant
+    signUpMerchant,
+    logoutMerchant,
+    relationMerchantInstitution,
+    changePasswordMerchant,
+
+    // institution
+    logoutInstitution,
+    signUpInstitution,
+
+    // qr
+    createQrStatic,
+    testing,
+    createQrDynamic,
+
+    // fee
+    addFee,
+    setMerchantFee,
+    setInstitutionFee,
+
+    // settlement
+    setSettlement,
+
+    // otp
+    sendOtp,
+    submitOtp,
+    changePasswordViaForgetPassword,
+    forgetPasswordSendOtp,
+    merchantForgetPassword,
+    merchantSubmitForgetPassword,
+    institutionForgetPassword,
+    institutionSubmitForgetPassword,
+
+    // services
+    topupVa,
+    staticQrPayment,
+    scanQrStatic,
+    detailPayment,
+    cancelStaticPayment,
+    transactionReceipt,
+    topupInstitution,
+    dynamicQrPayment,
+    scanQrDynamic,
+    createQrTopUpMerchant,
+    scanQrTopUpMerchant,
+    paymentTopUpMerchant
   }
 })
 

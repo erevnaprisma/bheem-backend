@@ -1,5 +1,5 @@
 // Model
-const Meeting = require('../collections/meeting/Model')
+const Meeting = require('../collections/bheem-meeting/Model')
 
 // Services
 const {
@@ -7,7 +7,7 @@ const {
   admitParticipantToJoinService,
   rejectParticipantToJoinService,
   removeUserFromParticipantsService
-} = require('../collections/meeting/services/Meeting')
+} = require('../collections/bheem-meeting/services/Meeting')
 
 const requestToJoin = async (socket, io) => {
   // Request to Join
