@@ -1,0 +1,7 @@
+{
+    "DB": "mongodb://localhost:27017/test?readPreference=primary&appname=MongoDB%20Compass&ssl=false",
+    "mongoDB": {
+        "email": "dev.erevna@gmail.com",
+        "password": "!erevnaDev123#"
+    }
+}
