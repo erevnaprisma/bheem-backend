@@ -155,6 +155,6 @@ lmsEnrollmentUser.index({ user_id: 1, course_id: 1, batch: 1 }, { unique: true }
 // lmsEnrollmentCourse.index({ course_id: 1 })
 
 module.exports = {
-  lmsEnrollmentUser: mongoose.model('lms_enrollment_user', lmsEnrollmentUser)
+  lmsEnrollmentUser: mongoose.model('lms_course_enrollment', lmsEnrollmentUser)
   // lmsEnrollmentCourse: mongoose.model('lms_enrollment_course', lmsEnrollmentCourse)
 }
