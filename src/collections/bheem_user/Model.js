@@ -97,4 +97,4 @@ bheemUserSchema.statics.validate = (args) => {
   return schema.validate(args)
 }
 
-module.exports = mongoose.model('BheemUser', bheemUserSchema)
+module.exports = mongoose.model('Bheem_User', bheemUserSchema)

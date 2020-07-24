@@ -1,14 +1,14 @@
-const { checkerValidQr } = require('../../../collections/rp-qr/services')
-const { checkerValidMerchant } = require('../../../collections/rp-merchant/services')
-const { addBillingService } = require('../../../collections/rp-billing/services')
-const { addUserTransaction } = require('../../../collections/rp-transaction/services')
+const { checkerValidQr } = require('../../../collections/rp_qr/services')
+const { checkerValidMerchant } = require('../../../collections/rp_merchant/services')
+const { addBillingService } = require('../../../collections/rp_billing/services')
+const { addUserTransaction } = require('../../../collections/rp_transaction/services')
 const { checkerValidUser } = require('../../../collections/user/services')
-const { institutionRelationChecker } = require('../../../collections/rp-institution/services')
+const { institutionRelationChecker } = require('../../../collections/rp_institution/services')
 const { getUnixTime } = require('../../../utils/services/supportServices')
 
-const Merchant = require('../../../collections/rp-merchant/Model')
-const Qr = require('../../../collections/rp-qr/Model')
-const Transaction = require('../../../collections/rp-transaction/Model')
+const Merchant = require('../../../collections/rp_merchant/Model')
+const Qr = require('../../../collections/rp_qr/Model')
+const Transaction = require('../../../collections/rp_transaction/Model')
 
 const scanPaymentStatic = async ({ merchantID, qrID, userID, institutionID = '1588133477369IntRx' }) => {
   // 1. Extract Date for QR

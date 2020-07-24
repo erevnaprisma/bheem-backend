@@ -1,18 +1,18 @@
 // Model
-const Saldo = require('../../../collections/rp-saldo/Model')
-const Transaction = require('../../../collections/rp-transaction/Model')
-const Billing = require('../../../collections/rp-billing/Model')
-const Qr = require('../../../collections/rp-qr/Model')
+const Saldo = require('../../../collections/rp_saldo/Model')
+const Transaction = require('../../../collections/rp_transaction/Model')
+const Billing = require('../../../collections/rp_billing/Model')
+const Qr = require('../../../collections/rp_qr/Model')
 // Services
-const { addUserPayment } = require('../../../collections/rp-emoney/services')
-const { checkerValidMerchant } = require('../../../collections/rp-merchant/services')
+const { addUserPayment } = require('../../../collections/rp_emoney/services')
+const { checkerValidMerchant } = require('../../../collections/rp_merchant/services')
 const { checkerValidUser } = require('../../../collections/bheem_user/services')
-const { checkerValidTransaction } = require('../../../collections/rp-transaction/services')
-const { checkerValidBill } = require('../../../collections/rp-billing/services')
-const { institutionRelationChecker } = require('../../../collections/rp-institution/services')
-const { checkerValidQr, isQrExpired } = require('../../../collections/rp-qr/services')
+const { checkerValidTransaction } = require('../../../collections/rp_transaction/services')
+const { checkerValidBill } = require('../../../collections/rp_billing/services')
+const { institutionRelationChecker } = require('../../../collections/rp_institution/services')
+const { checkerValidQr, isQrExpired } = require('../../../collections/rp_qr/services')
 const { getUnixTime } = require('../../../utils/services/supportServices')
-const { createPaymentSettlement } = require('../../../collections/rp-settlement/services')
+const { createPaymentSettlement } = require('../../../collections/rp_settlement/services')
 
 let finalAmount
 let getSaldoInstance

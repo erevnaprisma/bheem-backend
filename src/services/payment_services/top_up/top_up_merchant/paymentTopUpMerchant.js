@@ -1,16 +1,16 @@
 // Model
-const Saldo = require('../../../../collections/rp-saldo/Model')
-const Transaction = require('../../../../collections/rp-transaction/Model')
-const Qr = require('../../../../collections/rp-qr/Model')
-const Serial = require('../../../../collections/rp-serial_numbers/Model')
-const Merchant = require('../../../../collections/rp-merchant/Model')
-const Institution = require('../../../../collections/rp-institution/Model')
+const Saldo = require('../../../../collections/rp_saldo/Model')
+const Transaction = require('../../../../collections/rp_transaction/Model')
+const Qr = require('../../../../collections/rp_qr/Model')
+const Serial = require('../../../../collections/rp_serial_numbers/Model')
+const Merchant = require('../../../../collections/rp_merchant/Model')
+const Institution = require('../../../../collections/rp_institution/Model')
 
 // Services
 const { getUnixTime, generateID } = require('../../../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../../../utils/constants/number')
 const { checkerValidUser } = require('../../../../collections/user/services')
-const { createTopUpSettlementViaMerchant } = require('../.../../../../../collections/rp-settlement/services')
+const { createTopUpSettlementViaMerchant } = require('../../../../collections/rp_settlement/services')
 
 const paymentTopUpMerchantService = async (userID, amount, qrID, transactionID, serialID, merchantID, password) => {
   try {

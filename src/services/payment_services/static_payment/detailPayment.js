@@ -1,11 +1,11 @@
 const QRCode = require('qrcode')
 
 // Services
-const { getTransaction } = require('../../../collections/rp-transaction/services')
+const { getTransaction } = require('../../../collections/rp_transaction/services')
 
 // Model
-const Merchant = require('../../../collections/rp-merchant/Model')
-const Qr = require('../../../collections/rp-qr/Model')
+const Merchant = require('../../../collections/rp_merchant/Model')
+const Qr = require('../../../collections/rp_qr/Model')
 
 const transactionDetail = async (transactionID) => {
   try {

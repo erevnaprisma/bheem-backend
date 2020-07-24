@@ -1,6 +1,6 @@
 // Models
 const User = require('./Model')
-const Blacklist = require('../bheem-blacklist/Model')
+const Blacklist = require('../bheem_blacklist/Model')
 const config = require('config')
 
 // Services

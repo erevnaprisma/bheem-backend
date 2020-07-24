@@ -1,4 +1,4 @@
-const { cancelTransaction, transactionStatusPendingChecker, checkerValidTransaction } = require('../../../collections/rp-transaction/services')
+const { cancelTransaction, transactionStatusPendingChecker, checkerValidTransaction } = require('../../../collections/rp_transaction/services')
 
 const cancelStaticPaymentService = async (transactionID) => {
   await checkerValidTransaction(transactionID)

@@ -5,7 +5,7 @@ const router = express()
 const { v4: uuidv4 } = require('uuid')
 
 const User = require('./Model')
-const Otp = require('../rp-otp/Model')
+const Otp = require('../rp_otp/Model')
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
 const { generateRandomStringAndNumber, sendMailVerification, getUnixTime, generateRandomNumber, generateID, isEqual } = require('../../utils/services/supportServices')
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
