@@ -6,7 +6,7 @@ const Qr = require('../../../collections/rp-qr/Model')
 // Services
 const { addUserPayment } = require('../../../collections/rp-emoney/services')
 const { checkerValidMerchant } = require('../../../collections/rp-merchant/services')
-const { checkerValidUser } = require('../../../collections/user/services')
+const { checkerValidUser } = require('../../../collections/bheem_user/services')
 const { checkerValidTransaction } = require('../../../collections/rp-transaction/services')
 const { checkerValidBill } = require('../../../collections/rp-billing/services')
 const { institutionRelationChecker } = require('../../../collections/rp-institution/services')

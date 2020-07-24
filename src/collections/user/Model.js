@@ -1,49 +1,64 @@
 const mongoose = require('mongoose')
 require('mongoose-type-email')
-const Joi = require('@hapi/joi')
 const bcrypt = require('bcrypt')
+const Joi = require('@hapi/joi')
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String
+  user_id: {
+    type: String,
+    unique: true
   },
-  fullName: {
-    type: String
+  username: {
+    type: String,
+    min: 5,
+    max: 25,
+    unique: true
+  },
+  full_name: {
+    type: String,
+    min: 6,
+    max: 40
   },
   email: {
-    type: mongoose.SchemaTypes.Email
+    type: mongoose.SchemaTypes.Email,
+    unique: true
   },
   password: {
-    type: String
+    type: String,
+    min: 5,
+    max: 15
   },
-  deviceId: {
-    type: String
+  device_id: {
+    type: String,
+    min: 2
   },
-  firstName: {
-    type: String
+  first_name: {
+    type: String,
+    min: 3,
+    max: 14
   },
-  lastName: {
-    type: String
+  last_name: {
+    type: String,
+    min: 3,
+    max: 14
   },
   nickname: {
-    type: String
+    type: String,
+    min: 3,
+    max: 10
   },
   address: {
-    type: String
-  },
-  profilePicture: {
-    type: String
-  },
-  plan: {
     type: String,
-    ref: 'Plan',
-    enum: ['free', 'pro', 'business'],
-    default: 'free'
+    min: 6,
+    max: 50
   },
-  createdAt: {
+  profile_picture: {
     type: String
   },
-  updatedAt: {
+  created_at: {
+    type: String
+  },
+  updated_at: {
     type: String
   }
 })
@@ -65,36 +80,71 @@ userSchema.pre('save', function (next) {
   })
 })
 
-userSchema.statics.comparePassword = async (password, userPassword) => {
-  try {
-    const isTrue = await bcrypt.compare(password, userPassword)
-    if (!isTrue) throw new Error('Invalid password')
-    return
-  } catch (err) {
-    throw new Error(err.message || 'Invalid Password')
-  }
-}
-
-userSchema.statics.validate = (args) => {
+userSchema.statics.validation = (args) => {
   var regex = /^[a-z][a-z.\s-]{1,255}$/i
   var addRegex = /^[a-zA-Z0-9,.:/ ]*$/
-  var passwordRegex = /^[a-zA-Z0-9]*$/i
-  var usernameRegex = /^[a-zA-Z0-9]*$/i
 
   const schema = Joi.object({
-    username: Joi.string().min(4).max(25).pattern(new RegExp(usernameRegex)),
-    fullName: Joi.string().min(6).max(40).pattern(new RegExp(regex)),
+    username: Joi.string().min(5).max(25),
+    full_name: Joi.string().min(6).max(40).pattern(new RegExp(regex)),
     email: Joi.string().email(),
-    password: Joi.string().min(4).max(15).pattern(new RegExp(passwordRegex)),
-    deviceId: Joi.string().min(2),
-    firstName: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
-    lastName: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
+    password: Joi.string().min(5).max(15),
+    device_id: Joi.string().min(2),
+    first_name: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
+    last_name: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
     nickname: Joi.string().min(3).max(14).pattern(new RegExp(regex)),
-    address: Joi.string().min(6).max(50).pattern(new RegExp(addRegex, 'm')),
-    profilePicture: Joi.string()
+    address: Joi.string().min(6).max(50).pattern(new RegExp(addRegex, 'm'))
   })
 
   return schema.validate(args)
+}
+
+userSchema.statics.hashing = (password) => {
+  return new Promise((resolve, reject) => {
+    bcrypt.genSalt(10, (err, salt) => {
+      if (err) return reject(err)
+
+      bcrypt.hash(password, salt, (err, hash) => {
+        if (err) return reject(err)
+
+        resolve(hash)
+      })
+    })
+  })
+}
+
+userSchema.methods.comparedPassword = function (candidatePassword) {
+  const user = this
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
+      if (err) {
+        return reject('Invalid password')
+      }
+
+      if (!isMatch) {
+        return reject('Invalid password')
+      }
+
+      resolve(true)
+    })
+  })
+}
+
+userSchema.methods.confirmPassword = function (candidatePassword) {
+  const user = this
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
+      if (err) {
+        return reject({ message: 'Invalid password' })
+      }
+
+      if (!isMatch) {
+        return reject({ message: 'Invalid password' })
+      }
+
+      resolve(true)
+    })
+  })
 }
 
 module.exports = mongoose.model('User', userSchema)

@@ -3,9 +3,9 @@ const config = require('config')
 
 // model
 const Institution = require('./Model')
-const Blacklist = require('../blacklist/Model')
+const Blacklist = require('../bheem-blacklist/Model')
 const Merchant = require('../rp-merchant/Model')
-const { serviceAddBlacklist } = require('../blacklist/services')
+const { serviceAddBlacklist } = require('../bheem-blacklist/services')
 
 // services & constants
 const { sendMailVerification, generateRandomNumber, getUnixTime } = require('../../utils/services/supportServices')

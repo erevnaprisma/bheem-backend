@@ -3,7 +3,7 @@ const Blacklist = require('./Model')
 const serviceAddBlacklist = async (token) => {
   const blacklist = await new Blacklist({
     token,
-    createdAt: new Date().getTime(),
+    created_at: new Date().getTime(),
     updated_at: new Date().getTime()
   })
 
@@ -12,10 +12,20 @@ const serviceAddBlacklist = async (token) => {
 
 const checkerBlacklist = async (token) => {
   const res = await Blacklist.findOne({ token })
-  if (res) throw new Error('Token is not valid anymore')
+  if (res) return new Error('Token is not valid anymore')
 }
 
-module.exports = {
-  serviceAddBlacklist,
-  checkerBlacklist
+const checkerBlacklistMerchant = async (token) => {
+  const res = await Blacklist.findOne({ token })
+  if (res) return new Error('Token is not valid anymore')
 }
+
+const checkerBlacklistInstitution = async (token) => {
+  const res = await Blacklist.findOne({ token })
+  if (res) return new Error('Token is not valid anymore')
+}
+
+module.exports.serviceAddBlacklist = serviceAddBlacklist
+module.exports.checkerBlacklist = checkerBlacklist
+module.exports.checkerBlacklistMerchant = checkerBlacklistMerchant
+module.exports.checkerBlacklistInstitution = checkerBlacklistInstitution

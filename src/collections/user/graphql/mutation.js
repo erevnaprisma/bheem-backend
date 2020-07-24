@@ -1,63 +1,94 @@
 const graphql = require('graphql')
 
-const { loginService, signUpService, logoutService, changePasswordService } = require('../services')
-const { LoginType, LogoutType, SignUpType, ChangePasswordType } = require('../graphql/type')
+const { userSignup, changeEmail, changePassword, changeName, changeProfile, serviceLogout } = require('../services')
+const { AuthType, ChangeType } = require('./type')
 
 const {
   GraphQLString,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLID
 } = graphql
 
 const signUp = {
-  type: SignUpType,
+  type: AuthType,
   args: {
     email: { type: new GraphQLNonNull(GraphQLString) },
-    fullName: { type: new GraphQLNonNull(GraphQLString) },
-    firstName: { type: new GraphQLNonNull(GraphQLString) },
-    lastName: { type: new GraphQLNonNull(GraphQLString) },
-    deviceId: { type: new GraphQLNonNull(GraphQLString) }
+    device_id: { type: new GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return signUpService(args.email, args.deviceId, args.fullName, args.lastName, args.firstName)
+    return userSignup(args.email, args.device_id)
   }
 }
 
-const login = {
-  type: LoginType,
+const changeUserEmail = {
+  type: ChangeType,
   args: {
-    email: { type: new GraphQLNonNull(GraphQLString) },
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
+    user_id: { type: new GraphQLNonNull(GraphQLString) },
+    new_email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) }
   },
-  resolve (parent, args, { req, res }) {
-    return loginService(args.email, args.password, { req, res })
+  resolve (parent, args) {
+    return changeEmail(args.new_email, args.user_id, args.password, args.newToken)
+  }
+}
+
+const changeUserPassword = {
+  type: ChangeType,
+  args: {
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
+    user_id: { type: new GraphQLNonNull(GraphQLID) },
+    new_password: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return changePassword(args.user_id, args.new_password, args.password, args.newToken)
+  }
+}
+
+const changeUserName = {
+  type: ChangeType,
+  args: {
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
+    user_id: { type: new GraphQLNonNull(GraphQLID) },
+    new_username: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return changeName(args.user_id, args.new_username, args.password, args.newToken)
+  }
+}
+
+const changeUserProfile = {
+  type: ChangeType,
+  args: {
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
+    user_id: { type: new GraphQLNonNull(GraphQLID) },
+    first_name: { type: new GraphQLNonNull(GraphQLString) },
+    last_name: { type: new GraphQLNonNull(GraphQLString) },
+    nickname: { type: new GraphQLNonNull(GraphQLString) },
+    full_name: { type: new GraphQLNonNull(GraphQLString) },
+    address: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return changeProfile(args)
   }
 }
 
 const logout = {
-  type: LogoutType,
+  type: AuthType,
   args: {
-    token: { type: GraphQLNonNull(GraphQLString) }
+    access_token: { type: GraphQLNonNull(GraphQLString) }
   },
   resolve (parent, args) {
-    return logoutService(args.token)
+    return serviceLogout(args.access_token)
   }
 }
 
-const changePassword = {
-  type: ChangePasswordType,
-  args: {
-    userId: { type: new GraphQLNonNull(GraphQLString) },
-    newPassword: { type: new GraphQLNonNull(GraphQLString) },
-    password: { type: new GraphQLNonNull(GraphQLString) }
-  },
-  resolve (parent, args) {
-    return changePasswordService(args.userId, args.newPassword, args.password)
-  }
-}
-
-module.exports = {
-  signUp,
-  login,
-  logout,
-  changePassword
-}
+module.exports.signUp = signUp
+module.exports.changeUserEmail = changeUserEmail
+module.exports.changeUserPassword = changeUserPassword
+module.exports.changeUserName = changeUserName
+module.exports.changeUserProfile = changeUserProfile
+module.exports.logout = logout

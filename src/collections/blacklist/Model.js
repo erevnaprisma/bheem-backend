@@ -5,10 +5,13 @@ const blacklistSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  createdAt: {
+  created_at: {
     type: String
   },
-  updatedAt: {
+  updated_at: {
+    type: String
+  },
+  institution_id: {
     type: String
   }
 })

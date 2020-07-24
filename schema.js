@@ -3,8 +3,8 @@ const graphql = require('graphql')
 // BHEEM
 
 // User
-const { login, logout, signUp, changePassword } = require('./src/collections/user/graphql/mutation')
-const { getAllUser } = require('./src/collections/user/graphql/query')
+const { bheemLogin, bheemLogout, bheemSignUp, bheemChangePassword } = require('./src/collections/bheem_user/graphql/mutation')
+const { bheemGetAllUser } = require('./src/collections/bheem_user/graphql/query')
 
 // Meeting
 const {
@@ -97,6 +97,10 @@ const {
 const { topupVa, staticQrPayment, scanQrStatic, detailPayment, cancelStaticPayment, transactionReceipt, topupInstitution, dynamicQrPayment, scanQrDynamic, createQrTopUpMerchant, scanQrTopUpMerchant, paymentTopUpMerchant } = require('./src/services/graphql/mutation')
 const { transactionHistory } = require('./src/services/graphql/query')
 
+// User
+const { signUp, changeUserPassword, changeUserName, changeUserProfile, logout } = require('./src/collections/user/graphql/mutation')
+const { login, getProfile, allUser } = require('./src/collections/user/graphql/query')
+
 const {
   GraphQLObjectType,
   GraphQLSchema
@@ -107,7 +111,7 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     // BHEEM
     // user
-    getAllUser,
+    bheemGetAllUser,
 
     // plan
     getAllPlan,
@@ -155,7 +159,12 @@ const RootQuery = new GraphQLObjectType({
     getSettlements,
 
     // services
-    transactionHistory
+    transactionHistory,
+
+    // user
+    login,
+    getProfile,
+    allUser
   }
 })
 
@@ -164,10 +173,10 @@ const Mutation = new GraphQLObjectType({
   fields: {
     // BHEEM
     // auth
-    signUp,
-    login,
-    logout,
-    changePassword,
+    bheemSignUp,
+    bheemLogin,
+    bheemLogout,
+    bheemChangePassword,
 
     // meeting
     createMeeting,
@@ -263,7 +272,14 @@ const Mutation = new GraphQLObjectType({
     scanQrDynamic,
     createQrTopUpMerchant,
     scanQrTopUpMerchant,
-    paymentTopUpMerchant
+    paymentTopUpMerchant,
+
+    // user
+    signUp,
+    changeUserPassword,
+    changeUserName,
+    changeUserProfile,
+    logout
   }
 })
 

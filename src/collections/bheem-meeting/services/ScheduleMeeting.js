@@ -1,4 +1,4 @@
-const User = require('../../user/Model')
+const User = require('../../bheem_user/Model')
 const Meeting = require('../Model')
 
 const createScheduleMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {

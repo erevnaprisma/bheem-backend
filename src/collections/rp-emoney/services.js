@@ -1,5 +1,5 @@
 const Emoney = require('./Model')
-const User = require('../user/Model')
+const User = require('../bheem_user/Model')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 

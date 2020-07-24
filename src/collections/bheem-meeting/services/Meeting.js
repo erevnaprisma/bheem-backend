@@ -1,5 +1,5 @@
 const Meeting = require('../Model')
-const User = require('../../user/Model')
+const User = require('../../bheem_user/Model')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
   try {

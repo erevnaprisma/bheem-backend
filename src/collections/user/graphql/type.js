@@ -1,5 +1,8 @@
 const graphql = require('graphql')
 
+const { findUser } = require('../../../utils/services/mongoServices')
+const Saldo = require('../../rp-saldo/Model')
+
 const {
   GraphQLString,
   GraphQLID,
@@ -10,63 +13,52 @@ const {
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
-    id: { type: GraphQLString },
+    user_id: { type: GraphQLID },
+    full_name: { type: GraphQLString },
     username: { type: GraphQLString },
-    fullName: { type: GraphQLString },
+    device_id: { type: GraphQLString },
     email: { type: GraphQLString },
-    password: { type: GraphQLString },
-    deviceId: { type: GraphQLString },
-    firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString },
+    first_name: { type: GraphQLString },
+    last_name: { type: GraphQLString },
     nickname: { type: GraphQLString },
     address: { type: GraphQLString },
-    profilePicture: { type: GraphQLString },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString }
+    saldo: {
+      type: GraphQLInt,
+      async resolve (parent) {
+        const res = await Saldo.findOne({ user_id: parent.user_id }).select('saldo -_id')
+        if (!res) return 0
+        return res.saldo
+      }
+    }
   })
 })
 
-const LoginType = new GraphQLObjectType({
-  name: 'Login',
+const AuthType = new GraphQLObjectType({
+  name: 'Auth',
   fields: () => ({
-    user: { type: UserType },
+    access_token: { type: GraphQLString },
+    status: { type: GraphQLInt },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    user: {
+      type: UserType,
+      async resolve (parent, args) {
+        return findUser(parent.user_id)
+      }
+    }
+  })
+})
+
+const ChangeType = new GraphQLObjectType({
+  name: 'Change',
+  fields: () => ({
+    new_token: { type: GraphQLString },
     status: { type: GraphQLInt },
     error: { type: GraphQLString },
     success: { type: GraphQLString }
   })
 })
 
-const SignUpType = new GraphQLObjectType({
-  name: 'SignUp',
-  fields: () => ({
-    status: { type: GraphQLInt },
-    error: { type: GraphQLString },
-    success: { type: GraphQLString }
-  })
-})
-
-const LogoutType = new GraphQLObjectType({
-  name: 'Logout',
-  fields: () => ({
-    status: { type: GraphQLInt },
-    error: { type: GraphQLString },
-    success: { type: GraphQLString }
-  })
-})
-
-const ChangePasswordType = new GraphQLObjectType({
-  name: 'ChangePassword',
-  fields: () => ({
-    status: { type: GraphQLInt },
-    error: { type: GraphQLString },
-    success: { type: GraphQLString }
-  })
-})
-
-module.exports = {
-  SignUpType,
-  LoginType,
-  LogoutType,
-  UserType,
-  ChangePasswordType
-}
+module.exports.UserType = UserType
+module.exports.AuthType = AuthType
+module.exports.ChangeType = ChangeType

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Joi = require('@hapi/joi')
 
-const User = require('../user/Model')
+const User = require('../bheem_user/Model')
 
 const emoneySchema = new mongoose.Schema({
   emoney_id: {
