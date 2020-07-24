@@ -1,4 +1,5 @@
 {
+    "mongoUrl": "mongodb+srv://12345:12345@cluster0-7tyk7.mongodb.net/test",
     "DB": "mongodb+srv://admin:12345@cluster0-93svj.mongodb.net/test",
     "mongoDB": {
         "email": "dev.erevna@gmail.com",

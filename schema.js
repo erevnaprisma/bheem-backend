@@ -44,12 +44,12 @@ const { createTeacher } = require('./src/collections/lms-teacher/graphql/mutatio
 const { getTeacherById, getAllTeachers } = require('./src/collections/lms-teacher/graphql/query')
 
 // Course
-const { createCourse, updateCourse, deleteCourse } = require('./src/collections/lms-course/graphql/mutation')
-const { getCourseById, getAllCourses, getDetailCourse } = require('./src/collections/lms-course/graphql/query')
+const { createCourse, updateCourse, deleteCourse } = require('./src/collections/lms_course/graphql/mutation')
+const { getCourseById, getAllCourses, getDetailCourse } = require('./src/collections/lms_course/graphql/query')
 
 // Subject
-const { createSubject, updateSubject, deleteSubject } = require('./src/collections/lms-subject/graphql/mutation')
-const { getAllSubjects, getDetailSubject } = require('./src/collections/lms-subject/graphql/query')
+const { createSubject, updateSubject, deleteSubject } = require('./src/collections/lms_subject/graphql/mutation')
+const { getAllSubjects, getDetailSubject } = require('./src/collections/lms_subject/graphql/query')
 
 // Subject Unit
 const { createLmsSubjectUnit, updateLmsSubjectUnit, deleteLmsSubjectUnit } = require('./src/collections/lms_subject_unit/graphql/mutation')
@@ -101,6 +101,11 @@ const { transactionHistory } = require('./src/services/graphql/query')
 const { signUp, changeUserPassword, changeUserName, changeUserProfile, logout } = require('./src/collections/user/graphql/mutation')
 const { login, getProfile, allUser } = require('./src/collections/user/graphql/query')
 
+// lms course enrollment
+const { getAllEnrollmentUserByCourseId } = require('./src/collections/lms_course_enrollment/graphql/query')
+const { submitCourseEnrollmentRequest } = require('./src/collections/lms_course_enrollment/graphql/mutation')
+
+
 const {
   GraphQLObjectType,
   GraphQLSchema
@@ -117,6 +122,8 @@ const RootQuery = new GraphQLObjectType({
     getAllPlan,
 
     // LMS
+    // enrollment
+    getAllEnrollmentUserByCourseId,
     // teacher
     getTeacherById,
     getAllTeachers,
@@ -207,6 +214,8 @@ const Mutation = new GraphQLObjectType({
     deletePlan,
 
     // LMS
+    // enrollment
+    submitCourseEnrollmentRequest,
     // teacher
     createTeacher,
 

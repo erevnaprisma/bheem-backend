@@ -16,7 +16,7 @@ const server = require('http').createServer(app)
 app.io.attach(server)
 
 mongoose.connect(config.get('mongoUrl'), { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
-  .then((res) => console.log('Connected to MongoDB...'))
+  .then((res) => console.log('Connected to MongoDB... ', config.get('mongoUrl')))
   .catch((err) => console.log(err.message || 'Cannot connect to MongoDB...'))
 
 var indexRouter = require('./routes/index')

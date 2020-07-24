@@ -58,6 +58,7 @@ const userSignup = async (email, deviceID) => {
 }
 
 const userLogin = async (email, password, token, isLoggedInWithToken) => {
+  console.log('userLogin {}', email)
   const checkerToken = await Blacklist.findOne({ token })
   if (checkerToken) return { status: 400, error: 'Token already expired' }
 

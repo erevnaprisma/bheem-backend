@@ -40,7 +40,7 @@
 // //   context,
 // //   info
 // // ) => {
-// //   const { hmac } = context.headers
+// //   const { hmac } = context.req.headers
 // //   console.log(hmac)
 // //   return resolve(parent, args, context, info)
 // // }

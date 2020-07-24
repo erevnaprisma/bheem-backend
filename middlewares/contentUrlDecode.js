@@ -3,7 +3,7 @@ const config = require('config')
 const _ = require('lodash')
 
 const mw = async (resolve, parent, args, context, info) => {
-  // const { accesstoken } = context.headers
+  // const { accesstoken } = context.req.headers
   // if (!args.access_token) return { status: 400, error: 'Token needed' }
   // const at = await jwt.verify(accesstoken, config.get('privateKeyMerchant'))
   if (!_.isEmpty(args.content1)) {

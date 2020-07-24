@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const accessTokenValidate = async (resolve, parent, args, context, info) => {
-  const { accesstoken } = context.headers
+  // console.log('context===>', context.req.headers.accesstoken)
+  // console.log('context.req.headers===>', context.req.headers)
+  const { accesstoken } = context.req.headers
   // if (!args.access_token) return { status: 400, error: 'Token needed' }
   // const at = await jwt.verify(accesstoken, config.get('privateKeyMerchant'))
 

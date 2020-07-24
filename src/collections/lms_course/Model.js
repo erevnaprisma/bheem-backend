@@ -1,20 +1,46 @@
 const mongoose = require('mongoose')
 const Joi = require('@hapi/joi')
+const User = require('../user/Model')
 
 const schema = new mongoose.Schema({
+  title: {
+    type: String,
+    default: new Date().getTime(),
+    unique: true
+  },
   content1: {
     type: String,
     default: new Date().getTime()
+  },
+  content2: {
+    type: String,
+    default: new Date().getTime()
+  },
+  content3: {
+    type: String,
+    default: new Date().getTime()
+  },
+  start_date: {
+    type: Number,
+    default: null
+  },
+  end_date: {
+    type: Number,
+    default: null
+  },
+  code: {
+    type: String,
+    default: new Date().getTime(),
+    unique: true
+  },
+  batch: {
+    type: Number,
+    default: 1
   },
   status: {
     type: String,
     enum: ['active', 'inactive'],
     default: 'inactive'
-  },
-  subject_id: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: 'lms_subject',
-    default: null
   },
   created_at: {
     type: Number,
@@ -41,4 +67,4 @@ const schema = new mongoose.Schema({
 //   // amount: Joi.number().required().greater(0)
 // }).validate(args)
 
-module.exports = mongoose.model('lms_subject_unit', schema)
+module.exports = mongoose.model('lms_course', schema)
