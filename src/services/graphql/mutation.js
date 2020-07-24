@@ -3,7 +3,7 @@ const graphql = require('graphql')
 // type
 const { ResponseType, StaticPaymentScanType } = require('./type')
 const { TransactionDetailType, TransactionHistoryType, DynamicPaymentScanType } = require('./type')
-const { TopupQrResponseType } = require('../../collections/rp-qr/graphql/type')
+const { TopupQrResponseType } = require('../../collections/rp_qr/graphql/type')
 
 // service
 const serviceTopupVaService = require('../payment_services/top_up/topUpVa')

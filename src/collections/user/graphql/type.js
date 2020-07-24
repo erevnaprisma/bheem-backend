@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 
 const { findUser } = require('../../../utils/services/mongoServices')
-const Saldo = require('../../rp-saldo/Model')
+const Saldo = require('../../rp_saldo/Model')
 
 const {
   GraphQLString,

@@ -1,6 +1,6 @@
 const graphql = require('graphql')
 
-const { TransactionType } = require('../../collections/rp-transaction/graphql/type')
+const { TransactionType } = require('../../collections/rp_transaction/graphql/type')
 
 const {
   GraphQLString,

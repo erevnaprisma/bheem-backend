@@ -1,8 +1,8 @@
 // Services
-const { addBillingMerchantService } = require('../../../../collections/rp-billing/services')
-const { addUserTransaction } = require('../../../../collections/rp-transaction/services')
-const { checkerValidMerchant } = require('../../../../collections/rp-merchant/services')
-const { institutionRelationChecker, checkerValidInstitution } = require('../../../../collections/rp-institution/services')
+const { addBillingMerchantService } = require('../../../../collections/rp_billing/services')
+const { addUserTransaction } = require('../../../../collections/rp_transaction/services')
+const { checkerValidMerchant } = require('../../../../collections/rp_merchant/services')
+const { institutionRelationChecker, checkerValidInstitution } = require('../../../../collections/rp_institution/services')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../../../utils/constants/number')
 const { generateID, generateRandomStringAndNumber, getUnixTime } = require('../../../../utils/services/supportServices')
 
@@ -13,10 +13,10 @@ const CryptoJs = require('crypto-js')
 const config = require('config')
 
 // Model
-const Qr = require('../../../../collections/rp-qr/Model')
-const Serial = require('../../../../collections/rp-serial_numbers/Model')
+const Qr = require('../../../../collections/rp_qr/Model')
+const Serial = require('../../../../collections/rp_serial_numbers/Model')
 const User = require('../../../../collections/user/Model')
-const Institution = require('../../../../collections/rp-institution/Model')
+const Institution = require('../../../../collections/rp_institution/Model')
 
 const createQrTopupMerchant = async (amount, merchantID, email) => {
   if (!amount) return { status: 400, error: 'Invalid amount' }

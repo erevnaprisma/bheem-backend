@@ -1,17 +1,17 @@
-const { addBillingService } = require('../../../collections/rp-billing/services')
-const { addUserPayment } = require('../../../collections/rp-emoney/services')
-const { addUserTransaction } = require('../../../collections/rp-transaction/services')
-const { createSaldo, updateSaldo } = require('../../../collections/rp-saldo/services')
+const { addBillingService } = require('../../../collections/rp_billing/services')
+const { addUserPayment } = require('../../../collections/rp_emoney/services')
+const { addUserTransaction } = require('../../../collections/rp_transaction/services')
+const { createSaldo, updateSaldo } = require('../../../collections/rp_saldo/services')
 const { checkerValidUser, checkValidUserUsingEmail } = require('../../../collections/user/services')
-const { checkerValidInstitution } = require('../../../collections/rp-institution/services')
-const { createTopUpSettlementViaInstitution } = require('../../../collections/rp-settlement/services')
+const { checkerValidInstitution } = require('../../../collections/rp_institution/services')
+const { createTopUpSettlementViaInstitution } = require('../../../collections/rp_settlement/services')
 const { getUnixTime } = require('../../../utils/services/supportServices')
 const word = require('../../../utils/constants/word')
 
 const User = require('../../../collections/user/Model')
-const Transaction = require('../../../collections/rp-transaction/Model')
-const Saldo = require('../../../collections/rp-saldo/Model')
-const Institution = (require('../../../collections/rp-institution/Model'))
+const Transaction = require('../../../collections/rp_transaction/Model')
+const Saldo = require('../../../collections/rp_saldo/Model')
+const Institution = (require('../../../collections/rp_institution/Model'))
 
 let finalAmount
 let emoney

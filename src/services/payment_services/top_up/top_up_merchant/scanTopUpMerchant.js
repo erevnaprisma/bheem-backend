@@ -1,18 +1,18 @@
 // Services
-const { checkerValidMerchant } = require('../../../../collections/rp-merchant/services')
-const { checkerValidInstitution } = require('../../../../collections/rp-institution/services')
-const { checkerValidSerial } = require('../../../../collections/rp-serial_numbers/services')
-const { checkerValidQr, isQrExpired } = require('../../../../collections/rp-qr/services')
+const { checkerValidMerchant } = require('../../../../collections/rp_merchant/services')
+const { checkerValidInstitution } = require('../../../../collections/rp_institution/services')
+const { checkerValidSerial } = require('../../../../collections/rp_serial_numbers/services')
+const { checkerValidQr, isQrExpired } = require('../../../../collections/rp_qr/services')
 const { checkerValidUser } = require('../../../../collections/user/services')
-const { checkerValidTransaction } = require('../../../../collections/rp-transaction/services')
+const { checkerValidTransaction } = require('../../../../collections/rp_transaction/services')
 const { generateID, getUnixTime } = require('../../../../utils/services/supportServices')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../../../utils/constants/number')
 
 // Model
-const Saldo = require('../../../../collections/rp-saldo/Model')
-const Transaction = require('../../../../collections/rp-transaction/Model')
-const Qr = require('../../../../collections/rp-qr/Model')
-const Serial = require('../../../../collections/rp-serial_numbers/Model')
+const Saldo = require('../../../../collections/rp_saldo/Model')
+const Transaction = require('../../../../collections/rp_transaction/Model')
+const Qr = require('../../../../collections/rp_qr/Model')
+const Serial = require('../../../../collections/rp_serial_numbers/Model')
 
 const scanQrTopupMerchant = async (amount, merchantID, serialNumber, userID, transactionID, qrID, serialID) => {
   try {

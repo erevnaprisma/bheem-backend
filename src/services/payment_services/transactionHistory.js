@@ -1,5 +1,5 @@
-const Transaction = require('../../collections/rp-transaction/Model')
-const Institution = require('../../collections/rp-institution/Model')
+const Transaction = require('../../collections/rp_transaction/Model')
+const Institution = require('../../collections/rp_institution/Model')
 const { checkerValidUser } = require('../../collections/user/services')
 
 const transactionHistory = async (id) => {

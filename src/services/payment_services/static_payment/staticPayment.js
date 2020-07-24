@@ -5,18 +5,18 @@
 4. Update Transaction
 */
 // Model
-const Saldo = require('../../../collections/rp-saldo/Model')
-const Transaction = require('../../../collections/rp-transaction/Model')
-const Billing = require('../../../collections/rp-billing/Model')
+const Saldo = require('../../../collections/rp_saldo/Model')
+const Transaction = require('../../../collections/rp_transaction/Model')
+const Billing = require('../../../collections/rp_billing/Model')
 
 // Services
-const { addUserPayment } = require('../../../collections/rp-emoney/services')
-const { checkerValidMerchant } = require('../../../collections/rp-merchant/services')
+const { addUserPayment } = require('../../../collections/rp_emoney/services')
+const { checkerValidMerchant } = require('../../../collections/rp_merchant/services')
 const { checkerValidUser } = require('../../../collections/user/services')
-const { checkerValidTransaction } = require('../../../collections/rp-transaction/services')
-const { checkerValidBill } = require('../../../collections/rp-billing/services')
-const { institutionRelationChecker } = require('../../../collections/rp-institution/services')
-const { createPaymentSettlement } = require('../../../collections/rp-settlement/services')
+const { checkerValidTransaction } = require('../../../collections/rp_transaction/services')
+const { checkerValidBill } = require('../../../collections/rp_billing/services')
+const { institutionRelationChecker } = require('../../../collections/rp_institution/services')
+const { createPaymentSettlement } = require('../../../collections/rp_settlement/services')
 const { getUnixTime } = require('../../../utils/services/supportServices')
 
 let finalAmount

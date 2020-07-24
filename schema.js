@@ -19,7 +19,7 @@ const {
   testingPurposeOnly,
   isUserHost,
   removeUserFromParticipants
-} = require('./src/collections/bheem-meeting/graphql/mutation/meetingMutation')
+} = require('./src/collections/bheem_meeting/graphql/mutation/meetingMutation')
 
 // Schedule Meeting
 const {
@@ -28,28 +28,28 @@ const {
   showScheduleMeeting,
   startScheduleMeeting,
   editScheduleMeeting
-} = require('./src/collections/bheem-meeting/graphql/mutation/scheduleMeetingMutation')
+} = require('./src/collections/bheem_meeting/graphql/mutation/scheduleMeetingMutation')
 
 // Anonymous Meeting
-const { anonymousRequestTojoinMeeting } = require('./src/collections/bheem-meeting/graphql/mutation/anonymousMeetingMutation')
+const { anonymousRequestTojoinMeeting } = require('./src/collections/bheem_meeting/graphql/mutation/anonymousMeetingMutation')
 
 // Plan
-const { createPlan, getSelectedPlan, deletePlan } = require('./src/collections/bheem-plan/graphql/mutation')
-const { getAllPlan } = require('./src/collections/bheem-plan/graphql/query')
+const { createPlan, getSelectedPlan, deletePlan } = require('./src/collections/bheem_plan/graphql/mutation')
+const { getAllPlan } = require('./src/collections/bheem_plan/graphql/query')
 
 // LMS
 
 // Teacher
-const { createTeacher } = require('./src/collections/lms-teacher/graphql/mutation')
-const { getTeacherById, getAllTeachers } = require('./src/collections/lms-teacher/graphql/query')
+const { createTeacher } = require('./src/collections/lms_teacher/graphql/mutation')
+const { getTeacherById, getAllTeachers } = require('./src/collections/lms_teacher/graphql/query')
 
 // Course
-const { createCourse, updateCourse, deleteCourse } = require('./src/collections/lms-course/graphql/mutation')
-const { getCourseById, getAllCourses, getDetailCourse } = require('./src/collections/lms-course/graphql/query')
+const { createCourse, updateCourse, deleteCourse } = require('./src/collections/lms_course/graphql/mutation')
+const { getCourseById, getAllCourses, getDetailCourse } = require('./src/collections/lms_course/graphql/query')
 
 // Subject
-const { createSubject, updateSubject, deleteSubject } = require('./src/collections/lms-subject/graphql/mutation')
-const { getAllSubjects, getDetailSubject } = require('./src/collections/lms-subject/graphql/query')
+const { createSubject, updateSubject, deleteSubject } = require('./src/collections/lms_subject/graphql/mutation')
+const { getAllSubjects, getDetailSubject } = require('./src/collections/lms_subject/graphql/query')
 
 // Subject Unit
 const { createLmsSubjectUnit, updateLmsSubjectUnit, deleteLmsSubjectUnit } = require('./src/collections/lms_subject_unit/graphql/mutation')
@@ -60,26 +60,26 @@ const { getAllLmsSubjectUnits, getDetailLmsSubjectUnit } = require('./src/collec
 
 // RAYAPAY
 // Emoney
-const { allTransaction } = require('./src/collections/rp-emoney/graphql/query')
+const { allTransaction } = require('./src/collections/rp_emoney/graphql/query')
 
 // Merchant
-const { signUpMerchant, logoutMerchant, relationMerchantInstitution, changePasswordMerchant } = require('./src/collections/rp-merchant/graphql/mutation')
-const { AllMerchant, MerchantInfo, loginMerchant, MerchantTransactionHistory, merchantDashboard, showRelatedInstitution } = require('./src/collections/rp-merchant/graphql/query')
+const { signUpMerchant, logoutMerchant, relationMerchantInstitution, changePasswordMerchant } = require('./src/collections/rp_merchant/graphql/mutation')
+const { AllMerchant, MerchantInfo, loginMerchant, MerchantTransactionHistory, merchantDashboard, showRelatedInstitution } = require('./src/collections/rp_merchant/graphql/query')
 
 // Institution
-const { logoutInstitution, signUpInstitution } = require('./src/collections/rp-institution/graphql/mutation')
-const { AllInstitution, loginInstitution, InstitutionInfo } = require('./src/collections/rp-institution/graphql/query')
+const { logoutInstitution, signUpInstitution } = require('./src/collections/rp_institution/graphql/mutation')
+const { AllInstitution, loginInstitution, InstitutionInfo } = require('./src/collections/rp_institution/graphql/query')
 
 // Qr
-const { createQrStatic, testing, createQrDynamic } = require('./src/collections/rp-qr/graphql/mutation')
-const { showQR } = require('./src/collections/rp-qr/graphql/query')
+const { createQrStatic, testing, createQrDynamic } = require('./src/collections/rp_qr/graphql/mutation')
+const { showQR } = require('./src/collections/rp_qr/graphql/query')
 
 // Fee
-const { addFee, setMerchantFee, setInstitutionFee } = require('./src/collections/rp-fee/graphql/mutation')
+const { addFee, setMerchantFee, setInstitutionFee } = require('./src/collections/rp_fee/graphql/mutation')
 
 // Settlement
-const { setSettlement } = require('./src/collections/rp-settlement/graphql/mutation')
-const { getAllSettlement, getSettlements } = require('./src/collections/rp-settlement/graphql/query')
+const { setSettlement } = require('./src/collections/rp_settlement/graphql/mutation')
+const { getAllSettlement, getSettlements } = require('./src/collections/rp_settlement/graphql/query')
 
 // Otp
 const {
@@ -91,7 +91,7 @@ const {
   merchantSubmitForgetPassword,
   institutionForgetPassword,
   institutionSubmitForgetPassword
-} = require('./src/collections/rp-otp/graphql/mutation')
+} = require('./src/collections/rp_otp/graphql/mutation')
 
 // Services
 const { topupVa, staticQrPayment, scanQrStatic, detailPayment, cancelStaticPayment, transactionReceipt, topupInstitution, dynamicQrPayment, scanQrDynamic, createQrTopUpMerchant, scanQrTopUpMerchant, paymentTopUpMerchant } = require('./src/services/graphql/mutation')
