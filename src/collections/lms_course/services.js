@@ -51,6 +51,7 @@ const doCreateCourse = async (args, context) => {
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
     const userDetail = await User.findById(userId)
+
     const data = args
     data.created_by = userDetail._id
     data.updated_by = userDetail._id
@@ -70,6 +71,7 @@ const doUpdateCourse = async (args, context) => {
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
     const userDetail = await User.findById(userId)
+
     const data = args
     // data.created_by = userDetail._id
     data.updated_by = userDetail._id

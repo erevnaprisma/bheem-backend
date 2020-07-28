@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const accessTokenValidate = async (resolve, parent, args, context, info) => {
+  // console.log('info===>', info)
   // console.log('context===>', context.req.headers.accesstoken)
   // console.log('context.req.headers===>', context.req.headers)
   const { accesstoken } = context.req.headers

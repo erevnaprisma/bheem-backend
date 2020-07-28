@@ -114,7 +114,7 @@ const { getAllRoleprivileges, getDetailRoleprivilege } = require('./src/collecti
 const { createRoleprivilege, deleteRoleprivilege, updateRoleprivilege } = require('./src/collections/role_privilege/graphql/mutation')
 
 // user role
-const { getAllUserRoles, getDetailUserRole } = require('./src/collections/user_role/graphql/query')
+const { getAllUserRoles, getDetailUserRole, getDetailUserRoleByMyUserId } = require('./src/collections/user_role/graphql/query')
 const { createUserRole, deleteUserRole, updateUserRole } = require('./src/collections/user_role/graphql/mutation')
 
 
@@ -196,7 +196,8 @@ const RootQuery = new GraphQLObjectType({
 
     // user role
     getAllUserRoles,
-    getDetailUserRole
+    getDetailUserRole,
+    getDetailUserRoleByMyUserId
   }
 })
 

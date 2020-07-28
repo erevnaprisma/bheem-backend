@@ -2,7 +2,7 @@ const graphql = require('graphql')
 const GraphQLLong = require('graphql-type-long')
 const Course = require('../Model')
 const { UserRoleType } = require('./type')
-const { fetchAllUserRoles, fetchDetailUserRole } = require('../services')
+const { fetchAllUserRoles, fetchDetailUserRole, fetchDetailUserRoleByMyUserId } = require('../services')
 
 const {
   GraphQLString,
@@ -49,8 +49,23 @@ const getDetailUserRole = {
     return fetchDetailUserRole(args, context)
   }
 }
+const getDetailUserRoleByMyUserId = {
+  type: new GraphQLObjectType({
+    name: 'getDetailUserRoleByMyUserId' + 'Response',
+    fields: () => ({
+      status: { type: GraphQLInt },
+      error: { type: GraphQLString },
+      data_detail: { type: UserRoleType }
+    })
+  }),
+  args: {},
+  async resolve (parent, args, context) {
+    return fetchDetailUserRoleByMyUserId(args, context)
+  }
+}
 
 module.exports = {
+  getDetailUserRoleByMyUserId,
   getAllUserRoles,
   getDetailUserRole
 }

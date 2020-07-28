@@ -54,10 +54,16 @@ const sendMail = async model => {
     throw new Error(err)
   }
 }
+function flatten (arr) {
+  return arr.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+  }, [])
+}
 
 module.exports = {
   generateRandomString,
   generateRandomNumber,
   generateId,
-  sendMail
+  sendMail,
+  flatten
 }

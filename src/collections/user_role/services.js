@@ -40,7 +40,23 @@ const fetchDetailUserRole = async (args, context) => {
     const { accesstoken } = context.req.headers
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
-    const result = await UserRole.findOne({ _id: args.id, user_id: userId })
+    const result = await UserRole.findOne({ _id: args.id, created_by: userId })
+      .populate({ path: 'user_id' })
+      .populate({ path: 'role_id', populate: { path: 'role_privilege_id' } })
+      .populate({ path: 'created_by' })
+      .populate({ path: 'updated_by' })
+    return { status: 200, success: 'Successfully get Data', data_detail: result }
+  } catch (err) {
+    return { status: 400, error: err }
+  }
+}
+const fetchDetailUserRoleByMyUserId = async (args, context) => {
+  console.log('fetchDetailUserRole invoked')
+  try {
+    const { accesstoken } = context.req.headers
+    const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
+    const { user_id: userId } = bodyAt
+    const result = await UserRole.findOne({ user_id: userId })
       .populate({ path: 'user_id' })
       .populate({ path: 'role_id', populate: { path: 'role_privilege_id' } })
       .populate({ path: 'created_by' })
@@ -103,6 +119,7 @@ const doDeleteUserRole = async (args, context) => {
 }
 
 module.exports = {
+  fetchDetailUserRoleByMyUserId,
   fetchAllUserRoles,
   fetchDetailUserRole,
   doCreateUserRole,
