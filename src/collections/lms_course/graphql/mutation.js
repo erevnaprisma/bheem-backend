@@ -23,6 +23,7 @@ const createCourse = {
     content1: { type: GraphQLString },
     content2: { type: GraphQLString },
     content3: { type: GraphQLString },
+    status: { type: GraphQLString },
     start_date: { type: GraphQLString },
     end_date: { type: GraphQLString },
     code: { type: GraphQLString }
@@ -43,6 +44,7 @@ const updateCourse = {
   args: {
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
+    status: { type: GraphQLString },
     content1: { type: GraphQLString },
     content2: { type: GraphQLString },
     content3: { type: GraphQLString },

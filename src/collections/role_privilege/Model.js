@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const Joi = require('@hapi/joi')
-const User = require('../user/Model')
+// const Joi = require('@hapi/joi')
+// const User = require('../user/Model')
 
 const schema = new mongoose.Schema({
   title: {
@@ -8,47 +8,22 @@ const schema = new mongoose.Schema({
     default: new Date().getTime(),
     unique: true
   },
-  content1: {
+  name: {
     type: String,
-    default: new Date().getTime()
-  },
-  content2: {
-    type: String,
-    default: new Date().getTime()
-  },
-  content3: {
-    type: String,
-    default: new Date().getTime()
-  },
-  start_date: {
-    type: Number,
-    default: null
-  },
-  end_date: {
-    type: Number,
-    default: null
-  },
-  code: {
-    type: String,
-    default: new Date().getTime(),
     unique: true
-  },
-  batch: {
-    type: Number,
-    default: 1
   },
   status: {
     type: String,
-    enum: ['draft', 'publish'],
-    default: 'draft'
+    enum: ['active', 'inactive'],
+    default: 'active'
   },
   created_at: {
     type: Number,
-    default: new Date().getTime()
+    default: new Date().now
   },
   updated_at: {
     type: Number,
-    default: new Date().getTime()
+    default: new Date().now
   },
   created_by: {
     type: mongoose.SchemaTypes.ObjectId,
@@ -67,4 +42,4 @@ const schema = new mongoose.Schema({
 //   // amount: Joi.number().required().greater(0)
 // }).validate(args)
 
-module.exports = mongoose.model('lms_course', schema)
+module.exports = mongoose.model('role_privilege', schema)

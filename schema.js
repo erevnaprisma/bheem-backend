@@ -102,8 +102,20 @@ const { signUp, changeUserPassword, changeUserName, changeUserProfile, logout } 
 const { login, getProfile, allUser } = require('./src/collections/user/graphql/query')
 
 // lms course enrollment
-const { getAllEnrollmentUserByCourseId } = require('./src/collections/lms_course_enrollment/graphql/query')
+const { getAllEnrollmentUserByCourseId, getAllEnrollmentUserByFilter } = require('./src/collections/lms_course_enrollment/graphql/query')
 const { submitCourseEnrollmentRequest } = require('./src/collections/lms_course_enrollment/graphql/mutation')
+
+// role
+const { getAllRoles, getDetailRole } = require('./src/collections/role/graphql/query')
+const { createRole, deleteRole, updateRole } = require('./src/collections/role/graphql/mutation')
+
+// role privilege
+const { getAllRoleprivileges, getDetailRoleprivilege } = require('./src/collections/role_privilege/graphql/query')
+const { createRoleprivilege, deleteRoleprivilege, updateRoleprivilege } = require('./src/collections/role_privilege/graphql/mutation')
+
+// user role
+const { getAllUserRoles, getDetailUserRole } = require('./src/collections/user_role/graphql/query')
+const { createUserRole, deleteUserRole, updateUserRole } = require('./src/collections/user_role/graphql/mutation')
 
 
 const {
@@ -124,6 +136,7 @@ const RootQuery = new GraphQLObjectType({
     // LMS
     // enrollment
     getAllEnrollmentUserByCourseId,
+    getAllEnrollmentUserByFilter,
     // teacher
     getTeacherById,
     getAllTeachers,
@@ -171,7 +184,19 @@ const RootQuery = new GraphQLObjectType({
     // user
     login,
     getProfile,
-    allUser
+    allUser,
+
+    // role
+    getAllRoles,
+    getDetailRole,
+
+    // role privilege
+    getAllRoleprivileges,
+    getDetailRoleprivilege,
+
+    // user role
+    getAllUserRoles,
+    getDetailUserRole
   }
 })
 
@@ -288,7 +313,22 @@ const Mutation = new GraphQLObjectType({
     changeUserPassword,
     changeUserName,
     changeUserProfile,
-    logout
+    logout,
+
+    // role
+    createRole,
+    updateRole,
+    deleteRole,
+
+    // role privilege
+    createRoleprivilege,
+    updateRoleprivilege,
+    deleteRoleprivilege,
+
+    // user role
+    createUserRole,
+    updateUserRole,
+    deleteUserRole
   }
 })
 

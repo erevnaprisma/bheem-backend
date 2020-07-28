@@ -9,19 +9,13 @@ const {
   GraphQLObjectType,
   GraphQLInt
 } = graphql
-const CourseType = new GraphQLObjectType({
-  name: 'lms_course',
+const RoleprivilegeType = new GraphQLObjectType({
+  name: 'role_privilege',
   fields: () => ({
     _id: { type: GraphQLID },
-    code: { type: GraphQLString },
-    batch: { type: GraphQLInt },
     title: { type: GraphQLString },
+    name: { type: GraphQLString },
     status: { type: GraphQLString },
-    content1: { type: GraphQLString },
-    content2: { type: GraphQLString },
-    content3: { type: GraphQLString },
-    start_date: { type: GraphQLLong },
-    end_date: { type: GraphQLLong },
     created_by: { type: UserType },
     updated_by: { type: UserType },
     created_at: { type: GraphQLLong },
@@ -29,5 +23,5 @@ const CourseType = new GraphQLObjectType({
   })
 })
 module.exports = {
-  CourseType
+  RoleprivilegeType
 }

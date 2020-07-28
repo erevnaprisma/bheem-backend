@@ -1,6 +1,7 @@
 const graphql = require('graphql')
 const GraphQLLong = require('graphql-type-long')
 const { UserType } = require('../../user/graphql/type')
+const { RoleprivilegeType } = require('../../role_privilege/graphql/type')
 const {
   GraphQLString,
   GraphQLNonNull,
@@ -9,19 +10,13 @@ const {
   GraphQLObjectType,
   GraphQLInt
 } = graphql
-const CourseType = new GraphQLObjectType({
-  name: 'lms_course',
+const RoleType = new GraphQLObjectType({
+  name: 'role',
   fields: () => ({
     _id: { type: GraphQLID },
-    code: { type: GraphQLString },
-    batch: { type: GraphQLInt },
     title: { type: GraphQLString },
+    role_privilege_id: { type: GraphQLList(RoleprivilegeType) },
     status: { type: GraphQLString },
-    content1: { type: GraphQLString },
-    content2: { type: GraphQLString },
-    content3: { type: GraphQLString },
-    start_date: { type: GraphQLLong },
-    end_date: { type: GraphQLLong },
     created_by: { type: UserType },
     updated_by: { type: UserType },
     created_at: { type: GraphQLLong },
@@ -29,5 +24,5 @@ const CourseType = new GraphQLObjectType({
   })
 })
 module.exports = {
-  CourseType
+  RoleType
 }

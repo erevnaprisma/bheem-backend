@@ -133,32 +133,32 @@ const fetchAllEnrollmentUserByCourseId = async (args, context) => {
     return { status: 400, error: err }
   }
 }
-const fetchAllEnrollmentUserByFilter = async (args, context) => {
-  try {
-    console.log('fetchAllEnrollmentUserByFilter')
-    const { accesstoken } = context.req.headers
-    const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
-    const { user_id: userId } = bodyAt
-    const userDetail = await User.findById(userId)
-    const courseDetail = await Course.findById(args.course_id)
-    let isEligible = false
-    if (_.isEqual(userDetail._id, courseDetail.created_by)) isEligible = true
-    if (!isEligible) throw new Error('NOT_AUTHORIZED')
-    const filter = { course_id: args.course_id }
-    const result = await lmsEnrollmentUser.find(filter)
-      .sort({ updated_at: 'desc' })
-      .skip(args.page_index * args.page_size)
-      .limit(args.page_size)
-      .populate({ path: 'user_id' })
-      .populate({ path: 'course_id' })
-    const count = await lmsEnrollmentUser.countDocuments(filter)
-    const pageCount = await Math.ceil(count / args.page_size)
-    return { status: 200, success: 'Successfully get all Data', list_data: result, count, page_count: pageCount }
-  } catch (err) {
-    console.log('errorrr====>', err)
-    return { status: 400, error: err }
-  }
-}
+// const fetchAllEnrollmentUserByFilter = async (args, context) => {
+//   try {
+//     console.log('fetchAllEnrollmentUserByFilter')
+//     const { accesstoken } = context.req.headers
+//     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
+//     const { user_id: userId } = bodyAt
+//     const userDetail = await User.findById(userId)
+//     const courseDetail = await Course.findById(args.course_id)
+//     let isEligible = false
+//     if (_.isEqual(userDetail._id, courseDetail.created_by)) isEligible = true
+//     if (!isEligible) throw new Error('NOT_AUTHORIZED')
+//     const filter = { course_id: args.course_id }
+//     const result = await lmsEnrollmentUser.find(filter)
+//       .sort({ updated_at: 'desc' })
+//       .skip(args.page_index * args.page_size)
+//       .limit(args.page_size)
+//       .populate({ path: 'user_id' })
+//       .populate({ path: 'course_id' })
+//     const count = await lmsEnrollmentUser.countDocuments(filter)
+//     const pageCount = await Math.ceil(count / args.page_size)
+//     return { status: 200, success: 'Successfully get all Data', list_data: result, count, page_count: pageCount }
+//   } catch (err) {
+//     console.log('errorrr====>', err)
+//     return { status: 400, error: err }
+//   }
+// }
 // const fetchAllCourseEnrollment = async (args, context) => {
 //   try {
 //     console.log('fetchAllCourseEnrollment')
@@ -201,127 +201,167 @@ const fetchAllEnrollmentUserByFilter = async (args, context) => {
 //     return { status: 400, error: err }
 //   }
 // }
-// const fetchAllCourseEnrollmentxx = async (args, context) => {
-//   try {
-//     // const filter = {}
-//     // const now = Date.now()
-//     const { accesstoken } = context.req.headers
-//     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
-//     const { user_id: userId } = bodyAt
-//     const userDetail = await User.findById(userId)
+const fetchAllEnrollmentUserByFilter = async (args, context) => {
+  try {
+    // const filter = {}
+    // const now = Date.now()
+    const { accesstoken } = context.req.headers
+    const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
+    const { user_id: userId } = bodyAt
+    const userDetail = await User.findById(userId)
 
-//     const courseFilter = {}
-//     if (!_.isEmpty(args.course_id)) {
-//       courseFilter.$and = [{ created_by: userDetail._id }, { $or: [..._.map(args.course_id, (v, i) => ({ _id: v }))] }]
-//     } else {
-//       courseFilter.$and = [{ created_by: userDetail._id }]
-//     }
+    const courseFilter = {}
+    if (!_.isEmpty(args.course_id)) {
+      courseFilter.$and = [{ created_by: userDetail._id }, { $or: [..._.map(args.course_id, (v, i) => ({ _id: v }))] }]
+    } else {
+      courseFilter.$and = [{ created_by: userDetail._id }]
+    }
 
-//     let courseList = await Course.find(courseFilter)
-//     // console.log('courseList ciptaan saya===>', _.map(courseList, (v, i) => v._id))
+    // get semua kursus yang saya buat
+    let courseList = await Course.find(courseFilter)
+    // console.log('courseList ciptaan saya===>', _.map(courseList, (v, i) => v._id))
 
-//     // const data = args
-//     // data.batch = courseDetail.batch || 1
-//     // data.user_id = userDetail._id
-//     // data.created_by = userDetail._id
-//     // data.updated_by = userDetail._id
-//     // data.created_at = now
-//     // data.updated_at = now
+    // const data = args
+    // data.batch = courseDetail.batch || 1
+    // data.user_id = userDetail._id
+    // data.created_by = userDetail._id
+    // data.updated_by = userDetail._id
+    // data.created_at = now
+    // data.updated_at = now
 
-//     // get list user base on list course
-//     const LmsCourseEnrollmentFilter = {}
-//     LmsCourseEnrollmentFilter.$and = []
-//     LmsCourseEnrollmentFilter.$and.push({ $or: [..._.map(courseList, (v, i) => ({ course_id: v._id }))] })
-//     // console.log('LmsCourseEnrollmentFilter===>', LmsCourseEnrollmentFilter)
-//     // console.log('distinct===>', args.distinct)
-//     // let userEnrollList
-//     // if (args.distinct) {
-//     //   // const groupby = await LmsCourseEnrollment.aggregate([{ $group: { _id: '$' + args.distinct } }])
-//     //   // console.log('groupby===>', groupby)
-//     //   // LmsCourseEnrollmentFilter.$and.push({ $or: [..._.map(groupby, (v, i) => ({ user_id: '' + v._id }))] })
-//     //   console.log('LmsCourseEnrollmentFilter===>', LmsCourseEnrollmentFilter)
-//     //   userEnrollList = await LmsCourseEnrollment.find(LmsCourseEnrollmentFilter)
-//     // }
-//     // else userEnrollList = await LmsCourseEnrollment.find(LmsCourseEnrollmentFilter)
-//     const userEnrollList = await LmsCourseEnrollment.find({ $or: [..._.map(courseList, (v, i) => ({ course_id: v._id }))] })
-//     console.log('userEnrollList user yg enroll courses di atasssssss===>', userEnrollList)
-//     const userListFilter = {}
-//     userListFilter.$and = []
-//     let userList
-//     if (!_.isEmpty(userEnrollList)) {
-//       userListFilter.$and.push({ $or: [..._.map(userEnrollList, (v, i) => ({ _id: v.user_id }))] })
-//       if (!_.isEmpty(args.string_to_search)) {
-//         userListFilter.$and.push({
-//           $or: [
-//             { full_name: { $regex: args.string_to_search, $options: 'i' } },
-//             { email: { $regex: args.string_to_search, $options: 'i' } }
-//           ]
-//         })
-//       }
-//       // console.log('userListFilter===>', userListFilter)
-//       userList = await User.find(userListFilter)
-//     }
-//     // console.log('userList user yg sudah di filter===>', _.map(userList, (v, i) => v._id))
-//     if (!_.isEmpty(args.string_to_search)) {
-//       courseList = []
-//       courseFilter.$and.push({
-//         $or: [
-//           { title: { $regex: args.string_to_search, $options: 'i' } },
-//           { content1: { $regex: args.string_to_search, $options: 'i' } },
-//           { content2: { $regex: args.string_to_search, $options: 'i' } },
-//           { content3: { $regex: args.string_to_search, $options: 'i' } },
-//           { code: { $regex: args.string_to_search, $options: 'i' } }
-//         ]
-//       })
-//       courseList = await Course.find(courseFilter)
-//     }
-//     console.log('courseList course yg sudah di filter===>', _.map(courseList, (v, i) => v._id))
-//     const userEnrollFilter = {}
-//     userEnrollFilter.$or = []
+    // get list user base on list course
+    const LmsCourseEnrollmentFilter = {}
+    LmsCourseEnrollmentFilter.$and = []
+    LmsCourseEnrollmentFilter.$and.push({ $or: [..._.map(courseList, (v, i) => ({ course_id: v._id }))] })
+    // console.log('LmsCourseEnrollmentFilter===>', LmsCourseEnrollmentFilter)
+    // console.log('distinct===>', args.distinct)
+    // let userEnrollList
+    // if (args.distinct) {
+    //   // const groupby = await LmsCourseEnrollment.aggregate([{ $group: { _id: '$' + args.distinct } }])
+    //   // console.log('groupby===>', groupby)
+    //   // LmsCourseEnrollmentFilter.$and.push({ $or: [..._.map(groupby, (v, i) => ({ user_id: '' + v._id }))] })
+    //   console.log('LmsCourseEnrollmentFilter===>', LmsCourseEnrollmentFilter)
+    //   userEnrollList = await LmsCourseEnrollment.find(LmsCourseEnrollmentFilter)
+    // }
+    // else userEnrollList = await LmsCourseEnrollment.find(LmsCourseEnrollmentFilter)
 
-//     if (!_.isEmpty(courseList)) {
-//       userEnrollFilter.$or = [..._.map(courseList, (v, i) => ({ course_id: v._id }))]
-//     }
-//     if (!_.isEmpty(userList)) {
-//       userEnrollFilter.$or = [...userEnrollFilter.$or, ..._.map(userList, (v, i) => ({ user_id: v._id }))]
-//     }
-//     console.log('userEnrollFilterr===>', userEnrollFilter)
-//     let result, count
-//     if (!_.isEmpty(userEnrollFilter.$or)) {
-//       if (_.isEmpty(args.distinct)) {
-//         result = await LmsCourseEnrollment.find(userEnrollFilter)
-//           .sort({ updated_at: 'desc' })
-//           .skip(args.page_index * args.page_size)
-//           .limit(args.page_size).populate({ path: 'user_id' })
-//           .populate({ path: 'course_id' })
-//           .populate({ path: 'created_by' })
-//           .populate({ path: 'updated_by' })
-//         count = await LmsCourseEnrollment.countDocuments(userEnrollFilter)
-//       } else {
-//         result = await LmsCourseEnrollment.find(userEnrollFilter)
-//           .sort({ updated_at: 'desc' })
-//           .skip(args.page_index * args.page_size)
-//           .limit(args.page_size).populate({ path: 'user_id' })
-//           .populate({ path: 'course_id' })
-//           .populate({ path: 'created_by' })
-//           .populate({ path: 'updated_by' })
-//           .distinct(args.distinct)
-//         count = await LmsCourseEnrollment.countDocuments(userEnrollFilter)
-//           .distinct(args.distinct)
-//       }
-//       const pageCount = await Math.ceil(count / args.page_size)
-//       console.log('result====>', result)
-//       return { status: 200, success: 'Successfully get all Data', list_data: result, count, page_count: pageCount }
-//     } else {
-//       return { status: 200, success: 'Successfully get all Data', list_data: [], count: 0, page_count: 0 }
-//     }
-//   } catch (err) {
-//     console.log('errorrr====>', err)
-//     return { status: 400, error: err }
-//   }
-// }
+    // get semua user yang mendaftar ke kursus yang saya buat
+    const userEnrollList = await lmsEnrollmentUser.find(LmsCourseEnrollmentFilter)
+    console.log('userEnrollList user yg enroll courses di atasssssss===>', userEnrollList)
+    const userListFilter = {}
+    userListFilter.$and = []
+    let userList
+    if (!_.isEmpty(userEnrollList)) {
+      userListFilter.$and.push({ _id: { $in: _.map(userEnrollList, (v, i) => v.user_id) } })
+      if (!_.isEmpty(args.string_to_search)) {
+        userListFilter.$and.push({
+          $or: [
+            { full_name: { $regex: args.string_to_search, $options: 'i' } },
+            { email: { $regex: args.string_to_search, $options: 'i' } }
+          ]
+        })
+      }
+      console.log('userListFilter===>', userListFilter)
+      userList = await User.find(userListFilter)
+    }
+    console.log('userList user yg sudah di filter===>', userList)
+    if (!_.isEmpty(args.string_to_search)) {
+      courseList = []
+      courseFilter.$and.push({
+        $or: [
+          { title: { $regex: args.string_to_search, $options: 'i' } },
+          { content1: { $regex: args.string_to_search, $options: 'i' } },
+          { content2: { $regex: args.string_to_search, $options: 'i' } },
+          { content3: { $regex: args.string_to_search, $options: 'i' } },
+          { code: { $regex: args.string_to_search, $options: 'i' } }
+        ]
+      })
+      courseList = await Course.find(courseFilter)
+    }
+    console.log('courseList course yg sudah di filter===>', _.map(courseList, (v, i) => v._id))
+    const userEnrollFilter = {}
+    userEnrollFilter.$or = []
+    if (!_.isEmpty(courseList)) {
+      userEnrollFilter.$or.push({ course_id: { $in: _.map(courseList, (v, i) => v._id) } })
+    }
+    if (!_.isEmpty(userList)) {
+      userEnrollFilter.$or.push({ user_id: { $in: _.map(userList, (v, i) => v._id) } })
+    }
+    console.log('userEnrollFilterr===>', userEnrollFilter)
+
+    const groupbyUserId = await lmsEnrollmentUser.aggregate([
+      { $match: userEnrollFilter },
+      {
+        $group: {
+          _id: '$user_id',
+          created_at: { $max: '$created_at' },
+          // status: '$status',
+          // currentEvent: { $last: '$event.status' },
+          courses: { $push: '$$ROOT' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'users'
+        }
+      },
+      {
+        $facet: {
+          edges: [
+            { $sort: { updated_at: -1 } }, // desc
+            { $skip: args.page_index * args.page_size },
+            { $limit: args.page_size }
+          ],
+          pageInfo: [
+            { $group: { _id: null, count: { $sum: 1 } } }
+          ]
+        }
+      }
+    ])
+    // const cek = await User.populate(testAggregate, { path: '_id', select: { _id: 1, fullname: 1 } })
+    // console.log('testAggregate===>', groupbyUserId[0].edges[0])
+    // console.log('testAggregate pageInfo===>', groupbyUserId[0].pageInfo[0])
+    // console.log('cek===>', cek)
+    console.dir(groupbyUserId)
+    const result = [..._.map(groupbyUserId[0].edges, (v, i) => ({ _id: v._id, created_at: v.created_at, user_id: v.users[0] }))]
+    // console.log('result====>', result)
+    const count = groupbyUserId[0].pageInfo[0].count
+    // let result, count
+    // if (!_.isEmpty(userEnrollFilter.$or)) {
+    //   if (_.isEmpty(args.distinct)) {
+    //     result = await lmsEnrollmentUser.find(userEnrollFilter)
+    //       .sort({ updated_at: 'desc' })
+    //       .skip(args.page_index * args.page_size)
+    //       .limit(args.page_size)
+    //       .populate({ path: 'user_id' })
+    //       .populate({ path: 'course_id' })
+    //     count = await lmsEnrollmentUser.countDocuments(userEnrollFilter)
+    //   } else {
+    //     result = await lmsEnrollmentUser.find(userEnrollFilter)
+    //       .sort({ updated_at: 'desc' })
+    //       .skip(args.page_index * args.page_size)
+    //       .limit(args.page_size)
+    //       .populate({ path: 'user_id' })
+    //       .populate({ path: 'course_id' })
+    //     count = await lmsEnrollmentUser.countDocuments(userEnrollFilter)
+    //   }
+    const pageCount = await Math.ceil(count / args.page_size)
+    //   console.log('result====>', result)
+    return { status: 200, success: 'Successfully get all Data', list_data: result, count, page_count: pageCount }
+    // } else {
+    //   return { status: 200, success: 'Successfully get all Data', list_data: [], count: 0, page_count: 0 }
+    // }
+  } catch (err) {
+    console.log('errorrr====>', err)
+    return { status: 400, error: err }
+  }
+}
 
 module.exports = {
   doSubmitCourseEnrollmentRequest,
-  fetchAllEnrollmentUserByCourseId
+  fetchAllEnrollmentUserByCourseId,
+  fetchAllEnrollmentUserByFilter
 }
