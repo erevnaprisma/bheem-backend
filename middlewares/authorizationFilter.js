@@ -34,7 +34,8 @@ const authorizationFilterMiddleware = {
     deleteSubject: authorizationFilter,
     createLmsSubjectUnit: authorizationFilter,
     updateLmsSubjectUnit: authorizationFilter,
-    deleteLmsSubjectUnit: authorizationFilter
+    deleteLmsSubjectUnit: authorizationFilter,
+    submitCourseEnrollmentRequest: authorizationFilter
   },
   RootQueryType: {
     getAllCourses: authorizationFilter,
