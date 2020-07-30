@@ -1,12 +1,13 @@
 // Model
 const Meeting = require('../collections/bheem_meeting/Model')
+const User = require('../collections/bheem_user/Model')
 
 // Services
 const {
   requestToJoinMeetingService,
   admitParticipantToJoinService,
   rejectParticipantToJoinService,
-  removeUserFromParticipantsService
+  removeUserFromParticipantsService,
 } = require('../collections/bheem_meeting/services/Meeting')
 
 const requestToJoin = async (socket, io) => {
@@ -31,7 +32,7 @@ const requestToJoin = async (socket, io) => {
       meeting = await Meeting.findOne({ _id: message.meetingId })
       if (!meeting) return socket.emit('meetingError', 'Meeting not found')
     } catch (err) {
-      return socket.emit('meetingError', 'Meeting not found')
+      return socket.emit('meetingError', err.messagee || 'Meeting not found')
     }
 
     const response = await requestToJoinMeetingService(msg.meetingId, msg.userId)
@@ -61,7 +62,11 @@ const admitOrReject = async (socket, io) => {
 
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
-    io.of('/participant').to(msg.socketId).emit('userPermission', 'Admit')
+    const user = await User.findOne({ _id: msg.userId })
+    if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+
+    // send message to user
+    io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: user._id, fullName: user.fullName, role: 'participant', meetingId: msg.meetingId })
   })
 
   // Reject User to Join
@@ -70,7 +75,7 @@ const admitOrReject = async (socket, io) => {
 
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
-    io.of('/participant').to(msg.socketId).emit('userPermission', 'Reject')
+    io.of('/participant').to(msg.socketId).emit('userPermission', 'REJECT')
   })
 }
 
@@ -97,9 +102,23 @@ const ifUserSuddenlyOff = (socket, io) => {
   })
 }
 
+const joinRoomAndBroadcastToMeeting = (socket, io) => {
+  socket.on('afterUserJoinMeeting', (msg) => {
+    // add user to room
+    socket.join(msg.meetingId, () => {
+      console.log(`${msg.fullName} has join room`)
+    })
+
+    // broadcast message to all user in meeting
+    console.log(msg)
+    io.of('/participant').to(msg.meetingId).emit('userHasJoinMeeting', { message: `${msg.fullName} has join meeting`, fullName: msg.fullName, role: 'participant' })
+  })
+}
+
 module.exports = {
   requestToJoin,
   admitOrReject,
   createMeeting,
-  ifUserSuddenlyOff
+  ifUserSuddenlyOff,
+  joinRoomAndBroadcastToMeeting
 }

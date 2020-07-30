@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host 2</title>
+
+    <style>
+      .listOfRequest {
+        margin-top: 30%;
+      }
+    </style>
+</head>
+<body>
+    <h1>WELCOME TO MEETING</h1>
+    
+    <h3 class="listOfRequest">List of Request</h3>
+
+    <ul id="listRequestUser">
+        <!-- dynamic -->
+      </ul>
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="./script.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    socket.emit('createMeeting', {meetingId: '5f225852d818e841d5f37f2c'})
+  });
+  </script>
+<script>
+    let userInfo;
+
+    socket.on('sendRequestToHost', (msg) => {
+      userInfo = msg
+      console.log('someone request to join')
+      document.getElementById('listRequestUser').innerHTML += `<li>${msg.username}  <button onclick="admit()">admit</button> <button onclick="reject()">reject</button></li>`
+    })
+
+    function reject () {
+      socket.emit('rejectUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId })
+    }
+
+    function admit () {
+      socket.emit('admitUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId })
+    }
+
+    socket.on('userHasJoinMeeting', (msg) => {
+      console.log(msg.message)
+    })
+</script>
+
+</html>

@@ -104,8 +104,6 @@ const editScheduleMeetingService = async (meetingId, title, permission, startDat
       meeting.endDate = endDate
     }
 
-    console.log(meeting.title)
-
     await meeting.save()
 
     return { status: 200, success: 'Successfully edit meeting' }

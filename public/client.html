@@ -27,7 +27,7 @@
 <script>
   const socket = io('ws://localhost:3000/participant');
 
-  const userId = '5edda46652394805e0d89128'
+  const userId = '5f22589ad818e841d5f37f2e'
 
   // listening to meeting error
   socket.on('meetingError', (msg) => {
@@ -40,7 +40,7 @@
   })
 
   socket.on('userPermission', (msg) => {
-    console.log(msg)
+    socket.emit('afterUserJoinMeeting', msg)
   })
 
   function joinMeeting() {
@@ -51,6 +51,10 @@
       meetingId: document.getElementById('joinMeetingId').value
     }
 
-  socket.emit('requestToJoin', message)
+    socket.emit('requestToJoin', message)
   }
+
+  socket.on('userHasJoinMeeting', (msg) => {
+    console.log(msg.message)
+  })
 </script>
