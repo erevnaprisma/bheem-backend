@@ -45,7 +45,7 @@ const { getTeacherById, getAllTeachers } = require('./src/collections/lms_teache
 
 // Course
 const { createCourse, updateCourse, deleteCourse } = require('./src/collections/lms_course/graphql/mutation')
-const { getCourseById, getAllCourses, getDetailCourse } = require('./src/collections/lms_course/graphql/query')
+const { getCourseById, getAllCourses, getDetailCourse, getAllPublishedCourses, getDetailPublishedCourse } = require('./src/collections/lms_course/graphql/query')
 
 // Subject
 const { createSubject, updateSubject, deleteSubject } = require('./src/collections/lms_subject/graphql/mutation')
@@ -98,8 +98,8 @@ const { topupVa, staticQrPayment, scanQrStatic, detailPayment, cancelStaticPayme
 const { transactionHistory } = require('./src/services/graphql/query')
 
 // User
-const { signUp, changeUserPassword, changeUserName, changeUserProfile, logout } = require('./src/collections/user/graphql/mutation')
-const { login, getProfile, allUser } = require('./src/collections/user/graphql/query')
+const { signUpV2, signUp, changeUserPassword, changeUserName, changeUserProfile, logout } = require('./src/collections/user/graphql/mutation')
+const { getDetailUser, login, getProfile, allUser, getAllUsers } = require('./src/collections/user/graphql/query')
 
 // lms course enrollment
 const { getAllEnrollmentUserByCourseId, getAllEnrollmentUserByFilter } = require('./src/collections/lms_course_enrollment/graphql/query')
@@ -110,8 +110,12 @@ const { getAllRoles, getDetailRole } = require('./src/collections/role/graphql/q
 const { createRole, deleteRole, updateRole } = require('./src/collections/role/graphql/mutation')
 
 // role privilege
-const { getAllRoleprivileges, getDetailRoleprivilege } = require('./src/collections/role_privilege/graphql/query')
+const { getAllRoleprivilegesByRoleId, getDetailRoleprivilege } = require('./src/collections/role_privilege/graphql/query')
 const { createRoleprivilege, deleteRoleprivilege, updateRoleprivilege } = require('./src/collections/role_privilege/graphql/mutation')
+
+// privilege
+const { getAllPrivileges, getDetailPrivilege } = require('./src/collections/privilege/graphql/query')
+const { createPrivilege, deletePrivilege, privilegeCheckboxSubmit, updatePrivilege } = require('./src/collections/privilege/graphql/mutation')
 
 // user role
 const { getAllUserRoles, getDetailUserRole, getDetailUserRoleByMyUserId } = require('./src/collections/user_role/graphql/query')
@@ -145,6 +149,8 @@ const RootQuery = new GraphQLObjectType({
     getCourseById,
     getAllCourses,
     getDetailCourse,
+    getAllPublishedCourses,
+    getDetailPublishedCourse,
 
     // subject
     getAllSubjects,
@@ -185,14 +191,20 @@ const RootQuery = new GraphQLObjectType({
     login,
     getProfile,
     allUser,
+    getAllUsers,
+    getDetailUser,
 
     // role
     getAllRoles,
     getDetailRole,
 
     // role privilege
-    getAllRoleprivileges,
+    getAllRoleprivilegesByRoleId,
     getDetailRoleprivilege,
+
+    // privilege
+    getAllPrivileges,
+    getDetailPrivilege,
 
     // user role
     getAllUserRoles,
@@ -311,6 +323,7 @@ const Mutation = new GraphQLObjectType({
 
     // user
     signUp,
+    signUpV2,
     changeUserPassword,
     changeUserName,
     changeUserProfile,
@@ -325,6 +338,12 @@ const Mutation = new GraphQLObjectType({
     createRoleprivilege,
     updateRoleprivilege,
     deleteRoleprivilege,
+
+    // privilege
+    createPrivilege,
+    updatePrivilege,
+    deletePrivilege,
+    privilegeCheckboxSubmit,
 
     // user role
     createUserRole,

@@ -3,14 +3,14 @@ const config = require('config')
 const _ = require('lodash')
 const Roleprivilege = require('./Model')
 const User = require('../user/Model')
-const fetchAllRoleprivileges = async (args, context) => {
-  console.log('fetchAllRoleprivileges invoked')
+const fetchAllRoleprivilegesByRoleId = async (args, context) => {
+  console.log('fetchAllRoleprivilegesByRoleId invoked')
   try {
     const filter = {}
     const { accesstoken } = context.req.headers
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
-    filter.$and = [{ created_by: userId }]
+    filter.$and = [{ role_id: args.role_id }]
     if (!_.isEmpty(args.string_to_search)) {
       filter.$and.push({
         $or: [
@@ -19,7 +19,10 @@ const fetchAllRoleprivileges = async (args, context) => {
       })
     }
     console.log('filter======', filter)
-    const result = await Roleprivilege.find(filter).sort({ updated_at: 'desc' }).skip(args.page_index * args.page_size).limit(args.page_size).populate({ path: 'created_by' }).populate({ path: 'updated_by' })
+    const result = await Roleprivilege.find(filter).sort({ updated_at: 'desc' }).skip(args.page_index * args.page_size).limit(args.page_size)
+      .populate({ path: 'role_id', populate: { path: 'privilege_id' } })
+      .populate({ path: 'created_by' })
+      .populate({ path: 'updated_by' })
     const count = await Roleprivilege.countDocuments(filter)
     const pageCount = await Math.ceil(count / args.page_size)
     return { status: 200, success: 'Successfully get all Data', list_data: result, count, page_count: pageCount }
@@ -40,7 +43,7 @@ const fetchDetailRoleprivilege = async (args, context) => {
     return { status: 400, error: err }
   }
 }
-const doCreateRoleprivilege = async (args, context) => {
+const doCreateRoleprivilege = async (args, context, { opts }) => {
   try {
     const now = Date.now()
     const { accesstoken } = context.req.headers
@@ -52,7 +55,7 @@ const doCreateRoleprivilege = async (args, context) => {
     data.updated_by = userDetail._id
     data.created_at = now
     data.updated_at = now
-    return { status: 200, success: 'Successfully save Data', detail_data: await Roleprivilege.create(data) }
+    return { status: 200, success: 'Successfully save Data', detail_data: await Roleprivilege.create(data, opts) }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }
@@ -89,11 +92,22 @@ const doDeleteRoleprivilege = async (args, context) => {
     return { status: 400, error: err }
   }
 }
+const doDeleteRoleprivilegeByPrivilegeId = async ({ opts, args }) => {
+  try {
+    console.log('doDeleteRoleprivilegeByPrivilegeId invoked')
+    await Roleprivilege.remove({ privilege_id: args.privilege_id }).session(opts.session)
+    return { status: 200, success: 'Successfully delete Data', detail_data: {} }
+  } catch (err) {
+    console.log('errorrr====>', err)
+    return { status: 400, error: err }
+  }
+}
 
 module.exports = {
-  fetchAllRoleprivileges,
+  fetchAllRoleprivilegesByRoleId,
   fetchDetailRoleprivilege,
   doCreateRoleprivilege,
   doUpdateRoleprivilege,
-  doDeleteRoleprivilege
+  doDeleteRoleprivilege,
+  doDeleteRoleprivilegeByPrivilegeId
 }

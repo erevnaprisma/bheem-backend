@@ -1,6 +1,6 @@
 const graphql = require('graphql')
-
-const { userLogin, getUserProfile } = require('../services')
+const GraphQLLong = require('graphql-type-long')
+const { userLogin, getUserProfile, fetchAllUsers, fetchDetailUser } = require('../services')
 const { getAllUser } = require('../../../utils/services/mongoServices')
 const { AuthType, UserType } = require('./type')
 
@@ -8,7 +8,9 @@ const {
   GraphQLString,
   GraphQLNonNull,
   GraphQLID,
-  GraphQLList
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLInt
 } = graphql
 
 const login = {
@@ -32,6 +34,22 @@ const getProfile = {
     return getUserProfile(args.user_id)
   }
 }
+const getDetailUser = {
+  type: new GraphQLObjectType({
+    name: 'getDetailUser' + 'Response',
+    fields: () => ({
+      status: { type: GraphQLInt },
+      error: { type: GraphQLString },
+      data_detail: { type: UserType }
+    })
+  }),
+  args: {
+    id: { type: GraphQLString }
+  },
+  async resolve (parent, args, context) {
+    return fetchDetailUser(args, context)
+  }
+}
 
 const allUser = {
   type: new GraphQLList(UserType),
@@ -42,6 +60,30 @@ const allUser = {
     return getAllUser()
   }
 }
+
+const getAllUsers = {
+  type: new GraphQLObjectType({
+    name: 'getAllUsers' + 'Response',
+    fields: () => ({
+      status: { type: GraphQLInt },
+      error: { type: GraphQLString },
+      list_data: { type: GraphQLList(UserType) },
+      count: { type: GraphQLLong },
+      page_count: { type: GraphQLLong }
+    })
+  }),
+  args: {
+    page_size: { type: GraphQLInt },
+    page_index: { type: GraphQLInt },
+    string_to_search: { type: GraphQLString }
+  },
+  async resolve (parent, args, context) {
+    return fetchAllUsers(args, context)
+  }
+}
+
+module.exports.getDetailUser = getDetailUser
+module.exports.getAllUsers = getAllUsers
 module.exports.login = login
 module.exports.getProfile = getProfile
 module.exports.allUser = allUser

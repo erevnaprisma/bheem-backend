@@ -42,6 +42,9 @@ const schema = new mongoose.Schema({
     enum: ['draft', 'publish'],
     default: 'draft'
   },
+  instructors: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+  admins: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+  students: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
   created_at: {
     type: Number,
     default: new Date().getTime()

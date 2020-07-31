@@ -20,8 +20,8 @@ const createRoleprivilege = {
     })
   }),
   args: {
-    title: { type: GraphQLString },
-    name: { type: GraphQLString }
+    role_id: { type: GraphQLString },
+    privilege_id: { type: GraphQLString }
   },
   async resolve (parent, args, context) {
     return doCreateRoleprivilege(args, context)

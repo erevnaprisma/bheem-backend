@@ -60,6 +60,16 @@ const userSchema = new mongoose.Schema({
   },
   updated_at: {
     type: String
+  },
+  created_by: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  updated_by: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'User',
+    default: null
   }
 })
 

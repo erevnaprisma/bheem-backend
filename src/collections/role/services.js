@@ -3,6 +3,7 @@ const config = require('config')
 const _ = require('lodash')
 const Role = require('./Model')
 const User = require('../user/Model')
+const { CommandCursor } = require('mongodb')
 const fetchAllRoles = async (args, context) => {
   console.log('fetchAllRoles invoked')
   try {
@@ -34,7 +35,7 @@ const fetchDetailRole = async (args, context) => {
     const { accesstoken } = context.req.headers
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
-    const result = await Role.findOne({ _id: args.id, created_by: userId }).populate({ path: 'created_by' }).populate({ path: 'updated_by' })
+    const result = await Role.findOne({ _id: args.id }).populate({ path: 'created_by' }).populate({ path: 'updated_by' }).populate({ path: 'privilege_id' })
     return { status: 200, success: 'Successfully get Data', data_detail: result }
   } catch (err) {
     return { status: 400, error: err }
@@ -66,13 +67,15 @@ const doUpdateRole = async (args, context) => {
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
     const userDetail = await User.findById(userId)
-    const data = args
-    // data.created_by = userDetail._id
-    data.updated_by = userDetail._id
-    // data.created_at = now
-    data.updated_at = now
-    console.log('update=> ', data)
-    return { status: 200, success: 'Successfully save Data', detail_data: await Role.findOneAndUpdate({ _id: args._id, created_by: userId }, data).populate({ path: 'created_by' }).populate({ path: 'updated_by' }) }
+
+    const dataUpdate = {}
+    dataUpdate.updated_by = userDetail._id
+    dataUpdate.updated_at = now
+    if (args.title) dataUpdate.title = args.title
+    if (args.description) dataUpdate.description = args.description
+
+    const updateRoleResp = await Role.findByIdAndUpdate(args._id, dataUpdate)
+    return { status: 200, success: 'Successfully save Data', detail_data: updateRoleResp }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }

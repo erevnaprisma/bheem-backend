@@ -21,7 +21,8 @@ const createRole = {
   }),
   args: {
     title: { type: GraphQLString },
-    role_privilege_id: { type: GraphQLList(GraphQLString) }
+    description: { type: GraphQLString },
+    privilege_id: { type: GraphQLList(GraphQLString) }
   },
   async resolve (parent, args, context) {
     return doCreateRole(args, context)
@@ -39,6 +40,8 @@ const updateRole = {
   args: {
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
+    description: { type: GraphQLString },
+    privilege_id: { type: GraphQLList(GraphQLString) },
     status: { type: GraphQLString }
   },
   async resolve (parent, args, context) {

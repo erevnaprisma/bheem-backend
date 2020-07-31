@@ -2,7 +2,7 @@ const graphql = require('graphql')
 const GraphQLLong = require('graphql-type-long')
 const Course = require('../Model')
 const { CourseType } = require('./type')
-const { fetchAllCourses, fetchDetailCourse } = require('../services')
+const { fetchAllCourses, fetchDetailCourse, fetchAllPublishedCourses, fetchDetailPublishedCourse } = require('../services')
 
 const {
   GraphQLString,
@@ -55,6 +55,26 @@ const getAllCourses = {
     return fetchAllCourses(args, context)
   }
 }
+const getAllPublishedCourses = {
+  type: new GraphQLObjectType({
+    name: 'getAllPublishedCourses' + 'Response',
+    fields: () => ({
+      status: { type: GraphQLInt },
+      error: { type: GraphQLString },
+      list_data: { type: GraphQLList(CourseType) },
+      count: { type: GraphQLLong },
+      page_count: { type: GraphQLLong }
+    })
+  }),
+  args: {
+    page_size: { type: GraphQLInt },
+    page_index: { type: GraphQLInt },
+    string_to_search: { type: GraphQLString }
+  },
+  async resolve (parent, args, context) {
+    return fetchAllPublishedCourses(args, context)
+  }
+}
 const getDetailCourse = {
   type: new GraphQLObjectType({
     name: 'getDetailCourse' + 'Response',
@@ -71,8 +91,26 @@ const getDetailCourse = {
     return fetchDetailCourse(args, context)
   }
 }
+const getDetailPublishedCourse = {
+  type: new GraphQLObjectType({
+    name: 'getDetailPublishedCourse' + 'Response',
+    fields: () => ({
+      status: { type: GraphQLInt },
+      error: { type: GraphQLString },
+      data_detail: { type: CourseType }
+    })
+  }),
+  args: {
+    id: { type: GraphQLString }
+  },
+  async resolve (parent, args, context) {
+    return fetchDetailPublishedCourse(args, context)
+  }
+}
 
 module.exports = {
+  getDetailPublishedCourse,
+  getAllPublishedCourses,
   getCourseById,
   getAllCourses,
   getDetailCourse

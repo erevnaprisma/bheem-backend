@@ -22,7 +22,7 @@ const fetchAllUserRoles = async (args, context) => {
     console.log('filter======', filter)
     const result = await UserRole.find(filter).sort({ updated_at: 'desc' }).skip(args.page_index * args.page_size).limit(args.page_size)
       .populate({ path: 'user_id' })
-      .populate({ path: 'role_id', populate: { path: 'role_privilege_id' } })
+      .populate({ path: 'role_id', populate: { path: 'privilege_id' } })
       .populate({ path: 'created_by' })
       .populate({ path: 'updated_by' })
 
@@ -42,7 +42,7 @@ const fetchDetailUserRole = async (args, context) => {
     const { user_id: userId } = bodyAt
     const result = await UserRole.findOne({ _id: args.id, created_by: userId })
       .populate({ path: 'user_id' })
-      .populate({ path: 'role_id', populate: { path: 'role_privilege_id' } })
+      .populate({ path: 'role_id', populate: { path: 'privilege_id' } })
       .populate({ path: 'created_by' })
       .populate({ path: 'updated_by' })
     return { status: 200, success: 'Successfully get Data', data_detail: result }
@@ -56,9 +56,18 @@ const fetchDetailUserRoleByMyUserId = async (args, context) => {
     const { accesstoken } = context.req.headers
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
+    const result = (await fetchDetailUserRoleByUserId(userId) || {}).data_detail
+    return { status: 200, success: 'Successfully get Data', data_detail: result }
+  } catch (err) {
+    return { status: 400, error: err }
+  }
+}
+const fetchDetailUserRoleByUserId = async (userId) => {
+  console.log('fetchDetailUserRole invoked')
+  try {
     const result = await UserRole.findOne({ user_id: userId })
       .populate({ path: 'user_id' })
-      .populate({ path: 'role_id', populate: { path: 'role_privilege_id' } })
+      .populate({ path: 'role_id', populate: { path: 'privilege_id' } })
       .populate({ path: 'created_by' })
       .populate({ path: 'updated_by' })
     return { status: 200, success: 'Successfully get Data', data_detail: result }
@@ -80,7 +89,7 @@ const doCreateUserRole = async (args, context) => {
     data.created_at = now
     data.updated_at = now
     console.log('create course=> ', data)
-    return { status: 200, success: 'Successfully save Data', detail_data: await (await UserRole.create(data)).populate({ path: 'user_id' }).populate({ path: 'role_id', populate: { path: 'role_privilege_id' } }).execPopulate() }
+    return { status: 200, success: 'Successfully save Data', detail_data: await (await UserRole.create(data)).populate({ path: 'user_id' }).populate({ path: 'role_id', populate: { path: 'privilege_id' } }).execPopulate() }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }
@@ -99,7 +108,7 @@ const doUpdateUserRole = async (args, context) => {
     // data.created_at = now
     data.updated_at = now
     console.log('update=> ', data)
-    return { status: 200, success: 'Successfully save Data', detail_data: await (await UserRole.findOneAndUpdate({ _id: args._id, created_by: userId }, data)).populate({ path: 'user_id' }).populate({ path: 'role_id', populate: { path: 'role_privilege_id' } }).populate({ path: 'created_by' }).populate({ path: 'updated_by' }).execPopulate() }
+    return { status: 200, success: 'Successfully save Data', detail_data: await (await UserRole.findOneAndUpdate({ _id: args._id, created_by: userId }, data)).populate({ path: 'user_id' }).populate({ path: 'role_id', populate: { path: 'privilege_id' } }).populate({ path: 'created_by' }).populate({ path: 'updated_by' }).execPopulate() }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }
@@ -119,6 +128,7 @@ const doDeleteUserRole = async (args, context) => {
 }
 
 module.exports = {
+  fetchDetailUserRoleByUserId,
   fetchDetailUserRoleByMyUserId,
   fetchAllUserRoles,
   fetchDetailUserRole,

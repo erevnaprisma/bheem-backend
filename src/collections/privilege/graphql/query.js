@@ -1,7 +1,7 @@
 const graphql = require('graphql')
 const GraphQLLong = require('graphql-type-long')
-const { RoleprivilegeType } = require('./type')
-const { fetchAllRoleprivilegesByRoleId, fetchDetailRoleprivilege } = require('../services')
+const { PrivilegeType } = require('./type')
+const { fetchAllPrivileges, fetchDetailPrivilege } = require('../services')
 
 const {
   GraphQLString,
@@ -12,13 +12,13 @@ const {
   GraphQLList
 } = graphql
 
-const getAllRoleprivilegesByRoleId = {
+const getAllPrivileges = {
   type: new GraphQLObjectType({
-    name: 'getAllRoleprivilegesByRoleId' + 'Response',
+    name: 'getAllPrivileges' + 'Response',
     fields: () => ({
       status: { type: GraphQLInt },
       error: { type: GraphQLString },
-      list_data: { type: GraphQLList(RoleprivilegeType) },
+      list_data: { type: GraphQLList(PrivilegeType) },
       count: { type: GraphQLLong },
       page_count: { type: GraphQLLong }
     })
@@ -26,31 +26,30 @@ const getAllRoleprivilegesByRoleId = {
   args: {
     page_size: { type: GraphQLInt },
     page_index: { type: GraphQLInt },
-    role_id: { type: GraphQLString },
     string_to_search: { type: GraphQLString }
   },
   async resolve (parent, args, context) {
-    return fetchAllRoleprivilegesByRoleId(args, context)
+    return fetchAllPrivileges(args, context)
   }
 }
-const getDetailRoleprivilege = {
+const getDetailPrivilege = {
   type: new GraphQLObjectType({
-    name: 'getDetailRoleprivilege' + 'Response',
+    name: 'getDetailPrivilege' + 'Response',
     fields: () => ({
       status: { type: GraphQLInt },
       error: { type: GraphQLString },
-      data_detail: { type: RoleprivilegeType }
+      data_detail: { type: PrivilegeType }
     })
   }),
   args: {
     id: { type: GraphQLString }
   },
   async resolve (parent, args, context) {
-    return fetchDetailRoleprivilege(args, context)
+    return fetchDetailPrivilege(args, context)
   }
 }
 
 module.exports = {
-  getAllRoleprivilegesByRoleId,
-  getDetailRoleprivilege
+  getAllPrivileges,
+  getDetailPrivilege
 }

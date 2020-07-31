@@ -3,6 +3,9 @@ const config = require('config')
 const express = require('express')
 const router = express()
 const { v4: uuidv4 } = require('uuid')
+const _ = require('lodash')
+const { fetchDetailUserRoleByUserId } = require('../user_role/services')
+const { flatten } = require('../../utils/services')
 
 const User = require('./Model')
 const Otp = require('../rp_otp/Model')
@@ -12,6 +15,20 @@ const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, er
 const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
+const { doCreateUserRole } = require('../user_role/services')
+
+const fetchDetailUser = async (args, context) => {
+  console.log('fetchDetailUser invoked')
+  try {
+    const { accesstoken } = context.req.headers
+    const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
+    const { user_id: userId } = bodyAt
+    const result = await User.findOne({ _id: args.id }).populate({ path: 'created_by' }).populate({ path: 'updated_by' })
+    return { status: 200, success: 'Successfully get Data', data_detail: result }
+  } catch (err) {
+    return { status: 400, error: err }
+  }
+}
 
 const userSignup = async (email, deviceID) => {
   const { error } = User.validation({ email, device_id: deviceID })
@@ -56,6 +73,53 @@ const userSignup = async (email, deviceID) => {
     return { status: '500', error: err || 'Failed to save to data...' }
   }
 }
+const userSignupV2 = async (args, context) => {
+  const { error } = User.validation({ email: args.email, device_id: args.device_id, full_name: args.full_name })
+  if (error) return { status: 400, error: error.details[0].message }
+
+  const emailCheck = await User.findOne({ email: args.email })
+  if (emailCheck) return { status: 400, error: 'Email already used' }
+
+  // for send Email
+  const userBeforeSentEmail = {
+    type: 'signupUser',
+    password: generateRandomNumber(4),
+    email: args.email
+  }
+
+  await sendMailVerification(userBeforeSentEmail)
+  // if (!emailSent) return { status: 400, error: 'Failed sent email' }
+
+  let user = new User({
+    user_id: generateID(RANDOM_STRING_FOR_CONCAT),
+    email: args.email,
+    full_name: args.full_name,
+    device_id: args.device_id,
+    username: generateRandomStringAndNumber(8),
+    password: userBeforeSentEmail.password,
+    created_at: getUnixTime(),
+    updated_at: getUnixTime()
+  })
+
+  // const localPassword = user.password
+
+  try {
+    const accessToken = await jwt.sign({ user_id: user.user_id }, config.get('privateKey'), { expiresIn: '30min' })
+
+    user = await user.save()
+
+    // asign user role
+    await doCreateUserRole({ user_id: user._id, user_role: ['5f21083b6b896d0a1d0178e4'] }, context)
+
+    // user.password = localPassword
+    // user.type = 'signup'
+    // await sendMailVerification(user)
+
+    return { status: 200, user_id: user.user_id, access_token: accessToken, success: WORD_SIGN_UP }
+  } catch (err) {
+    return { status: '500', error: err || 'Failed to save to data...' }
+  }
+}
 
 const userLogin = async (email, password, token, isLoggedInWithToken) => {
   console.log('userLogin {}', email)
@@ -78,12 +142,19 @@ const userLogin = async (email, password, token, isLoggedInWithToken) => {
 
     // generate access token
     const accessToken = await jwt.sign({ user_id: user._id }, config.get('privateKey'), { expiresIn: '30min' })
+
+    // get user privileges
+    const userRole = await fetchDetailUserRoleByUserId(user._id)
+    const userPrivilegeName = _.uniq(flatten(_.map(userRole.data_detail.role_id, (v, i) => _.map(v.privilege_id, (v, i) => v.name)) || []))
+    // console.log('userRole.data_detail.role_id===>', userRole.data_detail.role_id)
     // login with username & password
     return {
       status: 200,
       access_token: accessToken,
       user_id: user.user_id,
-      success: WORD_LOGIN
+      success: WORD_LOGIN,
+      user_privileges: userPrivilegeName,
+      role: (_.map(userRole.data_detail.role_id, (v, i) => v.title) || []).join(', ')
     }
   } catch (err) {
     return { status: 500, error: err }
@@ -346,6 +417,50 @@ const userChangesValidation = async ({ userID, password }) => {
   })
 }
 
+const fetchAllUsers = async (args, context) => {
+  console.log('fetchAllUsers invoked')
+  try {
+    const filter = {}
+    const { accesstoken } = context.req.headers
+    const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
+    const { user_id: userId } = bodyAt
+    if (!_.isEmpty(args.string_to_search)) {
+      filter.$and = []
+      filter.$and.push({
+        $or: [
+          { username: { $regex: args.string_to_search, $options: 'i' } },
+          { full_name: { $regex: args.string_to_search, $options: 'i' } },
+          { email: { $regex: args.string_to_search, $options: 'i' } }
+        ]
+      })
+    }
+    console.log('filter======', filter)
+    let result = await User.find(filter)
+      .sort({ updated_at: 'desc' })
+      .skip(args.page_index * args.page_size)
+      .limit(args.page_size)
+      .populate({ path: 'created_by' })
+      .populate({ path: 'updated_by' })
+    result = result.map(async (v, i) => {
+      const userRole = await fetchDetailUserRoleByUserId(v._id)
+      if (!userRole.data_detail) return v
+      v.role = (_.map(userRole.data_detail.role_id, (v, i) => v.title) || []).join(', ')
+      // v.user_privileges = ['/tess']
+      // v.user_privileges = _.uniq(flatten(_.map(v.userRole.data_detail.role_id, (v, i) => _.map(v.privilege_id, (v, i) => v.name)) || [])) || []
+      return v
+    })
+    const count = await User.countDocuments(filter)
+    const pageCount = await Math.ceil(count / args.page_size)
+    return { status: 200, success: 'Successfully get all Data', list_data: result, count, page_count: pageCount }
+  } catch (err) {
+    console.log('err=> ', err)
+    return { status: 400, error: err }
+  }
+}
+
+module.exports.fetchDetailUser = fetchDetailUser
+module.exports.fetchAllUsers = fetchAllUsers
+module.exports.userSignupV2 = userSignupV2
 module.exports.userSignup = userSignup
 module.exports.userLogin = userLogin
 // module.exports.changeEmail = changeEmail

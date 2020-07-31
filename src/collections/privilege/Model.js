@@ -8,10 +8,17 @@ const schema = new mongoose.Schema({
     default: new Date().getTime(),
     unique: true
   },
+  entity: {
+    type: String
+  },
   description: {
     type: String
   },
-  privilege_id: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'privilege', unique: true }],
+  name: {
+    type: String,
+    unique: true
+  },
+  role_id: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'role', unique: true }],
   status: {
     type: String,
     enum: ['active', 'inactive'],
@@ -42,4 +49,4 @@ const schema = new mongoose.Schema({
 //   // amount: Joi.number().required().greater(0)
 // }).validate(args)
 
-module.exports = mongoose.model('role', schema)
+module.exports = mongoose.model('privilege', schema)

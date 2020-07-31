@@ -1,6 +1,6 @@
 const graphql = require('graphql')
 
-const { userSignup, changeEmail, changePassword, changeName, changeProfile, serviceLogout } = require('../services')
+const { userSignupV2, userSignup, changeEmail, changePassword, changeName, changeProfile, serviceLogout } = require('../services')
 const { AuthType, ChangeType } = require('./type')
 
 const {
@@ -17,6 +17,17 @@ const signUp = {
   },
   resolve (parent, args) {
     return userSignup(args.email, args.device_id)
+  }
+}
+const signUpV2 = {
+  type: AuthType,
+  args: {
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    device_id: { type: new GraphQLNonNull(GraphQLString) },
+    full_name: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args, context) {
+    return userSignupV2(args, context)
   }
 }
 
@@ -86,6 +97,7 @@ const logout = {
   }
 }
 
+module.exports.signUpV2 = signUpV2
 module.exports.signUp = signUp
 module.exports.changeUserEmail = changeUserEmail
 module.exports.changeUserPassword = changeUserPassword
