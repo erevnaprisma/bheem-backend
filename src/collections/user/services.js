@@ -109,6 +109,7 @@ const userSignupV2 = async (args, context) => {
     user = await user.save()
 
     // asign user role
+    // default as a student
     await doCreateUserRole({ user_id: user._id, user_role: ['5f21083b6b896d0a1d0178e4'] }, context)
 
     // user.password = localPassword
