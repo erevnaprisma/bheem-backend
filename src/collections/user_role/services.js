@@ -75,13 +75,13 @@ const fetchDetailUserRoleByUserId = async (userId) => {
     return { status: 400, error: err }
   }
 }
-const doCreateUserRole = async (args, context) => {
+const doCreateUserRole = async (args, context, { opts }) => {
   try {
     const now = Date.now()
-    const { accesstoken } = context.req.headers
-    const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
-    const { user_id: userId } = bodyAt
-    const userDetail = await User.findById(userId)
+    // const { accesstoken } = context.req.headers
+    // const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
+    // const { user_id: userId } = bodyAt
+    const userDetail = await User.findById(args.user_id)
     const data = args
 
     data.created_by = userDetail._id
@@ -89,7 +89,7 @@ const doCreateUserRole = async (args, context) => {
     data.created_at = now
     data.updated_at = now
     console.log('create course=> ', data)
-    return { status: 200, success: 'Successfully save Data', detail_data: await (await UserRole.create(data)).populate({ path: 'user_id' }).populate({ path: 'role_id', populate: { path: 'privilege_id' } }).execPopulate() }
+    return { status: 200, success: 'Successfully save Data', detail_data: await (await UserRole.create(data, opts)).populate({ path: 'user_id' }).populate({ path: 'role_id', populate: { path: 'privilege_id' } }).execPopulate() }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }

@@ -14,7 +14,7 @@ app.io = require('socket.io')()
 const server = require('http').createServer(app)
 
 app.io.attach(server)
-
+console.log('trying to connect to db... ', config.get('mongoUrl'))
 mongoose.connect(config.get('mongoUrl'), { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
   .then((res) => console.log('Connected to MongoDB... ', config.get('mongoUrl')))
   .catch((err) => console.log(err.message || 'Cannot connect to MongoDB...'))

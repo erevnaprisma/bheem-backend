@@ -16,6 +16,7 @@ const { serviceAddBlacklist } = require('../blacklist/services')
 const Blacklist = require('../blacklist/Model')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 const { doCreateUserRole } = require('../user_role/services')
+const UserRole = require('../user_role/Model')
 
 const fetchDetailUser = async (args, context) => {
   console.log('fetchDetailUser invoked')
@@ -80,44 +81,64 @@ const userSignupV2 = async (args, context) => {
   const emailCheck = await User.findOne({ email: args.email })
   if (emailCheck) return { status: 400, error: 'Email already used' }
 
-  // for send Email
-  const userBeforeSentEmail = {
-    type: 'signupUser',
-    password: generateRandomNumber(4),
-    email: args.email
-  }
-
-  await sendMailVerification(userBeforeSentEmail)
   // if (!emailSent) return { status: 400, error: 'Failed sent email' }
-
-  let user = new User({
-    user_id: generateID(RANDOM_STRING_FOR_CONCAT),
-    email: args.email,
-    full_name: args.full_name,
-    device_id: args.device_id,
-    username: generateRandomStringAndNumber(8),
-    password: userBeforeSentEmail.password,
-    created_at: getUnixTime(),
-    updated_at: getUnixTime()
-  })
 
   // const localPassword = user.password
 
+  const session = await User.db.startSession()
+  session.startTransaction()
+  const opts = { session }
   try {
-    const accessToken = await jwt.sign({ user_id: user.user_id }, config.get('privateKey'), { expiresIn: '30min' })
+    const now = Date.now()
+    // for send Email
+    const userBeforeSentEmail = {
+      type: 'signupUser',
+      password: generateRandomNumber(4),
+      email: args.email
+    }
 
-    user = await user.save()
+    let user = new User({
+      user_id: generateID(RANDOM_STRING_FOR_CONCAT),
+      email: args.email,
+      full_name: args.full_name,
+      device_id: args.device_id,
+      username: generateRandomStringAndNumber(8),
+      password: userBeforeSentEmail.password,
+      created_at: getUnixTime(),
+      updated_at: getUnixTime()
+    })
+
+    user = await user.save(opts)
+    console.log('new user=====>', user)
+
+    const accessToken = await jwt.sign({ user_id: user.user_id }, config.get('privateKey'), { expiresIn: '30min' })
 
     // asign user role
     // default as a student
-    await doCreateUserRole({ user_id: user._id, user_role: ['5f21083b6b896d0a1d0178e4'] }, context)
+    const doCreateUserRoleResp = await UserRole.create([{
+      role_id: ['5f21083b6b896d0a1d0178e4'],
+      user_id: '' + user._id,
+      created_at: now,
+      updated_at: now,
+      updated_by: '' + user._id,
+      created_by: '' + user._id
+    }], opts)
+    // const doCreateUserRoleResp = await doCreateUserRole({ user_id: '' + user._id, user_role: ['5f21083b6b896d0a1d0178e4'] }, context, { opts })
+    console.log('doCreateUserRoleResp==>', doCreateUserRoleResp)
 
     // user.password = localPassword
     // user.type = 'signup'
     // await sendMailVerification(user)
 
+    await sendMailVerification(userBeforeSentEmail)
+    await session.commitTransaction()
+    session.endSession()
+
     return { status: 200, user_id: user.user_id, access_token: accessToken, success: WORD_SIGN_UP }
   } catch (err) {
+    await session.abortTransaction()
+    session.endSession()
+    console.log('errorrr====>', err)
     return { status: '500', error: err || 'Failed to save to data...' }
   }
 }
