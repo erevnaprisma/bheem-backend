@@ -69,7 +69,7 @@ const admitOrReject = async (socket, io) => {
     io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: user._id, fullName: user.fullName, role: 'participant', meetingId: msg.meetingId })
 
     // send successfully admit response to host to erase participant from host
-    socket.emit('succeessfullyAdmit', { userId: user._id })
+    socket.emit('succeessfullyAdmit', { userId: user._id, fullName: user.fullName, role: 'participant' })
   })
 
   // Reject User to Join
