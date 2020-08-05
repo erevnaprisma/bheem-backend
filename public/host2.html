@@ -48,6 +48,10 @@
     socket.on('userHasJoinMeeting', (msg) => {
       console.log(msg.message)
     })
+
+    socket.on('succeessfullyAdmit', (msg) => {
+      console.log('Succssfully admit')
+    })
 </script>
 
 </html>
