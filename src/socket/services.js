@@ -78,7 +78,13 @@ const admitOrReject = async (socket, io) => {
 
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
+    const user = await User.findOne({ _id: msg.userId })
+    if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+
     io.of('/participant').to(msg.socketId).emit('userPermission', 'REJECT')
+
+    // send successfully admit response to host to erase participant from host
+    socket.emit('successfullyReject', { userId: user._id })
   })
 }
 
