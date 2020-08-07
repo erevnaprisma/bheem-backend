@@ -44,6 +44,9 @@ const updatePrivilege = {
   args: {
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
+    role_id: { type: GraphQLString },
+    description: { type: GraphQLString },
+    entity: { type: GraphQLString },
     name: { type: GraphQLString },
     status: { type: GraphQLString }
   },

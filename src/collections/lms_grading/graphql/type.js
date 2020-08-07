@@ -1,8 +1,7 @@
 const graphql = require('graphql')
 const GraphQLLong = require('graphql-type-long')
 const { UserType } = require('../../user/graphql/type')
-const { SubjectType } = require('../../lms_subject/graphql/type')
-const { LmsGradingType } = require('../../lms_grading/graphql/type')
+const { CourseType } = require('../../lms_course/graphql/type')
 const {
   GraphQLString,
   GraphQLNonNull,
@@ -11,17 +10,15 @@ const {
   GraphQLObjectType,
   GraphQLInt
 } = graphql
-const LmsSubjectUnitType = new GraphQLObjectType({
-  name: 'lms_subject_unit',
+const LmsGradingType = new GraphQLObjectType({
+  name: 'lms_grading',
   fields: () => ({
     _id: { type: GraphQLID },
-    content1: { type: GraphQLString },
     title: { type: GraphQLString },
+    description: { type: GraphQLString },
+    course_id: { type: CourseType },
     points: { type: GraphQLString },
-    grading_id: { type: LmsGradingType },
-    subject_id: { type: SubjectType },
-    start_date: { type: GraphQLLong },
-    end_date: { type: GraphQLLong },
+    status: { type: GraphQLString },
     created_by: { type: UserType },
     updated_by: { type: UserType },
     created_at: { type: GraphQLLong },
@@ -29,5 +26,5 @@ const LmsSubjectUnitType = new GraphQLObjectType({
   })
 })
 module.exports = {
-  LmsSubjectUnitType
+  LmsGradingType
 }

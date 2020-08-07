@@ -30,7 +30,11 @@ const fetchDetailLmsSubjectUnit = async (args, context) => {
     const { accesstoken } = context.req.headers
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
-    const result = await LmsSubjectUnit.findOne({ _id: args.id, created_by: userId }).populate({ path: 'subject_id', populate: { path: 'course_id' } }).populate({ path: 'created_by' }).populate({ path: 'updated_by' })
+    const result = await LmsSubjectUnit.findOne({ _id: args.id })
+      .populate({ path: 'grading_id' })
+      .populate({ path: 'subject_id', populate: { path: 'course_id' } })
+      .populate({ path: 'created_by' })
+      .populate({ path: 'updated_by' })
     return { status: 200, success: 'Successfully get Data', data_detail: result }
   } catch (err) {
     return { status: 400, error: err }
@@ -66,7 +70,7 @@ const doUpdateLmsSubjectUnit = async (args, context) => {
     data.updated_by = userDetail._id
     // data.created_at = now
     data.updated_at = now
-    return { status: 200, success: 'Successfully save Data', detail_data: await LmsSubjectUnit.findOneAndUpdate({ _id: args._id, created_by: userId }, data).populate({ path: 'created_by' }).populate({ path: 'updated_by' }) }
+    return { status: 200, success: 'Successfully save Data', detail_data: await LmsSubjectUnit.findOneAndUpdate({ _id: args._id }, data).populate({ path: 'created_by' }).populate({ path: 'updated_by' }) }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }
@@ -77,7 +81,7 @@ const doDeleteLmsSubjectUnit = async (args, context) => {
     const { accesstoken } = context.req.headers
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
-    return { status: 200, success: 'Successfully delete Data', detail_data: await LmsSubjectUnit.remove({ _id: args._id, created_by: userId }) }
+    return { status: 200, success: 'Successfully delete Data', detail_data: await LmsSubjectUnit.remove({ _id: args._id }) }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }

@@ -10,6 +10,7 @@ const {
   GraphQLID,
   GraphQLObjectType,
   GraphQLInt,
+  GraphQLBoolean,
   GraphQLList
 } = graphql
 
@@ -81,7 +82,8 @@ const getDetailCourse = {
     fields: () => ({
       status: { type: GraphQLInt },
       error: { type: GraphQLString },
-      data_detail: { type: CourseType }
+      data_detail: { type: CourseType },
+      is_enrolled: { type: GraphQLBoolean }
     })
   }),
   args: {

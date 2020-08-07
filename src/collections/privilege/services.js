@@ -183,7 +183,7 @@ const doUpdatePrivilege = async (args, context) => {
     // data.created_at = now
     data.updated_at = now
     console.log('update=> ', data)
-    return { status: 200, success: 'Successfully save Data', detail_data: await Privilege.findOneAndUpdate({ _id: args._id, created_by: userId }, data).populate({ path: 'created_by' }).populate({ path: 'updated_by' }) }
+    return { status: 200, success: 'Successfully save Data', detail_data: await Privilege.findOneAndUpdate({ _id: args._id }, data).populate({ path: 'created_by' }).populate({ path: 'updated_by' }) }
   } catch (err) {
     console.log('errorrr====>', err)
     return { status: 400, error: err }

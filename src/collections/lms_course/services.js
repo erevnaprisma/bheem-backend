@@ -3,6 +3,7 @@ const config = require('config')
 const _ = require('lodash')
 const Course = require('./Model')
 const User = require('../user/Model')
+const { lmsEnrollmentUser } = require('../lms_course_enrollment/Model')
 const fetchAllCourses = async (args, context) => {
   console.log('fetchAllCourses invoked')
   try {
@@ -80,13 +81,21 @@ const fetchDetailCourse = async (args, context) => {
     const { accesstoken } = context.req.headers
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
-    const result = await Course.findOne({ _id: args._id, $or: [{ created_by: userId }, { admins: userId }] })
+    const result = await Course.findOne({ _id: args.id, $or: [{ created_by: userId }, { admins: userId }] })
       .populate({ path: 'admins' })
       .populate({ path: 'instructors' })
       .populate({ path: 'students' })
       .populate({ path: 'created_by' })
       .populate({ path: 'updated_by' })
-    return { status: 200, success: 'Successfully get Data', data_detail: result }
+    // console.log('result===>', result)
+    let isEnrolled = false
+    if (result) {
+      // get my enrollment
+      const courseBatch = result.batch || 1
+      const countDocumentsResp = await lmsEnrollmentUser.countDocuments({ course_id: result._id, user_id: userId, batch: courseBatch })
+      if (countDocumentsResp > 0) isEnrolled = true
+    }
+    return { status: 200, success: 'Successfully get Data', data_detail: result, is_enrolled: isEnrolled }
   } catch (err) {
     return { status: 400, error: err }
   }

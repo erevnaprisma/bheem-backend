@@ -87,6 +87,7 @@ const doDeleteRole = async (args, context) => {
     const bodyAt = await jwt.verify(accesstoken, config.get('privateKey'))
     const { user_id: userId } = bodyAt
     console.log('delete invoked')
+
     return { status: 200, success: 'Successfully delete Data', detail_data: await Role.remove({ _id: args._id, created_by: userId }) }
   } catch (err) {
     console.log('errorrr====>', err)

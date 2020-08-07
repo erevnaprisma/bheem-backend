@@ -2,6 +2,18 @@ const mongoose = require('mongoose')
 const Joi = require('@hapi/joi')
 
 const schema = new mongoose.Schema({
+  title: {
+    type: String
+  },
+  grading_id: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'lms_grading',
+    default: null
+  },
+  points: {
+    type: Number,
+    default: 0
+  },
   content1: {
     type: String,
     default: new Date().getTime()

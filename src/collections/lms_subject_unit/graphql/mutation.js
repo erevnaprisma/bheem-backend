@@ -19,8 +19,11 @@ const createLmsSubjectUnit = {
     })
   }),
   args: {
+    points: { type: GraphQLString },
+    grading_id: { type: GraphQLString },
     content1: { type: GraphQLString },
-    subject_id: { type: GraphQLString }
+    subject_id: { type: GraphQLString },
+    title: { type: GraphQLString }
   },
   async resolve (parent, args, context) {
     return doCreateLmsSubjectUnit(args, context)
@@ -38,6 +41,8 @@ const updateLmsSubjectUnit = {
   args: {
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
+    grading_id: { type: GraphQLString },
+    points: { type: GraphQLString },
     content1: { type: GraphQLString },
     content2: { type: GraphQLString },
     content3: { type: GraphQLString },

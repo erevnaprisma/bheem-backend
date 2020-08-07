@@ -2,23 +2,26 @@ const mongoose = require('mongoose')
 const Joi = require('@hapi/joi')
 
 const schema = new mongoose.Schema({
-  filename: {
-    type: String,
-    default: new Date().getTime(),
-    unique: true
-  },
-  file_type: {
+  title: {
     type: String
   },
-  file_size: {
-    type: Number
+  course_id: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'lms_course',
+    default: null
   },
-  mtime: {
-    type: String
+  points: {
+    type: Number,
+    default: 0
   },
-  filenameorigin: {
+  description: {
     type: String,
     default: new Date().getTime()
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'inactive'
   },
   created_at: {
     type: Number,
@@ -45,4 +48,4 @@ const schema = new mongoose.Schema({
 //   // amount: Joi.number().required().greater(0)
 // }).validate(args)
 
-module.exports = mongoose.model('lms_file', schema)
+module.exports = mongoose.model('lms_grading', schema)

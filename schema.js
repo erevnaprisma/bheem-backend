@@ -121,6 +121,9 @@ const { createPrivilege, deletePrivilege, privilegeCheckboxSubmit, updatePrivile
 const { getAllUserRoles, getDetailUserRole, getDetailUserRoleByMyUserId } = require('./src/collections/user_role/graphql/query')
 const { createUserRole, deleteUserRole, updateUserRole } = require('./src/collections/user_role/graphql/mutation')
 
+// lms grading
+const { getAllLmsGradings, getDetailLmsGrading, getAllGradingsByCourseId } = require('./src/collections/lms_grading/graphql/query')
+const { createLmsGrading, deleteLmsGrading, updateLmsGrading } = require('./src/collections/lms_grading/graphql/mutation')
 
 const {
   GraphQLObjectType,
@@ -209,7 +212,12 @@ const RootQuery = new GraphQLObjectType({
     // user role
     getAllUserRoles,
     getDetailUserRole,
-    getDetailUserRoleByMyUserId
+    getDetailUserRoleByMyUserId,
+
+    // lms grading
+    getAllLmsGradings,
+    getDetailLmsGrading,
+    getAllGradingsByCourseId
   }
 })
 
@@ -348,7 +356,12 @@ const Mutation = new GraphQLObjectType({
     // user role
     createUserRole,
     updateUserRole,
-    deleteUserRole
+    deleteUserRole,
+
+    // lms grading
+    createLmsGrading,
+    updateLmsGrading,
+    deleteLmsGrading
   }
 })
 
