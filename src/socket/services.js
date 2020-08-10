@@ -8,6 +8,8 @@ const {
   admitParticipantToJoinService,
   rejectParticipantToJoinService,
   removeUserFromParticipantsService,
+  endMeetingService,
+  getCurrentMeetingListService
 } = require('../collections/bheem_meeting/services/Meeting')
 
 const requestToJoin = async (socket, io) => {
@@ -112,15 +114,34 @@ const ifUserSuddenlyOff = (socket, io) => {
 }
 
 const joinRoomAndBroadcastToMeeting = (socket, io) => {
-  socket.on('afterUserJoinMeeting', (msg) => {
+  socket.on('afterUserJoinMeeting', async (msg) => {
     // add user to room
     socket.join(msg.meetingId, () => {
       console.log(`${msg.fullName} has join room`)
     })
 
     // broadcast message to all user in meeting
-    console.log(msg)
     io.of('/participant').to(msg.meetingId).emit('userHasJoinMeeting', { message: `${msg.fullName} has join meeting`, fullName: msg.fullName, role: 'participant' })
+
+    // send meetingList to user
+    try {
+      const response = await getCurrentMeetingListService(msg.meetingId)
+      if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
+
+      socket.emit('meetingList', response)
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Something went wrong')
+    }
+  })
+}
+
+const broadcastEndMeeting = (socket, io) => {
+  socket.on('hostEndMeeting', async (msg) => {
+    const response = await endMeetingService(msg.meetingId)
+
+    if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
+
+    io.of('/participant').to(msg.meetingId).emit('endMeeting', { message: 'Meeting has ended' })
   })
 }
 
@@ -129,5 +150,6 @@ module.exports = {
   admitOrReject,
   createMeeting,
   ifUserSuddenlyOff,
-  joinRoomAndBroadcastToMeeting
+  joinRoomAndBroadcastToMeeting,
+  broadcastEndMeeting
 }

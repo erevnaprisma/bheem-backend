@@ -202,6 +202,13 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
     const alreadyRequestToJoin = await meeting.requestToJoin.find(e => e.userId === userId)
     if (alreadyRequestToJoin) throw new Error('User already request to join')
 
+    // check meeting lock status
+    if (meeting.lockMeeting === 'TRUE') throw new Error('Host already lock the meeting')
+
+    // check meeting limit
+    const totalMeetingList = meeting.participants.length + meeting.hosts.length
+    if (meeting.limit === totalMeetingList) throw new Error('Meeting has reached participant limit')
+
     // Meeting don't need permission (automatically join)
     const noPermissionNeeded = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'No' })
     if (noPermissionNeeded) {
@@ -334,6 +341,75 @@ const removeUserFromParticipantsService = async (userId, meetingId) => {
   }
 }
 
+const endMeetingService = async (meetingId) => {
+  try {
+    // check if meeting exist
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    meeting.status = 'INACTIVE'
+    await meeting.save()
+
+    return { status: 200, success: 'Successfully end meeting' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed end meeting' }
+  }
+}
+
+const lockMeetingService = async (meetingId) => {
+  try {
+    const meeting = await Meeting.findOne({ id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    meeting.lockMeeting = 'TRUE'
+    await meeting.save()
+
+    return { status: 200, success: 'Successfully lock meeting' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed lock meeting' }
+  }
+}
+
+const getCurrentMeetingListService = async (meetingId) => {
+  try {
+    const meetingList = []
+
+    // get hosts list
+    const { hosts } = await Meeting.findOne({ _id: meetingId }).populate('hosts.userId').select('hosts -_id')
+
+    let newHost
+
+    await hosts.forEach(e => {
+      newHost = {
+        fullName: e.userId.fullName,
+        role: 'Host',
+        userId: e.userId._id
+      }
+
+      meetingList.push(newHost)
+    })
+
+    // get participants list
+    const { participants } = await Meeting.findOne({ _id: meetingId }).populate('participants.userId').select('participants -_id')
+
+    let newParticipant
+
+    await participants.forEach(e => {
+      newParticipant = {
+        fullName: e.userId.fullName,
+        role: 'Participant',
+        userId: e.userId._id
+      }
+
+      meetingList.push(newParticipant)
+    })
+
+    return { status: 200, success: 'Successfully get current meeting list', meetingList }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed get current meeting list' }
+  }
+}
+
 module.exports = {
   createMeetingService,
   finishMeetingService,
@@ -346,5 +422,8 @@ module.exports = {
   testingPurposeOnlyService,
   rejectParticipantToJoinService,
   isUserHostService,
-  removeUserFromParticipantsService
+  removeUserFromParticipantsService,
+  endMeetingService,
+  lockMeetingService,
+  getCurrentMeetingListService
 }

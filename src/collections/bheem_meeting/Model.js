@@ -5,7 +5,7 @@ Joi.objectId = require('joi-objectid')(Joi)
 const participantsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   },
   status: {
     type: String,
@@ -17,14 +17,14 @@ const participantsSchema = new mongoose.Schema({
 const hostsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   }
 })
 
 const removedParticipantsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   },
   default: {
     type: String,
@@ -36,7 +36,7 @@ const removedParticipantsSchema = new mongoose.Schema({
 const requestToJoinSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   },
   status: {
     type: String,
@@ -73,9 +73,18 @@ const meetingSchema = new mongoose.Schema({
     enum: ['ACTIVE', 'INACTIVE', 'SCHEDULE'],
     default: 'ACTIVE'
   },
+  lockMeeting: {
+    type: String,
+    enum: ['TRUE', 'FALSE'],
+    default: 'FALSE'
+  },
+  limit: {
+    type: Number,
+    default: 100
+  },
   createdBy: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   },
   startDate: String,
   endDate: {
