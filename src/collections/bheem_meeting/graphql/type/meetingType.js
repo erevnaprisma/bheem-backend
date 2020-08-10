@@ -147,12 +147,22 @@ const LockMeetingType = new GraphQLObjectType({
   })
 })
 
+const SingleUserMeetingListType = new GraphQLObjectType({
+  name: 'SingleUserMeetingList',
+  fields: () => ({
+    fullName: { type: GraphQLString },
+    role: { type: GraphQLString },
+    userId: { type: GraphQLString }
+  })
+})
+
 const GetCurrentMeetingListType = new GraphQLObjectType({
   name: 'GetCurrentMeetingList',
   fields: () => ({
     status: { type: GraphQLString },
     error: { type: GraphQLString },
-    success: { type: GraphQLString }
+    success: { type: GraphQLString },
+    meetingList: { type: GraphQLList(SingleUserMeetingListType) }
   })
 })
 

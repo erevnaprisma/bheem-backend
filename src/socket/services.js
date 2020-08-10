@@ -90,6 +90,14 @@ const admitOrReject = async (socket, io) => {
   })
 }
 
+const requestToJoinAsAnonymous = async (socket, io) => {
+  
+}
+
+const admitOrRejectAnonymous = async (socket, io) => {
+
+}
+
 const createMeeting = (socket) => {
   socket.on('createMeeting', async (msg) => {
     socket.join(msg.meetingId, () => {

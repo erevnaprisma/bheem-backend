@@ -20,7 +20,7 @@ const anonymousRequestToJoinMeetingService = async (meetingId, name) => {
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
     if (!meeting) throw new Error('Invalid meeting id')
 
-    await meeting.requestToJoin.push({ userId, name, status: 'Anonymous' })
+    await meeting.requestToJoin.push({ userId, nameForAnonymous: name, status: 'Anonymous' })
     await meeting.save()
 
     return { status: 200, success: 'Successfully request to join' }

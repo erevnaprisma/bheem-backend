@@ -8,6 +8,9 @@ const participantsSchema = new mongoose.Schema({
     ref: 'Bheem_User',
     unique: true
   },
+  nameForAnonymous: {
+    type: String
+  },
   status: {
     type: String,
     enum: ['Auth', 'Anonymous'],
@@ -29,6 +32,9 @@ const removedParticipantsSchema = new mongoose.Schema({
     ref: 'Bheem_User',
     unique: true
   },
+  nameForAnonymous: {
+    type: String
+  },
   default: {
     type: String,
     enum: ['Auth', 'Anonymous'],
@@ -41,6 +47,9 @@ const requestToJoinSchema = new mongoose.Schema({
     type: String,
     ref: 'Bheem_User',
     unique: true
+  },
+  nameForAnonymous: {
+    type: String
   },
   status: {
     type: String,
