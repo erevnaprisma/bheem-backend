@@ -121,7 +121,7 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
     })
 
     // broadcast message to all user in meeting
-    io.of('/participant').to(msg.meetingId).emit('userHasJoinMeeting', { message: `${msg.fullName} has join meeting`, fullName: msg.fullName, role: 'participant' })
+    io.of('/participant').to(msg.meetingId).emit('userHasJoinMeeting', { message: `${msg.fullName} has join meeting`, fullName: msg.fullName, role: 'participant', userId: msg.userId })
 
     // send meetingList to user
     try {
