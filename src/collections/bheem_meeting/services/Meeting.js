@@ -50,18 +50,6 @@ const admitParticipantToJoinService = async (meetingId, userId, hostId) => {
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
     if (!meeting) throw new Error('Invalid meeting id')
 
-    // // if user is anonymous
-    // await meeting.requestToJoin.forEach(async e => {
-    //   if (e.userId === userId && e.status === 'Anonymous') {
-    //     // add requestedParticipant to participants
-    //     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
-
-    //     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
-
-    //     return { status: 200, success: 'Successfully add participant' }
-    //   }
-    // })
-
     // check if user id valid
     const user = await User.findOne({ _id: userId })
     if (!user) throw new Error('Invalid user id')
@@ -71,8 +59,8 @@ const admitParticipantToJoinService = async (meetingId, userId, hostId) => {
     if (!host) throw new Error('Invalid host id')
 
     // check if host id is a real meeting host
-    const isValidHost = await meeting.hosts.find(e => e.userId === hostId)
-    if (!isValidHost) throw new Error('host id is not this meeting host')
+    const isHostValid = await meeting.hosts.find(e => e.userId === hostId)
+    if (!isHostValid) throw new Error('Host id is not this meeting host')
 
     // add requestedParticipant to participants
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })

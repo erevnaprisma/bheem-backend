@@ -5,11 +5,7 @@ Joi.objectId = require('joi-objectid')(Joi)
 const participantsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'Bheem_User',
-    unique: true
-  },
-  nameForAnonymous: {
-    type: String
+    ref: 'Bheem_User'
   },
   status: {
     type: String,
@@ -21,16 +17,14 @@ const participantsSchema = new mongoose.Schema({
 const hostsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'Bheem_User',
-    unique: true
+    ref: 'Bheem_User'
   }
 })
 
 const removedParticipantsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'Bheem_User',
-    unique: true
+    ref: 'Bheem_User'
   },
   nameForAnonymous: {
     type: String
@@ -46,7 +40,7 @@ const requestToJoinSchema = new mongoose.Schema({
   userId: {
     type: String,
     ref: 'Bheem_User',
-    unique: true
+    // unique: true
   },
   nameForAnonymous: {
     type: String
@@ -131,6 +125,16 @@ meetingSchema.statics.admitOrReject = (args) => {
   const schema = Joi.object({
     meetingId: Joi.objectId().required(),
     userId: Joi.objectId().required(),
+    hostId: Joi.objectId().required()
+  })
+
+  return schema.validate(args)
+}
+
+meetingSchema.statics.admitOrRejectAnonymous = (args) => {
+  const schema = Joi.object({
+    meetingId: Joi.objectId().required(),
+    username: Joi.string().required(),
     hostId: Joi.objectId().required()
   })
 

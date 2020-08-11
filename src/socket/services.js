@@ -12,6 +12,13 @@ const {
   getCurrentMeetingListService
 } = require('../collections/bheem_meeting/services/Meeting')
 
+const {
+  anonymousRequestToJoinMeetingService,
+  anonymousAdmitParticipantToJoinService
+} = require('../collections/bheem_meeting/services/AnonymousMeeting')
+
+var ObjectId = require('mongodb').ObjectID
+
 const requestToJoin = async (socket, io) => {
   // Request to Join
   socket.on('requestToJoin', async (msg) => {
@@ -24,7 +31,8 @@ const requestToJoin = async (socket, io) => {
       socketId: msg.socketId,
       userId: msg.userId,
       username: msg.username,
-      meetingId: msg.meetingId
+      meetingId: msg.meetingId,
+      status: 'Auth'
     }
 
     let meeting
@@ -37,6 +45,40 @@ const requestToJoin = async (socket, io) => {
       return socket.emit('meetingError', err.messagee || 'Meeting not found')
     }
 
+    // if participant is anonymous
+    if (msg.anonymous) {
+      if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
+      if (!msg.username) return socket.emit('meetingError', 'Invalid name')
+
+      const response = await anonymousRequestToJoinMeetingService(msg.meetingId, msg.username)
+
+      if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
+
+      // if meeting permission is No
+      if (response.success === 'Successfully join meeting') {
+        socket.join(msg.meetingId, () => {
+          console.log(`${msg.username} has joined the room`)
+          socket.emit('userPermission', 'Admit')
+        })
+      }
+
+      // if meeting permission is Yes
+      if (response.success === 'Successfully request to join') {
+        const AnonymousMessage = {
+          socketId: msg.socketId,
+          userId: new ObjectId().toString(),
+          username: msg.username,
+          meetingId: msg.meetingId,
+          status: 'Anonymous'
+        }
+
+        io.of('/participant').to(msg.meetingId).emit('sendRequestToHost', AnonymousMessage)
+
+        socket.emit('needPermission', 'Waiting for host approval')
+      }
+    }
+
+    // if participant already authenticate
     const response = await requestToJoinMeetingService(msg.meetingId, msg.userId)
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
@@ -60,6 +102,17 @@ const requestToJoin = async (socket, io) => {
 const admitOrReject = async (socket, io) => {
   // Admit User to Join
   socket.on('admitUserToJoinHost', async (msg) => {
+    if (msg.status === 'Anonymous') {
+      const response = await anonymousAdmitParticipantToJoinService(msg.meetingId, msg.username, msg.hostId, msg.userId)
+
+      if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
+
+      // send message to user
+      io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'participant', meetingId: msg.meetingId })
+
+      // send successfully admit response to host to erase participant from host
+      return socket.emit('succeessfullyAdmit', { userId: msg.userId, fullName: msg.username, role: 'participant' })
+    }
     const response = await admitParticipantToJoinService(msg.meetingId, msg.userId, msg.hostId)
 
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
@@ -88,14 +141,6 @@ const admitOrReject = async (socket, io) => {
     // send successfully admit response to host to erase participant from host
     socket.emit('successfullyReject', { userId: user._id })
   })
-}
-
-const requestToJoinAsAnonymous = async (socket, io) => {
-  
-}
-
-const admitOrRejectAnonymous = async (socket, io) => {
-
 }
 
 const createMeeting = (socket) => {
