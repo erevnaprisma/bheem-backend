@@ -14,7 +14,8 @@ const {
 
 const {
   anonymousRequestToJoinMeetingService,
-  anonymousAdmitParticipantToJoinService
+  anonymousAdmitParticipantToJoinService,
+  anonymousRejectParticipantToJoinService
 } = require('../collections/bheem_meeting/services/AnonymousMeeting')
 
 var ObjectId = require('mongodb').ObjectID
@@ -103,7 +104,7 @@ const admitOrReject = async (socket, io) => {
   // Admit User to Join
   socket.on('admitUserToJoinHost', async (msg) => {
     if (msg.status === 'Anonymous') {
-      const response = await anonymousAdmitParticipantToJoinService(msg.meetingId, msg.username, msg.hostId, msg.userId)
+      const response = await anonymousAdmitParticipantToJoinService(msg.meetingId, msg.hostId, msg.userId)
 
       if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
@@ -129,6 +130,16 @@ const admitOrReject = async (socket, io) => {
 
   // Reject User to Join
   socket.on('rejectUserToJoinHost', async (msg) => {
+    if (msg.status === 'Anonymous') {
+      const response = await anonymousRejectParticipantToJoinService(msg.meetingId, msg.userId, msg.hostId)
+
+      if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
+
+      io.of('/participant').to(msg.socketId).emit('userPermission', 'REJECT')
+
+      // send successfully admit response to host to erase participant from host
+      socket.emit('successfullyReject', { userId: msg.userId })
+    }
     const response = await rejectParticipantToJoinService(msg.meetingId, msg.userId, msg.hostId)
 
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')

@@ -131,16 +131,6 @@ meetingSchema.statics.admitOrReject = (args) => {
   return schema.validate(args)
 }
 
-meetingSchema.statics.admitOrRejectAnonymous = (args) => {
-  const schema = Joi.object({
-    meetingId: Joi.objectId().required(),
-    username: Joi.string().required(),
-    hostId: Joi.objectId().required()
-  })
-
-  return schema.validate(args)
-}
-
 meetingSchema.statics.validateEditedScheduleMeeting = (args) => {
   const titleRegex = /^[a-zA-Z0-9,.?/'";;=+-_()&# ]*$/i
 

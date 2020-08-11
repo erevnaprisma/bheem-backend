@@ -35,18 +35,17 @@ const anonymousRequestToJoinMeetingService = async (meetingId, username) => {
   }
 }
 
-const anonymousAdmitParticipantToJoinService = async (meetingId, username, hostId, userId) => {
+const anonymousAdmitParticipantToJoinService = async (meetingId, hostId, userId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
-    if (!username) throw new Error('Invalid username')
     if (!hostId) throw new Error('Invalid host id')
     if (!userId) throw new Error('Invalid user id')
 
-    const { error } = await Meeting.admitOrRejectAnonymous({ meetingId, username, hostId })
+    const { error } = await Meeting.admitOrReject({ meetingId, userId, hostId })
     if (error) throw new Error(error.details[0].message)
 
     // check if meeting exist
-    const meeting = await Meeting.findOne({ _id: meetingId })
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
     if (!meeting) throw new Error('Invalid meeting id')
 
     // check if host exist
@@ -68,7 +67,38 @@ const anonymousAdmitParticipantToJoinService = async (meetingId, username, hostI
   }
 }
 
+const anonymousRejectParticipantToJoinService = async (meetingId, userId, hostId) => {
+  try {
+    if (!meetingId) throw new Error('Invalid meeting id')
+    if (!userId) throw new Error('Invalid user id')
+    if (!hostId) throw new Error('Invalid host id')
+
+    const { error } = await Meeting.admitOrReject({ meetingId, userId, hostId })
+    if (error) throw new Error(error.details[0].message)
+
+    // check if host id valid
+    const host = await User.findOne({ _id: hostId })
+    if (!host) throw new Error('Invalid host id')
+
+    // check if meeting id valid
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    // check if host id is a real meeting host
+    const isValidHost = await meeting.hosts.find(e => e.userId === hostId)
+    if (!isValidHost) throw new Error('host id is not this meeting host')
+
+    // pull user from request to join
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
+
+    return { status: 200, success: 'Successfully reject participants' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed reject Participant' }
+  }
+}
+
 module.exports = {
   anonymousRequestToJoinMeetingService,
-  anonymousAdmitParticipantToJoinService
+  anonymousAdmitParticipantToJoinService,
+  anonymousRejectParticipantToJoinService
 }
