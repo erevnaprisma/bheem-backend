@@ -14,3 +14,4 @@ test/*.json
 public/*.xml
 package-lock.json
 npm-debug.log.*
+uploadfile/
