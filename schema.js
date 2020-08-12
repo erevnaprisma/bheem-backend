@@ -125,6 +125,22 @@ const { createUserRole, deleteUserRole, updateUserRole } = require('./src/collec
 const { getAllLmsGradings, getDetailLmsGrading, getAllGradingsByCourseId } = require('./src/collections/lms_grading/graphql/query')
 const { createLmsGrading, deleteLmsGrading, updateLmsGrading } = require('./src/collections/lms_grading/graphql/mutation')
 
+// toko product
+const { getAllTokoProducts, getDetailTokoProduct, getAllTokoProductsByTokoId, getAllTokoProductsByCategoryId } = require('./src/collections/toko_product/graphql/query')
+const { createTokoProduct, deleteTokoProduct, updateTokoProduct } = require('./src/collections/toko_product/graphql/mutation')
+
+// tag
+const { getAllTags, getDetailTag } = require('./src/collections/tag/graphql/query')
+const { createTag, deleteTag, updateTag } = require('./src/collections/tag/graphql/mutation')
+
+// category
+const { getAllCategorys, getDetailCategory, getAllCategorysByTokoId } = require('./src/collections/category/graphql/query')
+const { createCategory, deleteCategory, updateCategory } = require('./src/collections/category/graphql/mutation')
+
+// toko toko online
+const { getAllTokoTokoOnlines, getDetailTokoTokoOnline } = require('./src/collections/toko_toko_online/graphql/query')
+const { createTokoTokoOnline, deleteTokoTokoOnline, updateTokoTokoOnline } = require('./src/collections/toko_toko_online/graphql/mutation')
+
 const {
   GraphQLObjectType,
   GraphQLSchema
@@ -217,7 +233,24 @@ const RootQuery = new GraphQLObjectType({
     // lms grading
     getAllLmsGradings,
     getDetailLmsGrading,
-    getAllGradingsByCourseId
+    getAllGradingsByCourseId,
+
+    // toko product
+    getAllTokoProducts,
+    getDetailTokoProduct,
+
+    // tag
+    getAllTags,
+    getDetailTag,
+    // category
+    getAllCategorys,
+    getDetailCategory,
+    getAllCategorysByTokoId,
+    // toko toko online
+    getAllTokoTokoOnlines,
+    getDetailTokoTokoOnline,
+    getAllTokoProductsByTokoId,
+    getAllTokoProductsByCategoryId
   }
 })
 
@@ -361,7 +394,24 @@ const Mutation = new GraphQLObjectType({
     // lms grading
     createLmsGrading,
     updateLmsGrading,
-    deleteLmsGrading
+    deleteLmsGrading,
+
+    createTokoProduct,
+    deleteTokoProduct,
+    updateTokoProduct,
+
+    // tag
+    createTag,
+    deleteTag,
+    updateTag,
+    // category
+    createCategory,
+    deleteCategory,
+    updateCategory,
+    // toko toko online
+    createTokoTokoOnline,
+    deleteTokoTokoOnline,
+    updateTokoTokoOnline
   }
 })
 

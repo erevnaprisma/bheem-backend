@@ -1,32 +1,19 @@
 const mongoose = require('mongoose')
-const Joi = require('@hapi/joi')
+// const Joi = require('@hapi/joi')
+// const User = require('../user/Model')
 
 const schema = new mongoose.Schema({
-  filename: {
+  name: {
     type: String,
-    default: new Date().getTime(),
     unique: true
-  },
-  file_type: {
-    type: String
-  },
-  file_size: {
-    type: Number
-  },
-  mtime: {
-    type: String
-  },
-  filenameorigin: {
-    type: String,
-    default: new Date().getTime()
   },
   created_at: {
     type: Number,
-    default: new Date().getTime()
+    default: new Date().now
   },
   updated_at: {
     type: Number,
-    default: new Date().getTime()
+    default: new Date().now
   },
   created_by: {
     type: mongoose.SchemaTypes.ObjectId,
@@ -45,4 +32,4 @@ const schema = new mongoose.Schema({
 //   // amount: Joi.number().required().greater(0)
 // }).validate(args)
 
-module.exports = mongoose.model('file', schema)
+module.exports = mongoose.model('tag', schema)

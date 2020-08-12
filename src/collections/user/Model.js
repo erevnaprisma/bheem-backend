@@ -32,6 +32,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     min: 2
   },
+  last_login: {
+    type: Number
+  },
   first_name: {
     type: String,
     min: 3,
@@ -75,19 +78,21 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', function (next) {
   const user = this
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {
-      return next(err)
-    }
-
-    bcrypt.hash(user.password, salt, (err, hash) => {
+  if (user.password) {
+    bcrypt.genSalt(10, (err, salt) => {
       if (err) {
         return next(err)
       }
-      user.password = hash
-      next()
+
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        if (err) {
+          return next(err)
+        }
+        user.password = hash
+        next()
+      })
     })
-  })
+  }
 })
 
 userSchema.statics.validation = (args) => {
@@ -126,6 +131,8 @@ userSchema.statics.hashing = (password) => {
 userSchema.methods.comparedPassword = function (candidatePassword) {
   const user = this
   return new Promise((resolve, reject) => {
+    // console.log('candidatePassword===>', candidatePassword)
+    // console.log('user.password===>', user.password)
     bcrypt.compare(candidatePassword, user.password, (err, isMatch) => {
       if (err) {
         return reject('Invalid password')

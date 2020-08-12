@@ -3,13 +3,12 @@ const { userChangesValidation } = require('../user/services')
 const { generateRandomNumber } = require('../../utils/services/supportServices')
 const { generateID, getUnixTime } = require('../../utils/services/supportServices')
 const { checkerValidUser } = require('../user/services')
-const { checkerValidMerchant } = require('../rp_merchant/services')
 const { RANDOM_STRING_FOR_CONCAT } = require('../../utils/constants/number')
 
 const Otp = require('./Model')
 const User = require('../user/Model')
-const Merchant = require('../rp_merchant/Model')
-const Institution = require('../rp_institution/Model')
+// const Merchant = require('../rp_merchant/Model')
+// const Institution = require('../rp_institution/Model')
 
 const sendOTPService = async ({ userID, password, email }) => {
   if (!password) return { status: 400, error: 'Invalid password' }
@@ -74,7 +73,7 @@ const submitOtpService = async ({ otp, email, userID, otpRefNum }) => {
 
   await checkerValidUser(userID)
 
-  var otp
+  // var otp
 
   try {
     // Check if otp is on database using otp number
@@ -171,91 +170,91 @@ const forgetPasswordSendOtpService = async (email) => {
   }
 }
 
-const merchantForgetPasswordSendOtpService = async (email) => {
-  if (!email) return { status: 400, error: 'Invalid email' }
+// const merchantForgetPasswordSendOtpService = async (email) => {
+//   if (!email) return { status: 400, error: 'Invalid email' }
 
-  const { error } = User.validation({ email })
-  if (error) return { status: 400, error: error.details[0].message }
+//   const { error } = User.validation({ email })
+//   if (error) return { status: 400, error: error.details[0].message }
 
-  try {
-    const merchant = await Merchant.findOne({ email })
-    if (!merchant) return { status: 400, error: 'Email not found' }
+//   try {
+//     const merchant = await Merchant.findOne({ email })
+//     if (!merchant) return { status: 400, error: 'Email not found' }
 
-    // check if already send forget password otp before
-    const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
-    if (alreadySentOtp) {
-      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
-    }
+//     // check if already send forget password otp before
+//     const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
+//     if (alreadySentOtp) {
+//       await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
+//     }
 
-    const model = {
-      type: 'forgetPasswordSendOtp',
-      email,
-      otp: generateRandomNumber(4)
-    }
+//     const model = {
+//       type: 'forgetPasswordSendOtp',
+//       email,
+//       otp: generateRandomNumber(4)
+//     }
 
-    const otp = await new Otp({
-      status: 'ACTIVE',
-      otp_number: model.otp,
-      otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
-      otp_reference_number: generateRandomNumber(4),
-      new_email: email,
-      type: 'FORGET PASSWORD',
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-      merchant_id: merchant.merchant_id,
-      merchant_id_native: merchant._id
-    })
+//     const otp = await new Otp({
+//       status: 'ACTIVE',
+//       otp_number: model.otp,
+//       otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
+//       otp_reference_number: generateRandomNumber(4),
+//       new_email: email,
+//       type: 'FORGET PASSWORD',
+//       created_at: new Date().getTime(),
+//       updated_at: new Date().getTime(),
+//       merchant_id: merchant.merchant_id,
+//       merchant_id_native: merchant._id
+//     })
 
-    await otp.save()
+//     await otp.save()
 
-    return { status: 200, success: 'Successfylly send otp', otpRefNum: otp.otp_reference_number }
-  } catch (err) {
-    return { status: 400, error: err || 'Failed send new password' }
-  }
-}
+//     return { status: 200, success: 'Successfylly send otp', otpRefNum: otp.otp_reference_number }
+//   } catch (err) {
+//     return { status: 400, error: err || 'Failed send new password' }
+//   }
+// }
 
-const institutionForgetPasswordSendOtpService = async (email) => {
-  if (!email) return { status: 400, error: 'Invalid email' }
+// const institutionForgetPasswordSendOtpService = async (email) => {
+//   if (!email) return { status: 400, error: 'Invalid email' }
 
-  const { error } = User.validation({ email })
-  if (error) return { status: 400, error: error.details[0].message }
+//   const { error } = User.validation({ email })
+//   if (error) return { status: 400, error: error.details[0].message }
 
-  try {
-    const institution = await Institution.findOne({ email })
-    if (!institution) return { status: 400, error: 'Email not found' }
+//   try {
+//     const institution = await Institution.findOne({ email })
+//     if (!institution) return { status: 400, error: 'Email not found' }
 
-    // check if already send forget password otp before
-    const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
-    if (alreadySentOtp) {
-      await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
-    }
+//     // check if already send forget password otp before
+//     const alreadySentOtp = await Otp.findOne({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' })
+//     if (alreadySentOtp) {
+//       await Otp.findOneAndUpdate({ new_email: email, status: 'ACTIVE', type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
+//     }
 
-    const model = {
-      type: 'forgetPasswordSendOtp',
-      email,
-      otp: generateRandomNumber(4)
-    }
+//     const model = {
+//       type: 'forgetPasswordSendOtp',
+//       email,
+//       otp: generateRandomNumber(4)
+//     }
 
-    const otp = await new Otp({
-      status: 'ACTIVE',
-      otp_number: model.otp,
-      otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
-      otp_reference_number: generateRandomNumber(4),
-      new_email: email,
-      type: 'FORGET PASSWORD',
-      created_at: new Date().getTime(),
-      updated_at: new Date().getTime(),
-      institution_id: institution.institution_id,
-      institution_id_native: institution._id
-    })
+//     const otp = await new Otp({
+//       status: 'ACTIVE',
+//       otp_number: model.otp,
+//       otp_id: generateID(RANDOM_STRING_FOR_CONCAT),
+//       otp_reference_number: generateRandomNumber(4),
+//       new_email: email,
+//       type: 'FORGET PASSWORD',
+//       created_at: new Date().getTime(),
+//       updated_at: new Date().getTime(),
+//       institution_id: institution.institution_id,
+//       institution_id_native: institution._id
+//     })
 
-    await otp.save()
+//     await otp.save()
 
-    return { status: 200, success: 'Successfylly send otp', otpRefNum: otp.otp_reference_number }
-  } catch (err) {
-    return { status: 400, error: err || 'Failed send new password' }
-  }
-}
+//     return { status: 200, success: 'Successfylly send otp', otpRefNum: otp.otp_reference_number }
+//   } catch (err) {
+//     return { status: 400, error: err || 'Failed send new password' }
+//   }
+// }
 
 const changePasswordViaForgetPasswordService = async (otp, password, email, otpRefNum) => {
   if (!otp) return { status: 400, error: 'Invalid otp' }
@@ -300,99 +299,99 @@ const changePasswordViaForgetPasswordService = async (otp, password, email, otpR
   }
 }
 
-const merchantChangePasswordViaForgetPasswordService = async (otp, password, email, otpRefNum) => {
-  if (!otp) return { status: 400, error: 'Invalid otp' }
-  if (!password) return { status: 400, error: 'Invalid password' }
+// const merchantChangePasswordViaForgetPasswordService = async (otp, password, email, otpRefNum) => {
+//   if (!otp) return { status: 400, error: 'Invalid otp' }
+//   if (!password) return { status: 400, error: 'Invalid password' }
 
-  try {
-    const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE', otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
-    if (!otpChecker) {
-      const isEmailValid = await Otp.findOne({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
-      if (isEmailValid) {
-        if (isEmailValid.status !== 'ACTIVE') {
-          return { status: 400, error: 'Otp expired' }
-        }
-        if (isEmailValid.isValidLimit <= 2) {
-          if (isEmailValid.isValidLimit >=2) {
-            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
-            return { status: 400, error: 'Otp expired' }
-          }
-          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
-          return { status: 400, error: 'Invalid otp' }
-        } else {
-          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
-          return { status: 400, error: 'Otp expired' }
-        }
-      } else {
-        return { status: 400, error: 'Invalid otp'}
-      }
-    }
-    const otpTime = parseInt(otpChecker.created_at)
-    const time = await expireOtpChecker({ getOtpTime: otpTime, otp })
-    if (!time) return { status: 400, error: 'Otp expired' }
+//   try {
+//     const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE', otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
+//     if (!otpChecker) {
+//       const isEmailValid = await Otp.findOne({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
+//       if (isEmailValid) {
+//         if (isEmailValid.status !== 'ACTIVE') {
+//           return { status: 400, error: 'Otp expired' }
+//         }
+//         if (isEmailValid.isValidLimit <= 2) {
+//           if (isEmailValid.isValidLimit >=2) {
+//             await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
+//             return { status: 400, error: 'Otp expired' }
+//           }
+//           await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
+//           return { status: 400, error: 'Invalid otp' }
+//         } else {
+//           await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
+//           return { status: 400, error: 'Otp expired' }
+//         }
+//       } else {
+//         return { status: 400, error: 'Invalid otp'}
+//       }
+//     }
+//     const otpTime = parseInt(otpChecker.created_at)
+//     const time = await expireOtpChecker({ getOtpTime: otpTime, otp })
+//     if (!time) return { status: 400, error: 'Otp expired' }
 
-    const hashedPassword = await User.hashing(password)
+//     const hashedPassword = await User.hashing(password)
 
-    await Merchant.findOneAndUpdate({ merchant_id: otpChecker.merchant_id }, { password: hashedPassword, updated_at: getUnixTime() })
+//     await Merchant.findOneAndUpdate({ merchant_id: otpChecker.merchant_id }, { password: hashedPassword, updated_at: getUnixTime() })
 
-    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
-    return { status: 200, success: 'Successfully change password' }
-  } catch (err) {
-    return { status: 400, error: 'Failed change password' }
-  }
-}
+//     await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
+//     return { status: 200, success: 'Successfully change password' }
+//   } catch (err) {
+//     return { status: 400, error: 'Failed change password' }
+//   }
+// }
 
-const institutionChangePasswordViaForgetPasswordService = async (otp, password, email, otpRefNum) => {
-  if (!otp) return { status: 400, error: 'Invalid otp' }
-  if (!password) return { status: 400, error: 'Invalid password' }
+// const institutionChangePasswordViaForgetPasswordService = async (otp, password, email, otpRefNum) => {
+//   if (!otp) return { status: 400, error: 'Invalid otp' }
+//   if (!password) return { status: 400, error: 'Invalid password' }
 
-  try {
-    const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE', otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
-    if (!otpChecker) {
-      const isEmailValid = await Otp.findOne({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
-      if (isEmailValid) {
-        if (isEmailValid.status !== 'ACTIVE') {
-          return { status: 400, error: 'Otp expired' }
-        }
-        if (isEmailValid.isValidLimit <= 2) {
-          if (isEmailValid.isValidLimit >= 2) {
-            await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
-            return { status: 400, error: 'Otp expired' }
-          }
-          await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD'}, { isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
-          return { status: 400, error: 'Invalid otp' }
-        } else {
-          await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
-          return { status: 400, error: 'Otp expired' }
-        }
-      } else {
-        return { status: 400, error: 'Invalid otp'}
-      }
-    }
-    const otpTime = parseInt(otpChecker.created_at)
-    const time = await expireOtpChecker({ getOtpTime: otpTime, otp })
-    if (!time) return { status: 400, error: 'Otp expired' }
+//   try {
+//     const otpChecker = await Otp.findOne({ otp_number: otp, status: 'ACTIVE', otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
+//     if (!otpChecker) {
+//       const isEmailValid = await Otp.findOne({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' })
+//       if (isEmailValid) {
+//         if (isEmailValid.status !== 'ACTIVE') {
+//           return { status: 400, error: 'Otp expired' }
+//         }
+//         if (isEmailValid.isValidLimit <= 2) {
+//           if (isEmailValid.isValidLimit >= 2) {
+//             await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
+//             return { status: 400, error: 'Otp expired' }
+//           }
+//           await Otp.findOneAndUpdate({ new_email: email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD'}, { isValidLimit: isEmailValid.isValidLimit + 1, updated_at: getUnixTime() })
+//           return { status: 400, error: 'Invalid otp' }
+//         } else {
+//           await Otp.findOneAndUpdate({ email, otp_reference_number: otpRefNum, type: 'FORGET PASSWORD' }, { status: 'INACTIVE', updated_at: getUnixTime() })
+//           return { status: 400, error: 'Otp expired' }
+//         }
+//       } else {
+//         return { status: 400, error: 'Invalid otp'}
+//       }
+//     }
+//     const otpTime = parseInt(otpChecker.created_at)
+//     const time = await expireOtpChecker({ getOtpTime: otpTime, otp })
+//     if (!time) return { status: 400, error: 'Otp expired' }
 
-    const hashedPassword = await User.hashing(password)
+//     const hashedPassword = await User.hashing(password)
 
-    await Institution.findOneAndUpdate({ institution_id: otpChecker.institution_id }, { password: hashedPassword, updated_at: getUnixTime() })
+//     await Institution.findOneAndUpdate({ institution_id: otpChecker.institution_id }, { password: hashedPassword, updated_at: getUnixTime() })
 
-    await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
-    return { status: 200, success: 'Successfully change password' }
-  } catch (err) {
-    return { status: 400, error: 'Failed change password' }
-  }
-}
+//     await Otp.findOneAndUpdate({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
+//     return { status: 200, success: 'Successfully change password' }
+//   } catch (err) {
+//     return { status: 400, error: 'Failed change password' }
+//   }
+// }
 
 const expireOtpChecker = async ({ getOtpTime, otp }) => {
   const maximumTime = 120000
 
-  const created_at = parseInt(getOtpTime)
-  console.log(created_at)
+  const createdAt = parseInt(getOtpTime)
+  console.log(createdAt)
   console.log(getOtpTime)
 
   // Check if otp above time limit
-  const maxDate = created_at + maximumTime
+  const maxDate = createdAt + maximumTime
 
   if (getUnixTime() > maxDate) {
     await Otp.updateOne({ otp_number: otp }, { status: 'INACTIVE', updated_at: getUnixTime() })
@@ -405,7 +404,7 @@ module.exports.sendOTPService = sendOTPService
 module.exports.submitOtpService = submitOtpService
 module.exports.forgetPasswordSendOtpService = forgetPasswordSendOtpService
 module.exports.changePasswordViaForgetPasswordService = changePasswordViaForgetPasswordService
-module.exports.merchantForgetPasswordSendOtpService = merchantForgetPasswordSendOtpService
-module.exports.merchantChangePasswordViaForgetPasswordService = merchantChangePasswordViaForgetPasswordService
-module.exports.institutionForgetPasswordSendOtpService = institutionForgetPasswordSendOtpService
-module.exports.institutionChangePasswordViaForgetPasswordService = institutionChangePasswordViaForgetPasswordService
+// module.exports.merchantForgetPasswordSendOtpService = merchantForgetPasswordSendOtpService
+// module.exports.merchantChangePasswordViaForgetPasswordService = merchantChangePasswordViaForgetPasswordService
+// module.exports.institutionForgetPasswordSendOtpService = institutionForgetPasswordSendOtpService
+// module.exports.institutionChangePasswordViaForgetPasswordService = institutionChangePasswordViaForgetPasswordService

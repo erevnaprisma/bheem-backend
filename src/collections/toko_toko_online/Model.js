@@ -1,32 +1,39 @@
 const mongoose = require('mongoose')
-const Joi = require('@hapi/joi')
+// const Joi = require('@hapi/joi')
+// const User = require('../user/Model')
 
 const schema = new mongoose.Schema({
-  filename: {
+  name: {
     type: String,
-    default: new Date().getTime(),
     unique: true
   },
-  file_type: {
+  website: {
     type: String
   },
-  file_size: {
-    type: Number
-  },
-  mtime: {
+  facebook: {
     type: String
   },
-  filenameorigin: {
+  instagram: {
+    type: String
+  },
+  youtube: {
+    type: String
+  },
+  description: {
+    type: String
+  },
+  status: {
     type: String,
-    default: new Date().getTime()
+    enum: ['active', 'inactive'],
+    default: 'active'
   },
   created_at: {
     type: Number,
-    default: new Date().getTime()
+    default: new Date().now
   },
   updated_at: {
     type: Number,
-    default: new Date().getTime()
+    default: new Date().now
   },
   created_by: {
     type: mongoose.SchemaTypes.ObjectId,
@@ -45,4 +52,4 @@ const schema = new mongoose.Schema({
 //   // amount: Joi.number().required().greater(0)
 // }).validate(args)
 
-module.exports = mongoose.model('file', schema)
+module.exports = mongoose.model('toko_toko_online', schema)

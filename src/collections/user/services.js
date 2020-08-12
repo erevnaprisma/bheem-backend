@@ -8,7 +8,6 @@ const { fetchDetailUserRoleByUserId } = require('../user_role/services')
 const { flatten } = require('../../utils/services')
 
 const User = require('./Model')
-const Otp = require('../rp_otp/Model')
 const { reusableFindUserByID } = require('../../utils/services/mongoServices')
 const { generateRandomStringAndNumber, sendMailVerification, getUnixTime, generateRandomNumber, generateID, isEqual } = require('../../utils/services/supportServices')
 const { WORD_SIGN_UP, WORD_LOGIN, WORD_CHANGE_PASSWORD, WORD_CHANGE_USERNAME, errorHandling } = require('../../utils/constants/word')
@@ -170,6 +169,9 @@ const userLogin = async (email, password, token, isLoggedInWithToken) => {
     const userPrivilegeName = _.uniq(flatten(_.map(userRole.data_detail.role_id, (v, i) => _.map(v.privilege_id, (v, i) => v.name)) || []))
     // console.log('userRole.data_detail.role_id===>', userRole.data_detail.role_id)
     // login with username & password
+    // await User.updateOne({ _id: '' + user._id }, { last_login: new Date().now, $inc: { total_login: 1 } })
+    // await user.save({ last_login: '' + new Date().getTime(), $inc: { total_login: 1 } })
+    await User.findOneAndUpdate({ _id: user._id }, { last_login: '' + new Date().getTime() })
     return {
       status: 200,
       access_token: accessToken,
@@ -179,6 +181,7 @@ const userLogin = async (email, password, token, isLoggedInWithToken) => {
       role: (_.map(userRole.data_detail.role_id, (v, i) => v.title) || []).join(', ')
     }
   } catch (err) {
+    console.log('error login=====>', err)
     return { status: 500, error: err }
   }
 }
