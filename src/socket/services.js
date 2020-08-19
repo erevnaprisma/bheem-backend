@@ -24,7 +24,6 @@ const requestToJoin = async (socket, io) => {
   // Request to Join
   socket.on('requestToJoin', async (msg) => {
     if (!msg.socketId) return socket.emit('meetingError', 'Invalid socket id')
-    if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
     if (!msg.username) return socket.emit('meetingError', 'Invalid username')
     if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
 
@@ -40,10 +39,10 @@ const requestToJoin = async (socket, io) => {
 
     try {
       // Validate Meeting
-      meeting = await Meeting.findOne({ _id: message.meetingId })
+      meeting = await Meeting.findOne({ _id: msg.meetingId })
       if (!meeting) return socket.emit('meetingError', 'Meeting not found')
     } catch (err) {
-      return socket.emit('meetingError', err.messagee || 'Meeting not found')
+      return socket.emit('meetingError', err.message || 'Meeting not found')
     }
 
     // if participant is anonymous
@@ -51,7 +50,9 @@ const requestToJoin = async (socket, io) => {
       if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
       if (!msg.username) return socket.emit('meetingError', 'Invalid name')
 
-      const response = await anonymousRequestToJoinMeetingService(msg.meetingId, msg.username)
+      const userId = new ObjectId().toString()
+
+      const response = await anonymousRequestToJoinMeetingService(msg.meetingId, msg.username, userId)
 
       if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
@@ -59,7 +60,7 @@ const requestToJoin = async (socket, io) => {
       if (response.success === 'Successfully join meeting') {
         socket.join(msg.meetingId, () => {
           console.log(`${msg.username} has joined the room`)
-          socket.emit('userPermission', 'Admit')
+          return socket.emit('userPermission', 'Admit')
         })
       }
 
@@ -67,7 +68,7 @@ const requestToJoin = async (socket, io) => {
       if (response.success === 'Successfully request to join') {
         const AnonymousMessage = {
           socketId: msg.socketId,
-          userId: new ObjectId().toString(),
+          userId,
           username: msg.username,
           meetingId: msg.meetingId,
           status: 'Anonymous'
@@ -75,9 +76,11 @@ const requestToJoin = async (socket, io) => {
 
         io.of('/participant').to(msg.meetingId).emit('sendRequestToHost', AnonymousMessage)
 
-        socket.emit('needPermission', 'Waiting for host approval')
+        return socket.emit('needPermission', 'Waiting for host approval')
       }
     }
+    // check user id is null or undefined
+    if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
 
     // if participant already authenticate
     const response = await requestToJoinMeetingService(msg.meetingId, msg.userId)
@@ -104,7 +107,7 @@ const admitOrReject = async (socket, io) => {
   // Admit User to Join
   socket.on('admitUserToJoinHost', async (msg) => {
     if (msg.status === 'Anonymous') {
-      const response = await anonymousAdmitParticipantToJoinService(msg.meetingId, msg.hostId, msg.userId)
+      const response = await anonymousAdmitParticipantToJoinService(msg.meetingId, msg.hostId, msg.userId, msg.username)
 
       if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
@@ -114,6 +117,7 @@ const admitOrReject = async (socket, io) => {
       // send successfully admit response to host to erase participant from host
       return socket.emit('succeessfullyAdmit', { userId: msg.userId, fullName: msg.username, role: 'participant' })
     }
+
     const response = await admitParticipantToJoinService(msg.meetingId, msg.userId, msg.hostId)
 
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
@@ -125,7 +129,7 @@ const admitOrReject = async (socket, io) => {
     io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: user._id, fullName: user.fullName, role: 'participant', meetingId: msg.meetingId })
 
     // send successfully admit response to host to erase participant from host
-    socket.emit('succeessfullyAdmit', { userId: user._id, fullName: user.fullName, role: 'participant' })
+    return socket.emit('succeessfullyAdmit', { userId: user._id, fullName: user.fullName, role: 'participant' })
   })
 
   // Reject User to Join
@@ -188,11 +192,62 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
     io.of('/participant').to(msg.meetingId).emit('userHasJoinMeeting', { message: `${msg.fullName} has join meeting`, fullName: msg.fullName, role: 'participant', userId: msg.userId })
 
     // send meetingList to user
-    try {
-      const response = await getCurrentMeetingListService(msg.meetingId)
-      if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
+    // try {
+    //   const response = await getCurrentMeetingListService(msg.meetingId)
+    //   console.log('response=', response)
+    //   if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
-      socket.emit('meetingList', response)
+    //   socket.emit('meetingList', response)
+    // } catch (err) {
+    //   return socket.emit('meetingError', err.message || 'Something went wrong')
+    // }
+
+    try {
+      const meetingList = []
+
+      // get hosts list
+      const { hosts } = await Meeting.findOne({ _id: msg.meetingId }).populate('hosts.userId').select('hosts -_id')
+
+      let newHost
+
+      await hosts.forEach(e => {
+        newHost = {
+          fullName: e.userId.fullName,
+          role: 'Host',
+          userId: e.userId._id
+        }
+
+        meetingList.push(newHost)
+      })
+
+      // get participants list
+      // const { participants } = await Meeting.findOne({ _id: meetingId }).populate('participants.userId').select('participants -_id')
+
+      const { participants } = await Meeting.findOne({ _id: msg.meetingId })
+
+      let newAuthParticipant
+      let newAnonymousParticipant
+
+      for (const participant of participants) {
+        if (participant.status === 'Anonymous') {
+          newAuthParticipant = {
+            fullName: participant.nameForAnonymous,
+            role: 'Participant',
+            userId: participant.userId
+          }
+          meetingList.push(newAuthParticipant)
+        } else {
+          const user = await User.findOne({ _id: participant.userId })
+          newAnonymousParticipant = {
+            fullName: user.fullName,
+            role: 'Participant',
+            userId: user._id
+          }
+          meetingList.push(newAnonymousParticipant)
+        }
+      }
+
+      return socket.emit('meetingList', { meetingList })
     } catch (err) {
       return socket.emit('meetingError', err.message || 'Something went wrong')
     }

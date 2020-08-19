@@ -390,23 +390,47 @@ const getCurrentMeetingListService = async (meetingId) => {
     })
 
     // get participants list
-    const { participants } = await Meeting.findOne({ _id: meetingId }).populate('participants.userId').select('participants -_id')
+    // const { participants } = await Meeting.findOne({ _id: meetingId }).populate('participants.userId').select('participants -_id')
 
-    let newParticipant
+    // const participants = await Meeting.findOne({ _id: meetingId })
 
-    await participants.forEach(e => {
-      newParticipant = {
-        fullName: e.userId.fullName,
-        role: 'Participant',
-        userId: e.userId._id
-      }
+    // let newParticipant
 
-      meetingList.push(newParticipant)
-    })
+    // await participants.forEach(async e => {
+    //   if (e.status === 'Anonymous') {
+    //     newParticipant = {
+    //       fullName: e.nameForAnonymous,
+    //       role: 'Participant',
+    //       userId: e.userId
+    //     }
+    //   } else if (e.status === 'Auth') {
+    //     const user = await User.findOne({ _id: e.userId })
+    //     newParticipant = {
+    //       fullName: user.fullName,
+    //       role: 'Participant',
+    //       userId: user._id
+    //     }
+    //   }
+
+    //   meetingList.push(newParticipant)
+    // })
+
+    console.log(meetingList)
 
     return { status: 200, success: 'Successfully get current meeting list', meetingList }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed get current meeting list' }
+  }
+}
+
+const meetingHistoryService = async (userId) => {
+  try {
+    const meeting = await Meeting.find()
+    console.log(meeting)
+
+    return { status: 200, success: 'Successfully get meeting history' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed get meeting history' }
   }
 }
 
@@ -425,5 +449,6 @@ module.exports = {
   removeUserFromParticipantsService,
   endMeetingService,
   lockMeetingService,
-  getCurrentMeetingListService
+  getCurrentMeetingListService,
+  meetingHistoryService
 }

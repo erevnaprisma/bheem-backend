@@ -11,6 +11,9 @@ const participantsSchema = new mongoose.Schema({
     type: String,
     enum: ['Auth', 'Anonymous'],
     default: 'Auth'
+  },
+  nameForAnonymous: {
+    type: String
   }
 })
 

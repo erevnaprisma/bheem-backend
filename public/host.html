@@ -1,9 +1,34 @@
 <h1>Host</h1>
 
 
-<label>Create Meeting</label>
-<input type="text" id="createMeetingId">
-<button onclick="location.href = 'host2.html';">Create Meeting</button>
+<table>
+    <tr>
+        <td><label>Title</label></td>
+        <td><input type="text" id="title" value="abc"></td>
+    </tr>
+    <tr>
+        <td><label>Host Id</label></td>
+        <td><input type="text" id="hostId" value="5f3114b9f461611201705089"></td>
+    </tr>
+    <tr>
+        <td><label>Created By</label></td>
+        <td><input type="text" id="createdBy" value="5f3114b9f461611201705089"></td>
+    </tr>
+    <tr>
+        <td><label>Start Date</label></td>
+        <td><input type="text" id="startDate" value="123"></td>
+    </tr>
+    <tr>
+        <td><label>End Date</label></td>
+        <td><input type="text" id="endDate" value="321"></td>
+    </tr>
+    <tr>
+        <td><label>Permission</label></td>
+        <td><input type="text" id="permission" value="Yes"></td>
+    </tr>
+</table>
+
+<button onclick="createMeeting()">Create Meeting</button>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="./script.js"></script>

@@ -23,11 +23,18 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="./script.js"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-    socket.emit('createMeeting', {meetingId: '5f225852d818e841d5f37f2c'})
-  });
-  </script>
+    var cookie = JSON.parse(document.cookie)
+    var meetingId = cookie.meetingId
+    var hostId = cookie.hostId
+
+    document.querySelector('h1').innerHTML = `WELCOME TO MEETING - ${meetingId}`
+
+    // create room
+    socket.emit('createMeeting', { meetingId: meetingId })
+</script>
+
 <script>
     let userInfo;
 
@@ -38,11 +45,11 @@
     })
 
     function reject () {
-      socket.emit('rejectUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId })
+      socket.emit('rejectUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId, status: userInfo.status, username: userInfo.username })
     }
 
     function admit () {
-      socket.emit('admitUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId })
+      socket.emit('admitUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId, status: userInfo.status, username: userInfo.username })
     }
 
     socket.on('userHasJoinMeeting', (msg) => {

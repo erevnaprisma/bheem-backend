@@ -22,7 +22,7 @@ const {
   lockMeeting
 } = require('./src/collections/bheem_meeting/graphql/mutation/meetingMutation')
 
-const { getCurrentMeetingList } = require('./src/collections/bheem_meeting/graphql/query')
+const { getCurrentMeetingList, meetingHistory } = require('./src/collections/bheem_meeting/graphql/query')
 
 // Schedule Meeting
 const {
@@ -118,6 +118,7 @@ const RootQuery = new GraphQLObjectType({
 
     // meeting
     getCurrentMeetingList,
+    meetingHistory,
 
     // plan
     getAllPlan,

@@ -5,12 +5,11 @@ const User = require('../../bheem_user/Model')
 // Variables
 var ObjectId = require('mongodb').ObjectID
 
-const anonymousRequestToJoinMeetingService = async (meetingId, username) => {
+const anonymousRequestToJoinMeetingService = async (meetingId, username, userId) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!username) throw new Error('Invalid username')
-
-    const userId = new ObjectId().toString()
+    if (!userId) throw new Error('Invalid user id')
 
     const { error } = await Meeting.validate({ meetingId: meetingId, participant: userId })
     if (error) throw new Error(error.details[0].message)
@@ -35,11 +34,12 @@ const anonymousRequestToJoinMeetingService = async (meetingId, username) => {
   }
 }
 
-const anonymousAdmitParticipantToJoinService = async (meetingId, hostId, userId) => {
+const anonymousAdmitParticipantToJoinService = async (meetingId, hostId, userId, username) => {
   try {
     if (!meetingId) throw new Error('Invalid meeting id')
     if (!hostId) throw new Error('Invalid host id')
     if (!userId) throw new Error('Invalid user id')
+    if (!username) throw new Error('Invalid username')
 
     const { error } = await Meeting.admitOrReject({ meetingId, userId, hostId })
     if (error) throw new Error(error.details[0].message)
@@ -57,7 +57,7 @@ const anonymousAdmitParticipantToJoinService = async (meetingId, hostId, userId)
     if (!isHostValid) throw new Error('Host id is not this meeting host')
 
     // add requestedParticipant to participants
-    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, status: 'Anonymous', nameForAnonymous: username } } })
 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
 

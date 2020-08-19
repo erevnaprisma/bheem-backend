@@ -3,18 +3,26 @@
 <table cellSpacing="10">
   <tr>
     <td>
-      <label>Name</label>
+      <label>Meeting ID</label>
     </td>
     <td>
-      <input type="text" id="name"><br>
+      <input type="text" id="meetingId">
     </td>
   </tr>
   <tr>
     <td>
-      <label>Meeting ID</label>
+      <label>Name</label>
     </td>
     <td>
-      <input type="text" id="joinMeetingId">
+      <input type="text" id="name">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label>User Id</label>
+    </td>
+    <td>
+      <input type="text" id="userId">
     </td>
   </tr>
 </table>
@@ -27,8 +35,6 @@
 <script>
   const socket = io('ws://localhost:3000/participant');
 
-  const userId = '5f22589ad818e841d5f37f2e'
-
   // listening to meeting error
   socket.on('meetingError', (msg) => {
     console.log(msg)
@@ -39,6 +45,7 @@
     console.log(msg)
   })
 
+  // response admit or reject from host
   socket.on('userPermission', (msg) => {
     socket.emit('afterUserJoinMeeting', msg)
   })
@@ -46,15 +53,21 @@
   function joinMeeting() {
     const message = {
       socketId: socket.id,
-      userId,
+      userId: document.getElementById('userId').value,
       username: document.getElementById('name').value,
-      meetingId: document.getElementById('joinMeetingId').value
+      meetingId: document.getElementById('meetingId').value
     }
 
     socket.emit('requestToJoin', message)
   }
 
+  // telling everyone in meeting that new user has join the meeting
   socket.on('userHasJoinMeeting', (msg) => {
     console.log(msg.message)
+  })
+
+  // get meeting list
+  socket.on('meetingList', msg => {
+    console.log(msg.meetingList)
   })
 </script>

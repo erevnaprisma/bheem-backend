@@ -1,8 +1,8 @@
 const graphql = require('graphql')
 
-const { getCurrentMeetingListService } = require('../services/Meeting')
+const { getCurrentMeetingListService, meetingHistoryService } = require('../services/Meeting')
 
-const { GetCurrentMeetingListType } = require('../graphql/type/meetingType')
+const { GetCurrentMeetingListType, MeetingHistoryType } = require('../graphql/type/meetingType')
 
 const {
   GraphQLString,
@@ -19,6 +19,17 @@ const getCurrentMeetingList = {
   }
 }
 
+const meetingHistory = {
+  type: MeetingHistoryType,
+  args: {
+    userId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return meetingHistoryService(args.userId)
+  }
+}
+
 module.exports = {
-  getCurrentMeetingList
+  getCurrentMeetingList,
+  meetingHistory
 }
