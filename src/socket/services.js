@@ -36,13 +36,23 @@ const requestToJoin = async (socket, io) => {
     }
 
     let meeting
+    let host
 
     try {
       // Validate Meeting
       meeting = await Meeting.findOne({ _id: msg.meetingId })
       if (!meeting) return socket.emit('meetingError', 'Meeting not found')
+
+      // Get host info
+      host = await User.findOne({ _id: meeting.hosts[0].userId })
     } catch (err) {
       return socket.emit('meetingError', err.message || 'Meeting not found')
+    }
+
+    const waitingMessage = {
+      message: 'Waiting for host approval',
+      hostName: host.fullName,
+      meetingTitle: meeting.title
     }
 
     // if participant is anonymous
@@ -76,9 +86,10 @@ const requestToJoin = async (socket, io) => {
 
         io.of('/participant').to(msg.meetingId).emit('sendRequestToHost', AnonymousMessage)
 
-        return socket.emit('needPermission', 'Waiting for host approval')
+        return socket.emit('needPermission', waitingMessage)
       }
     }
+
     // check user id is null or undefined
     if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
 
@@ -91,7 +102,7 @@ const requestToJoin = async (socket, io) => {
       io.of('/participant').to(msg.meetingId).emit('sendRequestToHost', message)
 
       // send current situation to user that request
-      socket.emit('needPermission', 'Waiting for host approval')
+      socket.emit('needPermission', waitingMessage)
     }
 
     if (response.success === 'Successfully join meeting') {
