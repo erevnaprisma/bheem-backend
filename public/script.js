@@ -9,6 +9,7 @@ const socket = io('ws://localhost:3000/participant')
 
 // listening to meeting error
 socket.on('meetingError', (msg) => {
+  console.log('MEETING ERROR')
   console.log(msg)
 })
 

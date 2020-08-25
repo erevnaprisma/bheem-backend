@@ -40,7 +40,8 @@
 
     socket.on('sendRequestToHost', (msg) => {
       userInfo = msg
-      console.log('someone request to join')
+      console.log('ADD THIS TO WAITING LIST')
+      console.log(msg)
       document.getElementById('listRequestUser').innerHTML += `<li>${msg.username}  <button onclick="admit()">admit</button> <button onclick="reject()">reject</button></li>`
     })
 
@@ -53,11 +54,21 @@
     }
 
     socket.on('userHasJoinMeeting', (msg) => {
+      console.log('--------------')
       console.log(msg.message)
+      console.log('--------------')
+      console.log('ADD THIS TO MEETING LIST')
+      console.log(msg)
     })
 
     socket.on('succeessfullyAdmit', (msg) => {
-      console.log('Succssfully admit')
+      console.log('REMOVE THIS FROM WAITING LIST')
+      console.log(msg)
+    })
+
+    socket.on('newWaitingList', (msg) => {
+      console.log('THIS IS THE NEW WAITING LIST (BACKUP)')
+      console.log(msg)
     })
 </script>
 

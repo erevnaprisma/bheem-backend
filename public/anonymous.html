@@ -32,9 +32,11 @@
     <script>
         const socket = io('ws://localhost:3000/participant');
 
+        // id for anonymous user
+        var anonymousUserId;
+
         function anonymousJoinMeeting() {
             const message = { 
-                socketId: socket.id,
                 username: document.getElementById('name').value,
                 meetingId: document.getElementById('meetingId').value,
                 anonymous: true,
@@ -45,26 +47,40 @@
 
         // listening to meeting error
         socket.on('meetingError', (msg) => {
+            console.log('MEETING ERROR')
             console.log(msg)
         })
 
         // listening meeting need permission
         socket.on('needPermission', (msg) => {
-            console.log(msg)
+            // set user id
+            anonymousUserId = msg.userId
+            console.log('PERMISSION=', msg)
         })
 
         // response admit or reject from host
         socket.on('userPermission', (msg) => {
-            socket.emit('afterUserJoinMeeting', msg)
+            if (msg.userId === anonymousUserId) {
+                if (msg.message === 'ADMIT') {
+                    socket.emit('afterUserJoinMeeting', msg)
+                } else if (msg.message === 'REJECT') {
+                    console.log(`Host has ${msg.message} your join request`)
+                }
+            }
         })
 
         // telling everyone in meeting that new user has join the meeting
         socket.on('userHasJoinMeeting', (msg) => {
+            console.log('--------------')
             console.log(msg.message)
+            console.log('--------------')
+            console.log('ADD THIS TO MEETING LIST')
+            console.log(msg)
         })
 
         // get meeting list
         socket.on('meetingList', msg => {
+            console.log('USER GET CURRENT MEETING LIST')
             console.log(msg.meetingList)
         })
     </script>
