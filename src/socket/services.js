@@ -23,12 +23,10 @@ var ObjectId = require('mongodb').ObjectID
 const requestToJoin = async (socket, io) => {
   // Request to Join
   socket.on('requestToJoin', async (msg) => {
-    if (!msg.socketId) return socket.emit('meetingError', 'Invalid socket id')
     if (!msg.username) return socket.emit('meetingError', 'Invalid username')
     if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
 
     const message = {
-      socketId: msg.socketId,
       userId: msg.userId,
       username: msg.username,
       meetingId: msg.meetingId,
@@ -77,7 +75,6 @@ const requestToJoin = async (socket, io) => {
       // if meeting permission is Yes
       if (response.success === 'Successfully request to join') {
         const AnonymousMessage = {
-          socketId: msg.socketId,
           userId,
           username: msg.username,
           meetingId: msg.meetingId,
