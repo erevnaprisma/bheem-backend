@@ -68,8 +68,9 @@ const requestToJoin = async (socket, io) => {
       if (response.success === 'Successfully join meeting') {
         socket.join(msg.meetingId, () => {
           console.log(`${msg.username} has joined the room`)
-          return socket.emit('userPermission', 'Admit')
         })
+
+        return socket.emit('userPermission', { message: 'ADMIT', fullName: msg.username, userId, meetingId: msg.meetingId })
       }
 
       // if meeting permission is Yes
@@ -135,7 +136,7 @@ const admitOrReject = async (socket, io) => {
 
       // send message to user
       // io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'participant', meetingId: msg.meetingId, socketId: msg.socketId })
-      io.of('/participant').to(msg.meetingId + '/waitingList').emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'anonymous', meetingId: msg.meetingId })
+      io.of('/participant').to(msg.meetingId + '/waitingList').emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'Anonymous', meetingId: msg.meetingId })
 
       // send successfully admit response to host to erase participant from host
       return socket.emit('succeessfullyAdmit', { userId: msg.userId, fullName: msg.username, role: 'participant' })
@@ -150,7 +151,7 @@ const admitOrReject = async (socket, io) => {
 
     // send message to user
     // io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: user._id, fullName: user.fullName, role: 'participant', meetingId: msg.meetingId })
-    io.of('/participant').to(msg.meetingId + '/waitingList').emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'participant', meetingId: msg.meetingId })
+    io.of('/participant').to(msg.meetingId + '/waitingList').emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'Participant', meetingId: msg.meetingId })
 
     // send successfully admit response to host to erase participant from host
     return socket.emit('succeessfullyAdmit', { userId: user._id, fullName: user.fullName, role: 'participant' })
@@ -267,32 +268,37 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
         }
       }
 
-      return socket.emit('meetingList', { meetingList })
+      socket.emit('meetingList', { meetingList })
 
-      // // get new waiting list and send to host
-      // for (const requestedUser of requestToJoin) {
-      //   if (requestedUser.status === 'Anonymous') {
-      //     newRequestList = {
-      //       socketId: msg.socketId,
-      //       userId: requestedUser.userId,
-      //       username: requestedUser.nameForAnonymous,
-      //       meetingId: msg.meetingId,
-      //       status: 'Anonymous'
-      //     }
-      //     waitingList.push(newRequestList)
-      //   } else {
-      //     const currentRequestedUser = await User.findOne({ _id: requestedUser.userId })
-      //     newRequestList = {
-      //       socketId: msg.socketId,
-      //       userId: requestedUser.userId,
-      //       username: currentRequestedUser.fullName,
-      //       meetingId: msg.meetingId,
-      //       status: 'Auth'
-      //     }
-      //     waitingList.push(newRequestList)
-      //   }
-      // }
-      // return socket.emit('newWaitingList', waitingList)
+      console.log('REQUEST TO JOIN=', requestToJoin)
+
+      // get new waiting list and send to host
+      if (requestToJoin.length !== 0) {
+        for (const requestedUser of requestToJoin) {
+          if (requestedUser.status === 'Anonymous') {
+            newRequestList = {
+              userId: requestedUser.userId,
+              username: requestedUser.nameForAnonymous,
+              meetingId: msg.meetingId,
+              status: 'Anonymous'
+            }
+            waitingList.push(newRequestList)
+          } else {
+            const currentRequestedUser = await User.findOne({ _id: requestedUser.userId })
+            newRequestList = {
+              userId: requestedUser.userId,
+              username: currentRequestedUser.fullName,
+              meetingId: msg.meetingId,
+              status: 'Auth'
+            }
+            waitingList.push(newRequestList)
+          }
+        }
+      } else {
+        return io.of('/participant').to(msg.meetingId).emit('newWaitingList', waitingList)
+      }
+
+      return io.of('/participant').to(msg.meetingId).emit('newWaitingList', waitingList)
     } catch (err) {
       return socket.emit('meetingError', err.message || 'Something went wrong')
     }

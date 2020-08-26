@@ -60,6 +60,9 @@
 
         // response admit or reject from host
         socket.on('userPermission', (msg) => {
+            if (msg.message === 'ADMIT') {
+                return socket.emit('afterUserJoinMeeting', msg)
+            }
             if (msg.userId === anonymousUserId) {
                 if (msg.message === 'ADMIT') {
                     socket.emit('afterUserJoinMeeting', msg)
