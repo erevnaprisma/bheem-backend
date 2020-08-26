@@ -64,7 +64,7 @@ const requestToJoin = async (socket, io) => {
 
       if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
-      // if meeting permission is No
+      // if meeting has no permission
       if (response.success === 'Successfully join meeting') {
         socket.join(msg.meetingId, () => {
           console.log(`${msg.username} has joined the room`)
@@ -100,9 +100,20 @@ const requestToJoin = async (socket, io) => {
     // check user id is null or undefined
     if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
 
+    const user = await User.findOne({ _id: msg.userId })
+
     // if participant already authenticate
     const response = await requestToJoinMeetingService(msg.meetingId, msg.userId)
     if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
+
+    // if meeting has no permission
+    if (response.success === 'Successfully join meeting') {
+      socket.join(msg.meetingId, () => {
+        console.log(`${user.fullName} has joined the room`)
+      })
+
+      return socket.emit('userPermission', { message: 'ADMIT', fullName: user.fullName, userId: user._id, meetingId: msg.meetingId })
+    }
 
     if (response.success === 'Successfully request to join meeting') {
       // send request to host
