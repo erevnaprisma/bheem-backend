@@ -53,7 +53,7 @@ app.use(cors(corsOptions))
 // app.use(corsAccess())
 
 app.use('/', indexRouter)
-// app.use('/users', usersRouter)
+app.use('/users', usersRouter)
 app.use('/graphql', graphqlRouter)
 
 // catch 404 and forward to error handler
