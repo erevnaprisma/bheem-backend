@@ -20,6 +20,10 @@ const anonymousRequestToJoinMeetingService = async (meetingId, username, userId)
     // check meeting lock status
     if (meeting.lockMeeting === 'TRUE') throw new Error('Host already lock the meeting')
 
+    // check meeting limit
+    const totalMeetingList = meeting.hosts.length + meeting.participants.length
+    if (meeting.limit === totalMeetingList) throw new Error('Meeting has reached participant limit')
+
     // if no permission
     if (meeting.needPermisionToJoin === 'No') {
       await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, status: 'Anonymous', nameForAnonymous: username } } })
