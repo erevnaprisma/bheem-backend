@@ -15,20 +15,20 @@ const anonymousRequestToJoinMeetingService = async (meetingId, username, userId)
     const { error } = await Meeting.validate({ meetingId: meetingId, participant: userId })
     if (error) throw new Error(error.details[0].message)
 
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    // check meeting lock status
+    if (meeting.lockMeeting === 'TRUE') throw new Error('Host already lock the meeting')
+
     // if no permission
-    const noPermissionNeeded = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'No' })
-    if (noPermissionNeeded) {
+    if (meeting.needPermisionToJoin === 'No') {
       await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, status: 'Anonymous', nameForAnonymous: username } } })
       return { status: 200, success: 'Successfully join meeting' }
     }
 
-    // if meeting has permission
-    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
-    if (!meeting) throw new Error('Invalid meeting id')
-
     await meeting.requestToJoin.push({ userId, nameForAnonymous: username, status: 'Anonymous' })
     await meeting.save()
-
 
     return { status: 200, success: 'Successfully request to join' }
   } catch (err) {

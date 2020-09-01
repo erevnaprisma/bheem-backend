@@ -141,6 +141,7 @@ const admitOrReject = async (socket, io) => {
   // Admit User to Join
   socket.on('admitUserToJoinHost', async (msg) => {
     if (msg.status === 'Anonymous') {
+      console.log('MESSAGE', msg)
       const response = await anonymousAdmitParticipantToJoinService(msg.meetingId, msg.hostId, msg.userId, msg.username)
 
       if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')

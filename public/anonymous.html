@@ -60,15 +60,15 @@
 
         // response admit or reject from host
         socket.on('userPermission', (msg) => {
-            if (msg.message === 'ADMIT') {
-                return socket.emit('afterUserJoinMeeting', msg)
-            }
             if (msg.userId === anonymousUserId) {
+                console.log(`MASUK SEBAGAI ${document.querySelector('#name').value}`)
                 if (msg.message === 'ADMIT') {
                     socket.emit('afterUserJoinMeeting', msg)
                 } else if (msg.message === 'REJECT') {
                     console.log(`Host has ${msg.message} your join request`)
                 }
+            } else if (msg.message === 'ADMIT') {
+                return socket.emit('afterUserJoinMeeting', msg)
             }
         })
 
