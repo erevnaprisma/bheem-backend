@@ -171,7 +171,8 @@ const MeetingHistoryType = new GraphQLObjectType({
   fields: () => ({
     status: { type: GraphQLString },
     error: { type: GraphQLString },
-    success: { type: GraphQLString }
+    success: { type: GraphQLString },
+    meetingList: { type: GraphQLList(MeetingType) }
   })
 })
 

@@ -1,5 +1,6 @@
 const Meeting = require('../Model')
 const User = require('../../bheem_user/Model')
+const { filter } = require('lodash')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, limit) => {
   try {
@@ -427,9 +428,40 @@ const getCurrentMeetingListService = async (meetingId) => {
 const meetingHistoryService = async (userId) => {
   try {
     const meeting = await Meeting.find()
-    console.log(meeting)
 
-    return { status: 200, success: 'Successfully get meeting history' }
+    const userHistoryMeeting = []
+
+    // meeting.forEach(e => {
+    //   if (meeting.hosts[0].userId === userId) {
+    //     userHistoryMeeting.push(e)
+    //   }
+    //   e.participants.forEach(val => {
+    //     if (val.userId === userId) {
+    //       userHistoryMeeting.push(e)
+    //     }
+    //   })
+    // })
+
+    for (const e of meeting) {
+      if (e.hosts[0].userId === userId) {
+        // e.userRole = 'Host'
+        // await e.save()
+        console.log('USER WAS HOST')
+        userHistoryMeeting.push(e)
+      }
+      for (const val of e.participants) {
+        if (val.userId === userId) {
+          // e.userRole = 'Participant'
+          // await e.save()
+          console.log('USER WAS PARTICIPANT')
+          userHistoryMeeting.push(e)
+        }
+      }
+    }
+
+    // console.log('User History Meeting=', userHistoryMeeting)
+
+    return { status: 200, success: 'Successfully get meeting history', meetingList: userHistoryMeeting }
   } catch (err) {
     return { status: 400, error: err.message || 'Failed get meeting history' }
   }
