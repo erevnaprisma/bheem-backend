@@ -11,7 +11,6 @@ const anonymousRequestToJoinMeetingService = async (meetingId, username, userId)
     if (!username) throw new Error('Invalid username')
     if (!userId) throw new Error('Invalid user id')
 
-
     const { error } = await Meeting.validate({ meetingId: meetingId, participant: userId })
     if (error) throw new Error(error.details[0].message)
 

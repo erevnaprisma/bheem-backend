@@ -115,6 +115,7 @@ meetingSchema.statics.validate = (args) => {
     title: Joi.string().min(3).max(50),
     host: Joi.objectId(),
     participant: Joi.objectId(),
+    limit: Joi.number().min(1).max(500),
     createdBy: Joi.objectId(),
     startDate: Joi.string(),
     endDate: Joi.string().allow('', null),

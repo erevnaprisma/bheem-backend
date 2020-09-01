@@ -1,7 +1,7 @@
 const Meeting = require('../Model')
 const User = require('../../bheem_user/Model')
 
-const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
+const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, limit) => {
   try {
     if (!title) throw new Error('Invalid title')
     if (!host) throw new Error('Invalid host')
@@ -11,7 +11,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
     const hostChecker = await User.findOne({ _id: host })
     if (!hostChecker) throw new Error('Invalid host')
 
-    const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate, permission })
+    const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate, permission, limit })
     if (error) {
       throw new Error(error.details[0].message)
     }
@@ -22,6 +22,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
       createdBy,
       startDate,
       endDate,
+      limit,
       needPermisionToJoin: permission,
       createdAt: new Date().getTime(),
       updatedAt: new Date().getTime()
