@@ -9,7 +9,8 @@ const {
   rejectParticipantToJoinService,
   removeUserFromParticipantsService,
   endMeetingService,
-  getCurrentMeetingListService
+  getCurrentMeetingListService,
+  lockMeetingService
 } = require('../collections/bheem_meeting/services/Meeting')
 
 const {
@@ -327,11 +328,29 @@ const broadcastEndMeeting = (socket, io) => {
   })
 }
 
+const lockMeeting = async (socket, io) => {
+  socket.on('meetingHasCreated', async (msg) => {
+    if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
+
+    try {
+      const response = await lockMeetingService(msg.meetingId)
+      if (response.status === 200) {
+        return io.of('/participant').to(msg.meetingId).emit('meetingStatus', { message: 'Meeting has been lock' })
+      } else if (response.status === 400) {
+        throw new Error(response.error)
+      }
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Failed lock meeting')
+    }
+  })
+}
+
 module.exports = {
   requestToJoin,
   admitOrReject,
   createMeeting,
   ifUserSuddenlyOff,
   joinRoomAndBroadcastToMeeting,
-  broadcastEndMeeting
+  broadcastEndMeeting,
+  lockMeeting
 }

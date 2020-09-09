@@ -4,7 +4,8 @@ const {
   admitOrReject,
   createMeeting,
   ifUserSuddenlyOff,
-  joinRoomAndBroadcastToMeeting
+  joinRoomAndBroadcastToMeeting,
+  lockMeeting
 } = require('./services')
 
 const meeting = (io) => {
@@ -24,6 +25,8 @@ const meeting = (io) => {
     ifUserSuddenlyOff(socket, io)
 
     joinRoomAndBroadcastToMeeting(socket, io)
+
+    lockMeeting(socket, io)
   })
 }
 
