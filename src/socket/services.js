@@ -345,6 +345,26 @@ const lockMeeting = async (socket, io) => {
   })
 }
 
+const muteHandler = (socket, io) => {
+  socket.on('hostMuteHandler', (msg) => {
+    // validation
+    if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
+    if (!msg.code) return socket.emit('meetingError', 'Invalid code')
+
+    if (msg.code === 'mute all') {
+      return io.of('/participant').to(msg.meetingId).emit('participantMuteHandler', { message: 'mute' })
+    } else if (msg.code === 'unmute all') {
+      return io.of('/participant').to(msg.meetingId).emit('participantMuteHandler', { message: 'unmute' })
+    } else if (msg.code === 'mute participant') {
+      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'mute' })
+    } else if (msg.code === 'unmute participant') {
+      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'unmute' })
+    }
+  })
+}
+
 module.exports = {
   requestToJoin,
   admitOrReject,
@@ -352,5 +372,6 @@ module.exports = {
   ifUserSuddenlyOff,
   joinRoomAndBroadcastToMeeting,
   broadcastEndMeeting,
-  lockMeeting
+  lockMeeting,
+  muteHandler
 }
