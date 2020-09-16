@@ -13,4 +13,5 @@ projectFilesBackup/
 test/*.json
 public/*.xml
 package-lock.json
+uploadfile/
 npm-debug.log.*
