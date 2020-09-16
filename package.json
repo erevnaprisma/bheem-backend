@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "localhostbheem": "NODE_ENV=productionbheem nodemon app.js",
+    "prodbheem": "NODE_ENV=productionbheem node app.js",
+    "devbheem": "NODE_ENV=developmentbheem node app.js",
     "dev": "NODE_ENV=development nodemon app.js",
     "start": "node ./bin/www",
     "prod": "NODE_ENV=production nodemon app.js",

@@ -1,0 +1,21 @@
+{
+    "mongoUrl": "mongodb+srv://12345:12345@cluster0-7tyk7.mongodb.net/test",
+    "devEmail": "erevnabheem@gmail.com",
+    "devPassword": "!erevna@2020",
+    "devAuth": "mnymojmwhgtjwpmk",
+    "DB": "mongodb+srv://12345:12345@cluster0-7tyk7.mongodb.net/test",
+    "mongoDB": {
+        "email": "dev.erevna@gmail.com",
+        "password": "!erevnaDev123#"
+    },
+    "privateKey": "PRIVATE_KEY",
+    "privateKeyMerchant": "PRIVATE_KEY_MERCHANT",
+    "privateKeyInstitution": "PRIVATE_KEY_INSTITUTION",
+    "hmac": "HMAC",
+    "serialNumber": "SERIAL_NUMBER",
+    "debitinPaymentPageBackendBaseUrl": "",
+    "rajaongkirBackendBaseUrl": "",
+    "backendBaseUrl": "",
+    "marketPlinkHost": "",
+    "isGraphiqlActive": true
+}
