@@ -11,11 +11,13 @@ const {
   IsMeetingExistType,
   TestingPurposeOnlyType,
   IsUserHostType,
-  RemoveUserFromParticipantsType
+  RemoveUserFromParticipantsType,
+  LockMeetingType
 } = require('../type/meetingType')
 
 // Meeting
-const { createMeetingService,
+const {
+  createMeetingService,
   finishMeetingService,
   showParticipantsThatRequestService,
   requestToJoinMeetingService,
@@ -25,12 +27,14 @@ const { createMeetingService,
   isMeetingExistService,
   testingPurposeOnlyService,
   isUserHostService,
-  removeUserFromParticipantsService
+  removeUserFromParticipantsService,
+  lockMeetingService
 } = require('../../services/Meeting')
 
 const {
   GraphQLString,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLInt
 } = graphql
 
 const createMeeting = {
@@ -41,10 +45,11 @@ const createMeeting = {
     createdBy: { type: new GraphQLNonNull(GraphQLString) },
     startDate: { type: new GraphQLNonNull(GraphQLString) },
     endDate: { type: GraphQLString },
-    permissionToJoin: { type: GraphQLString }
+    permissionToJoin: { type: GraphQLString },
+    limit: { type: GraphQLInt }
   },
   resolve (parent, args) {
-    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin)
+    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin, args.limit)
   }
 }
 
@@ -157,6 +162,16 @@ const removeUserFromParticipants = {
   }
 }
 
+const lockMeeting = {
+  type: LockMeetingType,
+  args: {
+    meetingId: { type: new GraphQLNonNull(GraphQLString) }
+  },
+  resolve (parent, args) {
+    return lockMeetingService(args.meetingId)
+  }
+}
+
 module.exports = {
   createMeeting,
   finishMeeting,
@@ -168,5 +183,6 @@ module.exports = {
   isMeetingExist,
   testingPurposeOnly,
   isUserHost,
-  removeUserFromParticipants
+  removeUserFromParticipants,
+  lockMeeting
 }

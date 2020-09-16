@@ -1,0 +1,92 @@
+<h1>Client</h1>
+
+<table cellSpacing="10">
+  <tr>
+    <td>
+      <label>Meeting ID</label>
+    </td>
+    <td>
+      <input type="text" id="meetingId">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label>Name</label>
+    </td>
+    <td>
+      <input type="text" id="name">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label>User Id</label>
+    </td>
+    <td>
+      <input type="text" id="userId">
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<button onclick="joinMeeting()">Join Meeting</button>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io('ws://localhost:3000/participant');
+
+  // listening to meeting error
+  socket.on('meetingError', (msg) => {
+    console.log('MEETING ERROR')
+    console.log(msg)
+  })
+
+  // listening meeting need permission
+  socket.on('needPermission', (msg) => {
+    console.log('PERMISSION=', msg)
+  })
+
+  // response admit or reject from host
+  // socket.on('userPermission', (msg) => {
+  //   socket.emit('afterUserJoinMeeting', msg)
+  // })
+
+  // response admit and reject from host
+  socket.on('userPermission', (msg) => {
+    if (msg.socketType === 'userPermission') {
+      socket.emit('afterUserJoinMeeting', msg)
+    }
+    if (msg.userId === document.querySelector('#userId').value) {
+      if (msg.message === 'ADMIT') {
+          socket.emit('afterUserJoinMeeting', msg)
+      } else if (msg.message === 'REJECT') {
+          console.log(`Host has ${msg.message} your join request`)
+      }
+    }
+  })
+
+  function joinMeeting() {
+    const message = {
+      userId: document.getElementById('userId').value,
+      username: document.getElementById('name').value,
+      meetingId: document.getElementById('meetingId').value
+    }
+
+    socket.emit('requestToJoin', message)
+  }
+
+  // telling everyone in meeting that new user has join the meeting
+  socket.on('userHasJoinMeeting', (msg) => {
+    console.log('--------------')
+    console.log(msg.message)
+    console.log('--------------')
+    console.log('ADD THIS TO MEETING LIST')
+    console.log(msg)
+  })
+
+  // get meeting list
+  socket.on('meetingList', msg => {
+    console.log('USER GET CURRENT MEETING LIST')
+    console.log(msg.meetingList)
+  })
+</script>

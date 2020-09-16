@@ -18,8 +18,11 @@ const {
   isMeetingExist,
   testingPurposeOnly,
   isUserHost,
-  removeUserFromParticipants
+  removeUserFromParticipants,
+  lockMeeting
 } = require('./src/collections/bheem_meeting/graphql/mutation/meetingMutation')
+
+const { getCurrentMeetingList, meetingHistory } = require('./src/collections/bheem_meeting/graphql/query')
 
 // Schedule Meeting
 const {
@@ -113,6 +116,10 @@ const RootQuery = new GraphQLObjectType({
     // user
     bheemGetAllUser,
 
+    // meeting
+    getCurrentMeetingList,
+    meetingHistory,
+
     // plan
     getAllPlan,
 
@@ -190,6 +197,7 @@ const Mutation = new GraphQLObjectType({
     testingPurposeOnly,
     isUserHost,
     removeUserFromParticipants,
+    lockMeeting,
 
     // schedule meeting
     createScheduleMeeting,

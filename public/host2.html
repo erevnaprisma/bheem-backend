@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host 2</title>
+
+    <style>
+      .listOfRequest {
+        margin-top: 30%;
+      }
+    </style>
+</head>
+<body>
+    <h1>WELCOME TO MEETING</h1>
+    
+    <h3 class="listOfRequest">List of Request</h3>
+
+    <ul id="listRequestUser">
+        <!-- dynamic -->
+      </ul>
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="./script.js"></script>
+
+<script>
+    var cookie = JSON.parse(document.cookie)
+    var meetingId = cookie.meetingId
+    var hostId = cookie.hostId
+
+    document.querySelector('h1').innerHTML = `WELCOME TO MEETING - ${meetingId}`
+
+    // create room
+    socket.emit('createMeeting', { meetingId: meetingId })
+</script>
+
+<script>
+    let userInfo;
+
+    socket.on('sendRequestToHost', (msg) => {
+      userInfo = msg
+      console.log('ADD THIS TO WAITING LIST')
+      console.log(msg)
+      document.getElementById('listRequestUser').innerHTML += `<li  <button onclick="admit()">admit</button> <button onclick="reject()">reject</button></li>`
+    })
+
+    function reject () {
+      socket.emit('rejectUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId, status: userInfo.status, username: userInfo.username })
+    }
+
+    function admit () {
+      socket.emit('admitUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId, status: userInfo.status, username: userInfo.username })
+    }
+
+    socket.on('userHasJoinMeeting', (msg) => {
+      console.log('--------------')
+      console.log(msg.message)
+      console.log('--------------')
+      console.log('ADD THIS TO MEETING LIST')
+      console.log(msg)
+    })
+
+    socket.on('succeessfullyAdmit', (msg) => {
+      console.log('REMOVE THIS FROM WAITING LIST')
+      console.log(msg)
+    })
+
+    socket.on('newWaitingList', (msg) => {
+      console.log('THIS IS THE NEW WAITING LIST (BACKUP)')
+      console.log(msg)
+    })
+</script>
+
+</html>

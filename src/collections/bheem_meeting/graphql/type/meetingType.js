@@ -138,6 +138,44 @@ const RemoveUserFromParticipantsType = new GraphQLObjectType({
   })
 })
 
+const LockMeetingType = new GraphQLObjectType({
+  name: 'LockMeeting',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString }
+  })
+})
+
+const SingleUserMeetingListType = new GraphQLObjectType({
+  name: 'SingleUserMeetingList',
+  fields: () => ({
+    fullName: { type: GraphQLString },
+    role: { type: GraphQLString },
+    userId: { type: GraphQLString }
+  })
+})
+
+const GetCurrentMeetingListType = new GraphQLObjectType({
+  name: 'GetCurrentMeetingList',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    meetingList: { type: GraphQLList(SingleUserMeetingListType) }
+  })
+})
+
+const MeetingHistoryType = new GraphQLObjectType({
+  name: 'MeetingHistory',
+  fields: () => ({
+    status: { type: GraphQLString },
+    error: { type: GraphQLString },
+    success: { type: GraphQLString },
+    meetingList: { type: GraphQLList(MeetingType) }
+  })
+})
+
 module.exports = {
   MeetingType,
   CreateMeetingType,
@@ -150,5 +188,8 @@ module.exports = {
   IsMeetingExistType,
   TestingPurposeOnlyType,
   IsUserHostType,
-  RemoveUserFromParticipantsType
+  RemoveUserFromParticipantsType,
+  LockMeetingType,
+  GetCurrentMeetingListType,
+  MeetingHistoryType
 }

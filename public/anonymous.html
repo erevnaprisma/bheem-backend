@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>
+                <label>Name</label>
+            </td>
+            <td>
+                <input type="text" id="name">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Meeting Id</label>
+            </td>
+            <td>
+                <input type="text" id="meetingId">
+            </td>
+        </tr>
+    </table>
+
+    <br><br>
+    <button onclick="anonymousJoinMeeting()">Join Meeting</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('ws://localhost:3000/participant');
+
+        // id for anonymous user
+        var anonymousUserId;
+
+        function anonymousJoinMeeting() {
+            const message = { 
+                username: document.getElementById('name').value,
+                meetingId: document.getElementById('meetingId').value,
+                anonymous: true,
+                status: 'Anonymous'
+              }
+            socket.emit('requestToJoin', message)
+        }
+
+        // listening to meeting error
+        socket.on('meetingError', (msg) => {
+            console.log('MEETING ERROR')
+            console.log(msg)
+        })
+
+        // listening meeting need permission
+        socket.on('needPermission', (msg) => {
+            // set user id
+            anonymousUserId = msg.userId
+            console.log('PERMISSION=', msg)
+        })
+
+        // response admit or reject from host
+        socket.on('userPermission', (msg) => {
+            if (msg.userId === anonymousUserId) {
+                console.log(`MASUK SEBAGAI ${document.querySelector('#name').value}`)
+                if (msg.message === 'ADMIT') {
+                    socket.emit('afterUserJoinMeeting', msg)
+                } else if (msg.message === 'REJECT') {
+                    console.log(`Host has ${msg.message} your join request`)
+                }
+            } else if (msg.message === 'ADMIT') {
+                return socket.emit('afterUserJoinMeeting', msg)
+            }
+        })
+
+        // telling everyone in meeting that new user has join the meeting
+        socket.on('userHasJoinMeeting', (msg) => {
+            console.log('--------------')
+            console.log(msg.message)
+            console.log('--------------')
+            console.log('ADD THIS TO MEETING LIST')
+            console.log(msg)
+        })
+
+        // get meeting list
+        socket.on('meetingList', msg => {
+            console.log('USER GET CURRENT MEETING LIST')
+            console.log(msg.meetingList)
+        })
+    </script>
+</body>
+
+</html>

@@ -5,14 +5,14 @@ Joi.objectId = require('joi-objectid')(Joi)
 const participantsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   },
   status: {
     type: String,
     enum: ['Auth', 'Anonymous'],
     default: 'Auth'
   },
-  name: {
+  nameForAnonymous: {
     type: String
   }
 })
@@ -20,19 +20,16 @@ const participantsSchema = new mongoose.Schema({
 const hostsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
-  },
-  name: {
-    type: String
+    ref: 'Bheem_User'
   }
 })
 
 const removedParticipantsSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   },
-  name: {
+  nameForAnonymous: {
     type: String
   },
   default: {
@@ -45,9 +42,10 @@ const removedParticipantsSchema = new mongoose.Schema({
 const requestToJoinSchema = new mongoose.Schema({
   userId: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User',
+    // unique: true
   },
-  name: {
+  nameForAnonymous: {
     type: String
   },
   status: {
@@ -85,9 +83,18 @@ const meetingSchema = new mongoose.Schema({
     enum: ['ACTIVE', 'INACTIVE', 'SCHEDULE'],
     default: 'ACTIVE'
   },
+  lockMeeting: {
+    type: String,
+    enum: ['TRUE', 'FALSE'],
+    default: 'FALSE'
+  },
+  limit: {
+    type: Number,
+    default: 100
+  },
   createdBy: {
     type: String,
-    ref: 'User'
+    ref: 'Bheem_User'
   },
   startDate: String,
   endDate: {
@@ -108,6 +115,7 @@ meetingSchema.statics.validate = (args) => {
     title: Joi.string().min(3).max(50),
     host: Joi.objectId(),
     participant: Joi.objectId(),
+    limit: Joi.number().min(1).max(500),
     createdBy: Joi.objectId(),
     startDate: Joi.string(),
     endDate: Joi.string().allow('', null),

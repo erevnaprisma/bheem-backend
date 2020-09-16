@@ -1,7 +1,8 @@
 const Meeting = require('../Model')
 const User = require('../../bheem_user/Model')
+const { filter } = require('lodash')
 
-const createMeetingService = async (title, host, createdBy, startDate, endDate, permission) => {
+const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, limit) => {
   try {
     if (!title) throw new Error('Invalid title')
     if (!host) throw new Error('Invalid host')
@@ -11,7 +12,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
     const hostChecker = await User.findOne({ _id: host })
     if (!hostChecker) throw new Error('Invalid host')
 
-    const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate, permission })
+    const { error } = await Meeting.validate({ title, host, createdBy, startDate, endDate, permission, limit })
     if (error) {
       throw new Error(error.details[0].message)
     }
@@ -22,6 +23,7 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
       createdBy,
       startDate,
       endDate,
+      limit,
       needPermisionToJoin: permission,
       createdAt: new Date().getTime(),
       updatedAt: new Date().getTime()
@@ -46,6 +48,10 @@ const admitParticipantToJoinService = async (meetingId, userId, hostId) => {
     const { error } = await Meeting.admitOrReject({ meetingId, userId, hostId })
     if (error) throw new Error(error.details[0].message)
 
+    // check if meeting id valid
+    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
+    if (!meeting) throw new Error('Invalid meeting id')
+
     // check if user id valid
     const user = await User.findOne({ _id: userId })
     if (!user) throw new Error('Invalid user id')
@@ -54,16 +60,12 @@ const admitParticipantToJoinService = async (meetingId, userId, hostId) => {
     const host = await User.findOne({ _id: hostId })
     if (!host) throw new Error('Invalid host id')
 
-    // check if meeting id valid
-    const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'Yes' })
-    if (!meeting) throw new Error('Invalid meeting id')
-
     // check if host id is a real meeting host
-    const isValidHost = await meeting.hosts.find(e => e.userId === hostId)
-    if (!isValidHost) throw new Error('host id is not this meeting host')
+    const isHostValid = await meeting.hosts.find(e => e.userId === hostId)
+    if (!isHostValid) throw new Error('Host id is not this meeting host')
 
     // add requestedParticipant to participants
-    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
+    await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
 
     await Meeting.findOneAndUpdate({ _id: meetingId }, { $pull: { requestToJoin: { userId } } })
 
@@ -165,7 +167,7 @@ const hostRemoveParticipantService = async (meetingId, hostId, participantId) =>
 
     // remove participant from participants and add the removed participant to removedParticipants
     await meeting.participants.pop({ userId: participantId })
-    await meeting.removedParticipants.push({ userId: participantId, name: participant.fullName })
+    await meeting.removedParticipants.push({ userId: participantId })
     await meeting.save()
 
     return { status: 200, success: 'Successfully remove participant' }
@@ -184,7 +186,7 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
 
     // check if user exist
     const user = await User.findOne({ _id: userId })
-    if (!userId) throw new Error('Invalid user id')
+    if (!user) throw new Error('Invalid user id')
 
     // check if meeting exist
     const meeting = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE' })
@@ -202,14 +204,21 @@ const requestToJoinMeetingService = async (meetingId, userId) => {
     const alreadyRequestToJoin = await meeting.requestToJoin.find(e => e.userId === userId)
     if (alreadyRequestToJoin) throw new Error('User already request to join')
 
+    // check meeting lock status
+    if (meeting.lockMeeting === 'TRUE') throw new Error('Host already lock the meeting')
+
+    // check meeting limit
+    const totalMeetingList = meeting.participants.length + meeting.hosts.length
+    if (meeting.limit === totalMeetingList) throw new Error('Meeting has reached participant limit')
+
     // Meeting don't need permission (automatically join)
     const noPermissionNeeded = await Meeting.findOne({ _id: meetingId, status: 'ACTIVE', needPermisionToJoin: 'No' })
     if (noPermissionNeeded) {
-      await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId, name: user.fullName } } })
+      await Meeting.findOneAndUpdate({ _id: meetingId }, { $push: { participants: { userId } } })
       return { status: 200, success: 'Successfully join meeting' }
     }
 
-    await meeting.requestToJoin.push({ userId: user._id, name: user.fullName })
+    await meeting.requestToJoin.push({ userId: user._id })
     await meeting.save()
 
     return { status: 200, success: 'Successfully request to join meeting' }
@@ -330,7 +339,131 @@ const removeUserFromParticipantsService = async (userId, meetingId) => {
     await meeting.save()
     return { status: 200, success: 'Successfully remove user' }
   } catch (err) {
-    return { status: 400, error: 'Failed to remove user from participants '}
+    return { status: 400, error: 'Failed to remove user from participants' }
+  }
+}
+
+const endMeetingService = async (meetingId) => {
+  try {
+    // check if meeting exist
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    meeting.status = 'INACTIVE'
+    await meeting.save()
+
+    return { status: 200, success: 'Successfully end meeting' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed end meeting' }
+  }
+}
+
+const lockMeetingService = async (meetingId) => {
+  try {
+    const meeting = await Meeting.findOne({ id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    meeting.lockMeeting = 'TRUE'
+    await meeting.save()
+
+    return { status: 200, success: 'Successfully lock meeting' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed lock meeting' }
+  }
+}
+
+const getCurrentMeetingListService = async (meetingId) => {
+  try {
+    const meetingList = []
+
+    // get hosts list
+    const { hosts } = await Meeting.findOne({ _id: meetingId }).populate('hosts.userId').select('hosts -_id')
+
+    let newHost
+
+    await hosts.forEach(e => {
+      newHost = {
+        fullName: e.userId.fullName,
+        role: 'Host',
+        userId: e.userId._id
+      }
+
+      meetingList.push(newHost)
+    })
+
+    // get participants list
+    // const { participants } = await Meeting.findOne({ _id: meetingId }).populate('participants.userId').select('participants -_id')
+
+    // const participants = await Meeting.findOne({ _id: meetingId })
+
+    // let newParticipant
+
+    // await participants.forEach(async e => {
+    //   if (e.status === 'Anonymous') {
+    //     newParticipant = {
+    //       fullName: e.nameForAnonymous,
+    //       role: 'Participant',
+    //       userId: e.userId
+    //     }
+    //   } else if (e.status === 'Auth') {
+    //     const user = await User.findOne({ _id: e.userId })
+    //     newParticipant = {
+    //       fullName: user.fullName,
+    //       role: 'Participant',
+    //       userId: user._id
+    //     }
+    //   }
+
+    //   meetingList.push(newParticipant)
+    // })
+
+    console.log(meetingList)
+
+    return { status: 200, success: 'Successfully get current meeting list', meetingList }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed get current meeting list' }
+  }
+}
+
+const meetingHistoryService = async (userId) => {
+  try {
+    const meeting = await Meeting.find()
+
+    const userHistoryMeeting = []
+
+    // meeting.forEach(e => {
+    //   if (meeting.hosts[0].userId === userId) {
+    //     userHistoryMeeting.push(e)
+    //   }
+    //   e.participants.forEach(val => {
+    //     if (val.userId === userId) {
+    //       userHistoryMeeting.push(e)
+    //     }
+    //   })
+    // })
+
+    for (const e of meeting) {
+      if (e.hosts[0].userId === userId) {
+        // e.userRole = 'Host'
+        // await e.save()
+        console.log('USER WAS HOST')
+        userHistoryMeeting.push(e)
+      }
+      for (const val of e.participants) {
+        if (val.userId === userId) {
+          // e.userRole = 'Participant'
+          // await e.save()
+          console.log('USER WAS PARTICIPANT')
+          userHistoryMeeting.push(e)
+        }
+      }
+    }
+
+    // console.log('User History Meeting=', userHistoryMeeting)
+
+    return { status: 200, success: 'Successfully get meeting history', meetingList: userHistoryMeeting }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed get meeting history' }
   }
 }
 
@@ -346,5 +479,9 @@ module.exports = {
   testingPurposeOnlyService,
   rejectParticipantToJoinService,
   isUserHostService,
-  removeUserFromParticipantsService
+  removeUserFromParticipantsService,
+  endMeetingService,
+  lockMeetingService,
+  getCurrentMeetingListService,
+  meetingHistoryService
 }
