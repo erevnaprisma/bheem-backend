@@ -345,22 +345,36 @@ const lockMeeting = async (socket, io) => {
   })
 }
 
-const muteHandler = (socket, io) => {
-  socket.on('hostMuteHandler', (msg) => {
+const muteAndVideoHandler = (socket, io) => {
+  socket.on('hostMuteAndVideoHandler', (msg) => {
     // validation
     if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
     if (!msg.code) return socket.emit('meetingError', 'Invalid code')
 
+    // mute & unmute
     if (msg.code === 'mute all') {
-      return io.of('/participant').to(msg.meetingId).emit('participantMuteHandler', { message: 'mute' })
-    } else if (msg.code === 'unmute all') {
-      return io.of('/participant').to(msg.meetingId).emit('participantMuteHandler', { message: 'unmute' })
+      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'mute' })
+    } else if (msg.code === 'unmute all') { // unmute all participant
+      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'unmute' })
     } else if (msg.code === 'mute participant') {
       if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
-      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'mute' })
+      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'mute', userId: msg.userId })
     } else if (msg.code === 'unmute participant') {
       if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
-      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'unmute' })
+      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'unmute', userId: msg.userId })
+    }
+
+    // on & off video
+    if (msg.code === 'on all video') {
+      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'off video' })
+    } else if (msg.code === 'off all video') {
+      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'on video' })
+    } else if (msg.code === 'on participant video') {
+      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'off video', userId: msg.userId })
+    } else if (msg.code === 'off participant video') {
+      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
+      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'on video', userId: msg.userId })
     }
   })
 }
@@ -373,5 +387,5 @@ module.exports = {
   joinRoomAndBroadcastToMeeting,
   broadcastEndMeeting,
   lockMeeting,
-  muteHandler
+  muteAndVideoHandler
 }
