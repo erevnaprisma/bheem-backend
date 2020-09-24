@@ -40,7 +40,10 @@
                 username: document.getElementById('name').value,
                 meetingId: document.getElementById('meetingId').value,
                 anonymous: true,
-                status: 'Anonymous'
+                status: 'Anonymous',
+                socketId: socket.id,
+                audio: false,
+                video: false
               }
             socket.emit('requestToJoin', message)
         }

@@ -1,5 +1,6 @@
 // Model
 const Meeting = require('../collections/bheem_meeting/Model')
+const MeetingList = require('../collections/bheem_meeting_list/Model')
 const User = require('../collections/bheem_user/Model')
 
 // Services
@@ -19,6 +20,14 @@ const {
   anonymousRejectParticipantToJoinService
 } = require('../collections/bheem_meeting/services/AnonymousMeeting')
 
+const {
+  userAudioVideoUpdate,
+  userAudioVideoUpdateAll,
+  joinMeetingList,
+  removeFromMeetingList,
+  getSpesificUserMeetingList
+} = require('../collections/bheem_meeting_list/services')
+
 var ObjectId = require('mongodb').ObjectID
 
 const requestToJoin = async (socket, io) => {
@@ -26,12 +35,16 @@ const requestToJoin = async (socket, io) => {
   socket.on('requestToJoin', async (msg) => {
     if (!msg.username) return socket.emit('meetingError', 'Invalid username')
     if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
+    if (!msg.socketId) return socket.emit('meetingError', 'Invalid socket id')
 
     const message = {
       userId: msg.userId,
       username: msg.username,
       meetingId: msg.meetingId,
-      status: 'Auth'
+      status: 'Auth',
+      socketId: msg.socketId,
+      audio: msg.audio,
+      video: msg.video
     }
 
     let meeting
@@ -71,6 +84,18 @@ const requestToJoin = async (socket, io) => {
           console.log(`${msg.username} has joined the room`)
         })
 
+        // join meeting list with default audio false and video false
+        try {
+          await joinMeetingList(msg.meetingId, userId, msg.audio, msg.video, msg.socketId)
+        } catch (err) {
+          return socket.emit('meetingError', err.message || 'Failed create meeting list')
+        }
+
+        console.log('BEFORE MEETING LIST')
+
+        // notify everyon that someone is joining meeting list
+        io.of('/participant').to(msg.meetingId).emit('meetingList', { userId: msg.userId, audio: msg.audio, video: msg.video, socketId: msg.socketId })
+
         return socket.emit('userPermission', { message: 'ADMIT', fullName: msg.username, userId, meetingId: msg.meetingId })
       }
 
@@ -80,7 +105,10 @@ const requestToJoin = async (socket, io) => {
           userId,
           username: msg.username,
           meetingId: msg.meetingId,
-          status: 'Anonymous'
+          status: 'Anonymous',
+          socketId: msg.socketId,
+          audio: msg.audio,
+          video: msg.video
         }
 
         // send request to host
@@ -113,6 +141,16 @@ const requestToJoin = async (socket, io) => {
         console.log(`${user.fullName} has joined the room`)
       })
 
+      // join meeting list with default audio false and video false
+      try {
+        await joinMeetingList(msg.meetingId, msg.userId, msg.audio, msg.video, msg.socketId)
+      } catch (err) {
+        return socket.emit('meetingError', err.message || 'Failed create meeting list')
+      }
+
+      // notify everyon that someone is joining meeting list
+      io.of('/participant').to(msg.meetingId).emit('meetingList', { userId: msg.userId, audio: msg.audio, video: msg.video, socketId: msg.socketId })
+
       return socket.emit('userPermission', { message: 'ADMIT', fullName: user.fullName, userId: user._id, meetingId: msg.meetingId })
     }
 
@@ -142,14 +180,22 @@ const admitOrReject = async (socket, io) => {
   // Admit User to Join
   socket.on('admitUserToJoinHost', async (msg) => {
     if (msg.status === 'Anonymous') {
-      console.log('MESSAGE', msg)
       const response = await anonymousAdmitParticipantToJoinService(msg.meetingId, msg.hostId, msg.userId, msg.username)
 
       if (response.status === 400) return socket.emit('meetingError', response.error || 'Something went wrong')
 
+      // join meeting list with default audio false and video false
+      try {
+        await joinMeetingList(msg.meetingId, msg.userId, msg.audio, msg.video, msg.socketId)
+      } catch (err) {
+        return socket.emit('meetingError', err.message || 'Failed create meeting list')
+      }
+
       // send message to user
-      // io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'participant', meetingId: msg.meetingId, socketId: msg.socketId })
       io.of('/participant').to(msg.meetingId + '/waitingList').emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'Anonymous', meetingId: msg.meetingId })
+
+      // notify everyon that someone is joining meeting list
+      io.of('/participant').to(msg.meetingId).emit('meetingList', { userId: msg.userId, audio: msg.audio, video: msg.video, socketId: msg.socketId })
 
       // send successfully admit response to host to erase participant from host
       return socket.emit('succeessfullyAdmit', { userId: msg.userId, fullName: msg.username, role: 'participant' })
@@ -162,9 +208,18 @@ const admitOrReject = async (socket, io) => {
     const user = await User.findOne({ _id: msg.userId })
     if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
 
+    // create new meeting list with default audio false and video false
+    try {
+      await joinMeetingList(msg.meetingId, msg.userId, msg.audio, msg.video, msg.socketId)
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Failed create meeting list')
+    }
+
     // send message to user
-    // io.of('/participant').to(msg.socketId).emit('userPermission', { message: 'ADMIT', userId: user._id, fullName: user.fullName, role: 'participant', meetingId: msg.meetingId })
     io.of('/participant').to(msg.meetingId + '/waitingList').emit('userPermission', { message: 'ADMIT', userId: msg.userId, fullName: msg.username, role: 'Participant', meetingId: msg.meetingId })
+
+    // notify everyon that someone is joining meeting list
+    io.of('/participant').to(msg.meetingId).emit('meetingList', { userId: msg.userId, audio: msg.audio, video: msg.video, socketId: msg.socketId })
 
     // send successfully admit response to host to erase participant from host
     return socket.emit('succeessfullyAdmit', { userId: user._id, fullName: user.fullName, role: 'participant' })
@@ -234,8 +289,21 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
       console.log(`${msg.fullName} has join room`)
     })
 
+    var userInfo
+
+    try {
+      const response = await getSpesificUserMeetingList(msg.meetingId, msg.userId)
+
+      if (response.status === 400) {
+        return socket.emit('meetingError', response.error || 'Failed get specific user info')
+      }
+      userInfo = await response.userInfo
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Failed get specific user info')
+    }
+
     // broadcast message to all user in meeting
-    io.of('/participant').to(msg.meetingId).emit('userHasJoinMeeting', { message: `${msg.fullName} has join meeting`, fullName: msg.fullName, role: 'participant', userId: msg.userId })
+    await io.of('/participant').to(msg.meetingId).emit('userHasJoinMeeting', { message: `${msg.fullName} has join meeting`, fullName: msg.fullName, role: 'participant', userId: msg.userId, userInfo })
 
     try {
       const meetingList = []
@@ -262,7 +330,7 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
       let newRequestList
 
       // get meeting list and send to user
-      for (const participant of participants) {
+      for await (const participant of participants) {
         if (participant.status === 'Anonymous') {
           newParticipantList = {
             fullName: participant.nameForAnonymous,
@@ -282,8 +350,6 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
       }
 
       socket.emit('meetingList', { meetingList })
-
-      console.log('REQUEST TO JOIN=', requestToJoin)
 
       // get new waiting list and send to host
       if (requestToJoin.length !== 0) {
@@ -345,36 +411,60 @@ const lockMeeting = async (socket, io) => {
   })
 }
 
-const muteAndVideoHandler = (socket, io) => {
-  socket.on('hostMuteAndVideoHandler', (msg) => {
-    // validation
-    if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
-    if (!msg.code) return socket.emit('meetingError', 'Invalid code')
+const audioVideohandler = (socket, io) => {
+  socket.on('hostMuteAndVideoHandler', async (msg) => {
+    // yang harus dikirim oleh frontend :
+    // 1. msg.code ('specific', 'all')
+    // 2. msg.userId
+    // 3. msg.meetingId
+    // 4. msg.type ('audio', 'video')
+    // 5. msg.value (true, false)
 
-    // mute & unmute
-    if (msg.code === 'mute all') {
-      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'mute' })
-    } else if (msg.code === 'unmute all') { // unmute all participant
-      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'unmute' })
-    } else if (msg.code === 'mute participant') {
-      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
-      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'mute', userId: msg.userId })
-    } else if (msg.code === 'unmute participant') {
-      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
-      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'unmute', userId: msg.userId })
+    if (msg.code === 'specific') {
+      try {
+        const { error } = await MeetingList.updateFlag(msg)
+        if (error) throw new Error(error.details[0].message)
+
+        const response = await userAudioVideoUpdate(msg.meetingId, msg.userId, msg.type, msg.value)
+
+        if (response.status === 400) {
+          return socket.emit('meetingError', response.error || 'Failed change audio or video')
+        }
+
+        return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { userId: msg.userId, type: msg.type, value: msg.value, code: msg.code })
+      } catch (err) {
+        return socket.emit('meetingError', err.message || 'Failed change audio or video for specific user')
+      }
     }
 
-    // on & off video
-    if (msg.code === 'on all video') {
-      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'off video' })
-    } else if (msg.code === 'off all video') {
-      return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { message: 'on video' })
-    } else if (msg.code === 'on participant video') {
-      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
-      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'off video', userId: msg.userId })
-    } else if (msg.code === 'off participant video') {
-      if (!msg.userId) return socket.emit('meetingError', 'Invalid user id')
-      return io.of('/participant').to(msg.meetingId).emit('userPermission', { message: 'on video', userId: msg.userId })
+    if (msg.code === 'all') {
+      try {
+        const { error } = await MeetingList.updateFlagForAll(msg)
+        if (error) throw new Error(error.details[0].message)
+
+        const response = await userAudioVideoUpdateAll(msg.meetingId, msg.type, msg.value)
+
+        if (response.status === 400) {
+          return socket.emit('meetingError', response.error || 'Failed change all user audio or video')
+        }
+
+        return io.of('/participant').to(msg.meetingId).emit('participantMuteAndVideoHandler', { type: msg.type, value: msg.value, code: msg.code })
+      } catch (err) {
+        return socket.emit('meetingError', err.message || 'Failed change audio or video for all')
+      }
+    }
+  })
+}
+
+const removeFromMeetingListHandler = (socket, io) => {
+  socket.on('removeFromMeetingList', async msg => {
+    try {
+      if (!msg.meetingId) throw new Error('Invalid meeting id')
+      if (!msg.userId) throw new Error('Invalid user id')
+
+      await removeFromMeetingList(msg.meetingId, msg.userId)
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Failed remove from meeting list')
     }
   })
 }
@@ -387,5 +477,6 @@ module.exports = {
   joinRoomAndBroadcastToMeeting,
   broadcastEndMeeting,
   lockMeeting,
-  muteAndVideoHandler
+  audioVideohandler,
+  removeFromMeetingListHandler
 }

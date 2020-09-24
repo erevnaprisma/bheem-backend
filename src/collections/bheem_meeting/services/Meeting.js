@@ -1,6 +1,7 @@
+// models
 const Meeting = require('../Model')
 const User = require('../../bheem_user/Model')
-const { filter } = require('lodash')
+const MeetingList = require('../../bheem_meeting_list/Model')
 
 const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, limit) => {
   try {
@@ -32,6 +33,13 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
     if (meeting.endDate === '') meeting.endDate = null
 
     await meeting.save()
+
+    // create meeting list for the meeting that just been created
+    const meetingList = await new MeetingList({
+      meetingId: meeting._id
+    })
+
+    await meetingList.save()
 
     return { status: 200, success: 'Successfully create meeting', meeting }
   } catch (err) {
@@ -360,7 +368,7 @@ const endMeetingService = async (meetingId) => {
 
 const lockMeetingService = async (meetingId) => {
   try {
-    const meeting = await Meeting.findOne({ id: meetingId })
+    const meeting = await Meeting.findOne({ _id: meetingId })
     if (!meeting) throw new Error('Invalid meeting id')
 
     meeting.lockMeeting = 'TRUE'

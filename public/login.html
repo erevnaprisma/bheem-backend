@@ -69,7 +69,10 @@
     const message = {
       userId: document.getElementById('userId').value,
       username: document.getElementById('name').value,
-      meetingId: document.getElementById('meetingId').value
+      meetingId: document.getElementById('meetingId').value,
+      socketId: socket.id,
+      audio: false,
+      video: false
     }
 
     socket.emit('requestToJoin', message)

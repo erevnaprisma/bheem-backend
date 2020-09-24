@@ -50,7 +50,7 @@
     }
 
     function admit () {
-      socket.emit('admitUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId, status: userInfo.status, username: userInfo.username })
+      socket.emit('admitUserToJoinHost', { meetingId: userInfo.meetingId, userId: userInfo.userId, hostId, socketId: userInfo.socketId, status: userInfo.status, username: userInfo.username, audio: userInfo.audio, video: userInfo.video })
     }
 
     socket.on('userHasJoinMeeting', (msg) => {

@@ -6,7 +6,7 @@ const {
   ifUserSuddenlyOff,
   joinRoomAndBroadcastToMeeting,
   lockMeeting,
-  muteAndVideoHandler
+  audioVideohandler
 } = require('./services')
 
 const meeting = (io) => {
@@ -29,7 +29,7 @@ const meeting = (io) => {
 
     lockMeeting(socket, io)
 
-    muteAndVideoHandler(socket, io)
+    audioVideohandler(socket, io)
   })
 }
 
