@@ -255,6 +255,36 @@ const admitOrReject = async (socket, io) => {
 
 const createMeeting = (socket) => {
   socket.on('createMeeting', async (msg) => {
+    try {
+      const meetingList = []
+
+      // get hosts list
+      const { hosts } = await Meeting.findOne({ _id: msg.meetingId }).populate('hosts.userId').select('hosts -_id')
+
+      let newHost
+
+      for (const host of hosts) {
+        const getUserMeetingList = await MeetingList.findOne({ meetingId: msg.meetingId })
+        const hostId = await (host.userId._id).toString()
+        const userInfo = await getUserMeetingList.meetingList.find(e => e.userId === hostId)
+
+        newHost = {
+          fullName: host.userId.fullName,
+          role: 'Host',
+          userId: host.userId._id,
+          audio: userInfo.audio,
+          video: userInfo.video,
+          socketId: userInfo.socketId
+        }
+
+        meetingList.push(newHost)
+      }
+
+      await socket.emit('hostGetMeetingList', meetingList)
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Failed get meeting list')
+    }
+
     // host create meeting room
     socket.join(msg.meetingId, () => {
       console.log('Host successfully join room')
@@ -314,15 +344,22 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
 
       let newHost
 
-      await hosts.forEach(e => {
+      for (const host of hosts) {
+        const getUserMeetingList = await MeetingList.findOne({ meetingId: msg.meetingId })
+        const hostId = await (host.userId._id).toString()
+        const userInfo = await getUserMeetingList.meetingList.find(e => e.userId === hostId)
+
         newHost = {
-          fullName: e.userId.fullName,
+          fullName: host.userId.fullName,
           role: 'Host',
-          userId: e.userId._id
+          userId: host.userId._id,
+          audio: userInfo.audio,
+          video: userInfo.video,
+          socketId: userInfo.socketId
         }
 
         meetingList.push(newHost)
-      })
+      }
 
       const { participants, requestToJoin } = await Meeting.findOne({ _id: msg.meetingId })
 
@@ -332,18 +369,30 @@ const joinRoomAndBroadcastToMeeting = (socket, io) => {
       // get meeting list and send to user
       for await (const participant of participants) {
         if (participant.status === 'Anonymous') {
+          const getUserMeetingList = await MeetingList.findOne({ meetingId: msg.meetingId })
+          const userInfo = await getUserMeetingList.meetingList.find(e => e.userId === participant.userId)
+
           newParticipantList = {
             fullName: participant.nameForAnonymous,
             role: 'Participant',
-            userId: participant.userId
+            userId: participant.userId,
+            audio: userInfo.audio,
+            video: userInfo.video,
+            socketId: userInfo.socketId
           }
           meetingList.push(newParticipantList)
         } else {
+          const getUserMeetingList = await MeetingList.findOne({ meetingId: msg.meetingId })
+          const userInfo = await getUserMeetingList.meetingList.find(e => e.userId === participant.userId)
+
           const user = await User.findOne({ _id: participant.userId })
           newParticipantList = {
             fullName: user.fullName,
             role: 'Participant',
-            userId: user._id
+            userId: user._id,
+            audio: userInfo.audio,
+            video: userInfo.video,
+            socketId: userInfo.socketId
           }
           meetingList.push(newParticipantList)
         }

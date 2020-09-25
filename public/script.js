@@ -20,6 +20,9 @@ async function createMeeting () {
   var startDate = document.querySelector('#startDate').value
   var endDate = document.querySelector('#endDate').value
   var permissionToJoin = document.querySelector('#permission').value
+  var audio = true
+  var video = true
+  var socketId = await socket.id
 
   const response = await fetch('http://localhost:3000/graphql', {
     method: 'POST',
@@ -27,7 +30,7 @@ async function createMeeting () {
     body: JSON.stringify({
       query: `
         mutation {
-          createMeeting(title:"${title}", host:"${hostId}", createdBy:"${createdBy}", startDate:"${startDate}", endDate:"${endDate}", permissionToJoin:"${permissionToJoin}"){
+          createMeeting(title:"${title}", host:"${hostId}", createdBy:"${createdBy}", startDate:"${startDate}", endDate:"${endDate}", permissionToJoin:"${permissionToJoin}", audio:${audio}, video:${video}, socketId:"${socketId}"){
             status
             error
             success

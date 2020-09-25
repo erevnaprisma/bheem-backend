@@ -3,8 +3,12 @@ const Meeting = require('../Model')
 const User = require('../../bheem_user/Model')
 const MeetingList = require('../../bheem_meeting_list/Model')
 
-const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, limit) => {
+const createMeetingService = async (title, host, createdBy, startDate, endDate, permission, limit, audio, video, socketId) => {
   try {
+    console.log('AUDIO', audio)
+    console.log('VIDEO', video)
+    console.log('SOCKET ID', socketId)
+
     if (!title) throw new Error('Invalid title')
     if (!host) throw new Error('Invalid host')
     if (!createdBy) throw new Error('Invalid createdBy')
@@ -37,6 +41,13 @@ const createMeetingService = async (title, host, createdBy, startDate, endDate, 
     // create meeting list for the meeting that just been created
     const meetingList = await new MeetingList({
       meetingId: meeting._id
+    })
+
+    await meetingList.meetingList.push({
+      userId: hostChecker._id,
+      audio,
+      video,
+      socketId
     })
 
     await meetingList.save()

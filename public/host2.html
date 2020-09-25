@@ -70,6 +70,12 @@
       console.log('THIS IS THE NEW WAITING LIST (BACKUP)')
       console.log(msg)
     })
+
+    // get meeting list when meeting just created
+    socket.on('hostGetMeetingList', msg => {
+      console.log('HOST GET CURRENT MEETING LIST')
+      console.log(msg)
+    })
 </script>
 
 </html>

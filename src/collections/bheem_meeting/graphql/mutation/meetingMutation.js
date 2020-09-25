@@ -34,7 +34,8 @@ const {
 const {
   GraphQLString,
   GraphQLNonNull,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLBoolean
 } = graphql
 
 const createMeeting = {
@@ -46,10 +47,13 @@ const createMeeting = {
     startDate: { type: new GraphQLNonNull(GraphQLString) },
     endDate: { type: GraphQLString },
     permissionToJoin: { type: GraphQLString },
-    limit: { type: GraphQLInt }
+    limit: { type: GraphQLInt },
+    audio: { type: GraphQLBoolean },
+    video: { type: GraphQLBoolean },
+    socketId: { type: GraphQLString }
   },
   resolve (parent, args) {
-    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin, args.limit)
+    return createMeetingService(args.title, args.host, args.createdBy, args.startDate, args.endDate, args.permissionToJoin, args.limit, args.audio, args.video, args.socketId)
   }
 }
 
