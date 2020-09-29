@@ -11,7 +11,8 @@ const {
   removeUserFromParticipantsService,
   endMeetingService,
   getCurrentMeetingListService,
-  lockMeetingService
+  lockMeetingService,
+  unlockMeetingService
 } = require('../collections/bheem_meeting/services/Meeting')
 
 const {
@@ -460,6 +461,23 @@ const lockMeeting = async (socket, io) => {
   })
 }
 
+const unlockMeeting = async (socket, io) => {
+  socket.on('unlockMeeting', async (msg) => {
+    if (!msg.meetingId) return socket.emit('meetingError', 'Invalid meeting id')
+
+    try {
+      const response = await unlockMeetingService(msg.meetingId)
+      if (response.status === 200) {
+        return io.of('/participant').to(msg.meetingId).emit('meetingStatus', { message: 'Meeting has been unlock' })
+      } else if (response.status === 400) {
+        throw new Error(response.error)
+      }
+    } catch (err) {
+      return socket.emit('meetingError', err.message || 'Failed lock meeting')
+    }
+  })
+}
+
 const audioVideohandler = (socket, io) => {
   socket.on('hostMuteAndVideoHandler', async (msg) => {
     // yang harus dikirim oleh frontend :
@@ -527,5 +545,6 @@ module.exports = {
   broadcastEndMeeting,
   lockMeeting,
   audioVideohandler,
-  removeFromMeetingListHandler
+  removeFromMeetingListHandler,
+  unlockMeeting
 }

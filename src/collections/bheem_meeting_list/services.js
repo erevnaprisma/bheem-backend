@@ -1,4 +1,3 @@
-const { required } = require('@hapi/joi')
 // models
 const MeetingList = require('../bheem_meeting_list/Model')
 const User = require('../bheem_user/Model')
@@ -69,8 +68,8 @@ const userAudioVideoUpdate = async (meetingId, userId, type, value) => {
     if (!meeting) throw new Error('Invalid meeting id')
 
     // check valid user id
-    const user = await User.findOne({ _id: userId })
-    if (!user) throw new Error('Invalid user id')
+    const isUserParticipant = await meeting.participants.find(e => e.userId === userId)
+    if (!isUserParticipant) throw new Error('Invalid user id')
 
     // check valid meeting list
     const meetingList = await MeetingList.findOne({ meetingId })

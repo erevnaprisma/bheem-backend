@@ -391,6 +391,20 @@ const lockMeetingService = async (meetingId) => {
   }
 }
 
+const unlockMeetingService = async (meetingId) => {
+  try {
+    const meeting = await Meeting.findOne({ _id: meetingId })
+    if (!meeting) throw new Error('Invalid meeting id')
+
+    meeting.lockMeeting = 'FALSE'
+    await meeting.save()
+
+    return { status: 200, success: 'Successfully unlock meeting' }
+  } catch (err) {
+    return { status: 400, error: err.message || 'Failed unlock meeting' }
+  }
+}
+
 const getCurrentMeetingListService = async (meetingId) => {
   try {
     const meetingList = []
@@ -501,6 +515,7 @@ module.exports = {
   removeUserFromParticipantsService,
   endMeetingService,
   lockMeetingService,
+  unlockMeetingService,
   getCurrentMeetingListService,
   meetingHistoryService
 }
