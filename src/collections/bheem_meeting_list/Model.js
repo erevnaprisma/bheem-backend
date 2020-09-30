@@ -49,6 +49,7 @@ meetingListSchema.statics.updateFlag = (args) => {
     meetingId: Joi.string().required(),
     userId: Joi.string().required(),
     type: Joi.string().valid('audio', 'video').required(),
+    code: Joi.string().valid('specific', 'all').required(),
     value: Joi.boolean()
   })
 
